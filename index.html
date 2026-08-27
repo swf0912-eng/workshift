@@ -27,31 +27,31 @@
 
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-      --card-glass: rgba(255, 255, 255, 0.12);
-      --card-border: rgba(255, 255, 255, 0.2);
+      --bg-gradient: linear-gradient(135deg, #050515 0%, #100b32 40%, #1a0b2e 70%, #080014 100%);
+      --card-glass: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.18);
       --text-main: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.6);
+      --text-muted: rgba(255, 255, 255, 0.65);
       
-      --shift-day-bg: linear-gradient(135deg, #2563eb, #3b82f6);
-      --shift-day-glow: rgba(59, 130, 246, 0.6);
+      --shift-day-bg: linear-gradient(135deg, #00c6ff, #0072ff);
+      --shift-day-glow: rgba(0, 198, 255, 0.8);
       
-      --shift-noon-bg: linear-gradient(135deg, #f59e0b, #fbbf24);
-      --shift-noon-glow: rgba(245, 158, 11, 0.6);
+      --shift-noon-bg: linear-gradient(135deg, #f857a6, #ff5858);
+      --shift-noon-glow: rgba(248, 87, 166, 0.8);
 
-      --shift-night-bg: linear-gradient(135deg, #7c3aed, #a855f7);
-      --shift-night-glow: rgba(168, 85, 247, 0.6);
+      --shift-night-bg: linear-gradient(135deg, #8a2387, #e94057, #f27121);
+      --shift-night-glow: rgba(233, 64, 87, 0.8);
       
-      --shift-r-off-cell-bg: rgba(220, 38, 38, 0.35);
+      --shift-r-off-cell-bg: rgba(239, 68, 68, 0.25);
       --shift-r-off-cell-border: rgba(248, 113, 113, 0.8);
-      --shift-r-off-bg: linear-gradient(135deg, #dc2626, #ef4444);
-      --shift-r-off-glow: rgba(239, 68, 68, 0.8);
+      --shift-r-off-bg: linear-gradient(135deg, #ff0844, #ffb199);
+      --shift-r-off-glow: rgba(255, 8, 68, 0.8);
 
-      --shift-off-bg: linear-gradient(135deg, #ec4899, #f472b6);
-      --shift-off-glow: rgba(244, 114, 182, 0.7);
+      --shift-off-bg: linear-gradient(135deg, #f77062, #fe5196);
+      --shift-off-glow: rgba(254, 81, 150, 0.8);
       
-      --shift-custom-bg: linear-gradient(135deg, #ff007f, #7928ca);
-      --shift-custom-glow: rgba(255, 0, 127, 0.6);
+      --shift-custom-bg: linear-gradient(135deg, #b224ef, #7579ff);
+      --shift-custom-glow: rgba(178, 36, 239, 0.8);
     }
 
     * {
@@ -80,30 +80,41 @@
       position: relative;
     }
 
+    /* 華麗背景極光光暈 */
     .bg-glow {
       position: absolute;
       border-radius: 50%;
-      filter: blur(80px);
+      filter: blur(90px);
       z-index: 0;
-      animation: float 8s ease-in-out infinite alternate;
+      opacity: 0.8;
+      animation: float 10s ease-in-out infinite alternate;
     }
 
     .bg-glow-1 {
-      width: 280px; height: 280px;
-      background: #7928ca;
-      top: -50px; left: -50px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, #7928ca 0%, #ff007f 100%);
+      top: -80px; left: -80px;
     }
 
     .bg-glow-2 {
-      width: 250px; height: 250px;
-      background: #ff007f;
-      bottom: -40px; right: -40px;
-      animation-delay: -4s;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #00f2fe 0%, #4facfe 100%);
+      bottom: -60px; right: -60px;
+      animation-delay: -5s;
+    }
+
+    .bg-glow-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #ff0844 0%, #ffb199 100%);
+      top: 40%; left: 30%;
+      animation-delay: -2.5s;
+      opacity: 0.5;
     }
 
     @keyframes float {
-      0% { transform: translate(0, 0) scale(1); }
-      100% { transform: translate(30px, 40px) scale(1.15); }
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+      50% { transform: translate(40px, 30px) scale(1.2) rotate(180deg); }
+      100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
     .calendar-container {
@@ -116,12 +127,14 @@
       display: flex;
       flex-direction: column;
       background: var(--card-glass);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 12px 8px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 12px 10px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 
+                  inset 0 0 20px rgba(255, 255, 255, 0.15),
+                  0 0 15px rgba(255, 0, 127, 0.2);
       overflow: hidden;
     }
 
@@ -135,84 +148,98 @@
       flex-shrink: 0;
     }
 
-    /* 模式切換按鈕 */
+    /* 模式切換按鈕炫彩特效 */
     .mode-toggle-btn {
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.12);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 0.75rem;
-      font-weight: 700;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      font-weight: 800;
       color: #fff;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 5px;
-      transition: all 0.3s ease;
+      gap: 6px;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(10px);
     }
 
     .mode-toggle-btn.edit-mode {
       background: linear-gradient(135deg, #ff007f, #7928ca);
-      box-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
-      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.8), 0 0 30px rgba(121, 40, 202, 0.5);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.05);
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       padding: 0 4px;
       flex-shrink: 0;
     }
 
     .header h2 {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      background: linear-gradient(to right, #fff, #a5b4fc);
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(to right, #ffffff, #00f2fe, #ff007f);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      text-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
     }
 
     .nav-btn {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 6px 12px;
-      font-size: 0.8rem;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
       color: #fff;
       cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
     .nav-btn:active {
-      transform: scale(0.92);
-      background: rgba(255, 255, 255, 0.25);
+      transform: scale(0.9);
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     }
 
     .status-bar {
-      font-size: 0.7rem;
-      color: #38f9d7;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #00f2fe;
       display: flex;
       align-items: center;
       gap: 6px;
+      text-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
     }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
-      background-color: #38f9d7;
+      width: 8px;
+      height: 8px;
+      background-color: #00f2fe;
       border-radius: 50%;
-      box-shadow: 0 0 8px #38f9d7;
+      box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
     }
 
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       text-align: center;
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.88rem;
+      font-weight: 800;
       color: var(--text-muted);
       margin-bottom: 6px;
       flex-shrink: 0;
@@ -220,7 +247,8 @@
 
     .weekdays div:nth-child(6),
     .weekdays div:nth-child(7) {
-      color: #f472b6;
+      color: #ff5858;
+      text-shadow: 0 0 8px rgba(255, 88, 88, 0.5);
     }
 
     .days-grid-container {
@@ -228,41 +256,42 @@
       height: 100%;
       position: relative;
       overflow: hidden;
+      perspective: 1000px;
     }
 
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       grid-template-rows: repeat(6, 1fr);
-      gap: 4px;
+      gap: 5px;
       height: 100%;
       width: 100%;
       position: absolute;
       top: 0;
       left: 0;
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease;
     }
 
-    /* 切換月份動畫 Class */
-    .slide-left-out { transform: translateX(-100%); opacity: 0; }
-    .slide-left-in { transform: translateX(100%); opacity: 0; }
-    .slide-right-out { transform: translateX(100%); opacity: 0; }
-    .slide-right-in { transform: translateX(-100%); opacity: 0; }
+    /* 切換月份 3D 炫彩動畫 */
+    .slide-left-out { transform: translateX(-100%) rotateY(-20deg) scale(0.9); opacity: 0; }
+    .slide-left-in { transform: translateX(100%) rotateY(20deg) scale(0.9); opacity: 0; }
+    .slide-right-out { transform: translateX(100%) rotateY(20deg) scale(0.9); opacity: 0; }
+    .slide-right-in { transform: translateX(-100%) rotateY(-20deg) scale(0.9); opacity: 0; }
 
     .day-cell {
-      border-radius: 10px;
-      padding: 3px 2px;
+      border-radius: 12px;
+      padding: 4px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
       gap: 2px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.08);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .day-cell.empty {
@@ -272,49 +301,59 @@
     }
 
     .day-number {
-      font-size: 0.82rem;
-      font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      font-size: 0.85rem;
+      font-weight: 800;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
       line-height: 1.1;
     }
 
+    /* 今日炫光光暈 */
     .day-cell.today {
       border: 2px solid #ffd700;
-      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 215, 0, 0.3);
+      animation: todayGlow 3s infinite alternate;
+    }
+
+    @keyframes todayGlow {
+      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+      100% { box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.5); }
     }
 
     .day-cell.today .day-number {
-      background: #ffd700;
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
       color: #000;
       border-radius: 50%;
-      width: 18px; height: 18px;
+      width: 20px; height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.7rem;
-      box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
+      font-size: 0.72rem;
+      font-weight: 900;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
     }
 
+    /* 選取狀態炫光 */
     .day-cell.selected {
       border: 2px solid #00f2fe !important;
-      background: rgba(0, 242, 254, 0.25) !important;
-      box-shadow: 0 0 12px rgba(0, 242, 254, 0.6) !important;
-      transform: scale(0.96);
+      background: rgba(0, 242, 254, 0.3) !important;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9), inset 0 0 10px rgba(0, 242, 254, 0.5) !important;
+      transform: scale(0.94);
     }
 
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
       border: 1px solid var(--shift-r-off-cell-border) !important;
-      box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.4);
+      box-shadow: inset 0 0 12px rgba(255, 8, 68, 0.5);
     }
 
+    /* 班別標籤霓虹質感 */
     .shift-tag {
       width: 98%;
       text-align: center;
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 2px 1px;
-      border-radius: 5px;
+      padding: 3px 2px;
+      border-radius: 6px;
       color: #fff;
       line-height: 1.15;
       word-break: break-all;
@@ -323,20 +362,24 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
     }
 
-    .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
-    .shift-noon { background: var(--shift-noon-bg); color: #4a2800; box-shadow: 0 0 8px var(--shift-noon-glow); }
-    .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
-    .shift-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 8px var(--shift-r-off-glow); }
-    .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 8px var(--shift-off-glow); }
-    .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 8px var(--shift-custom-glow); }
+    .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 10px var(--shift-day-glow); }
+    .shift-noon { background: var(--shift-noon-bg); color: #fff; box-shadow: 0 0 10px var(--shift-noon-glow); }
+    .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 10px var(--shift-night-glow); }
+    .shift-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 10px var(--shift-r-off-glow); }
+    .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 10px var(--shift-off-glow); }
+    .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
+    /* Modal 玻璃與光暈 */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(10px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -352,46 +395,49 @@
     }
 
     .modal {
-      background: rgba(30, 27, 75, 0.92);
-      border: 1px solid var(--card-border);
+      background: rgba(20, 15, 45, 0.95);
+      border: 1px solid rgba(255, 0, 127, 0.4);
       width: 90%;
       max-width: 340px;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(121, 40, 202, 0.4);
-      transform: scale(0.8);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 0, 127, 0.5);
+      transform: scale(0.7) translateY(30px);
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .modal-overlay.active .modal {
-      transform: scale(1);
+      transform: scale(1) translateY(0);
     }
 
     .modal h3 {
-      font-size: 1.1rem;
-      margin-bottom: 14px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 16px;
       text-align: center;
       color: #fff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
     }
 
     .quick-btns {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 8px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .quick-btn {
       padding: 10px 0;
       border: none;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .quick-btn:active {
-      transform: scale(0.95);
+      transform: scale(0.92);
     }
 
     .input-group {
@@ -400,65 +446,74 @@
 
     .input-group label {
       display: block;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
+      font-weight: 700;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .input-group textarea {
       width: 100%;
-      height: 64px;
-      padding: 8px 10px;
-      background: rgba(255, 255, 255, 0.1);
+      height: 68px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
-      border-radius: 8px;
-      font-size: 0.9rem;
+      border-radius: 12px;
+      font-size: 0.92rem;
       color: #fff;
       outline: none;
       resize: none;
       user-select: text;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .input-group textarea:focus {
       border-color: #ff007f;
-      box-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
     }
 
     .modal-actions {
       display: flex;
-      gap: 10px;
+      gap: 12px;
     }
 
     .btn-action {
       flex: 1;
-      padding: 10px 0;
-      border-radius: 10px;
+      padding: 11px 0;
+      border-radius: 12px;
       border: none;
-      font-size: 0.9rem;
-      font-weight: 700;
+      font-size: 0.92rem;
+      font-weight: 800;
       cursor: pointer;
     }
 
     .btn-cancel { background: rgba(255, 255, 255, 0.15); color: #fff; }
-    .btn-save { background: linear-gradient(135deg, #ff007f, #7928ca); color: #fff; box-shadow: 0 0 10px rgba(255, 0, 127, 0.5); }
+    .btn-save { 
+      background: linear-gradient(135deg, #ff007f, #7928ca); 
+      color: #fff; 
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
+    }
 
+    /* 爆發星芒粒子特效 */
     .particle {
       position: absolute;
       pointer-events: none;
       border-radius: 50%;
-      animation: explode 0.6s ease-out forwards;
+      animation: explode 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
     }
 
     @keyframes explode {
-      0% { transform: translate(0, 0) scale(1); opacity: 1; }
-      100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+      0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 6px currentColor); }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
+  <!-- 背景流動極光 -->
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
+  <div class="bg-glow bg-glow-3"></div>
 
   <div class="calendar-container">
     <div class="top-bar">
@@ -515,7 +570,7 @@
     let currentDate = new Date();
     let shiftData = {};
 
-    let isEditMode = false; // 預設為檢視模式
+    let isEditMode = false; // 預設檢視模式
     let isDragging = false;
     let selectedDates = new Set();
 
@@ -555,6 +610,7 @@
         btn.classList.add('edit-mode');
         icon.innerText = '✏️';
         text.innerText = '編輯模式';
+        createParticles(btn.offsetLeft + btn.offsetWidth/2, btn.offsetTop + btn.offsetHeight/2, 16);
       } else {
         btn.classList.remove('edit-mode');
         icon.innerText = '👁️';
@@ -624,10 +680,8 @@
     }
 
     function changeMonth(delta) {
-      const container = document.getElementById('days-grid-container');
       const currentGrid = document.getElementById('days-grid');
 
-      // 動畫：當前網頁往左或右移出
       const outClass = delta > 0 ? 'slide-left-out' : 'slide-right-out';
       const inClass = delta > 0 ? 'slide-left-in' : 'slide-right-in';
 
@@ -640,13 +694,12 @@
         currentGrid.classList.remove(outClass);
         currentGrid.classList.add(inClass);
 
-        // 強制重繪後進場
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             currentGrid.classList.remove(inClass);
           });
         });
-      }, 250);
+      }, 300);
     }
 
     function setupDragAndSwipeSelection() {
@@ -663,7 +716,7 @@
         touchEndX = x;
         touchEndY = y;
 
-        if (!isEditMode) return; // 檢視模式下禁用選取
+        if (!isEditMode) return;
 
         const cell = getCellFromPoint(x, y);
         if (!cell) return;
@@ -686,16 +739,14 @@
 
       const endSelection = (x, y) => {
         if (!isEditMode) {
-          // 檢視模式下，計算是否為橫向滑動
           const diffX = touchEndX - touchStartX;
           const diffY = touchEndY - touchStartY;
 
-          // 判斷橫向滑動距離大於 50px 且垂直移動距離較小
           if (Math.abs(diffX) > 50 && Math.abs(diffY) < 60) {
             if (diffX < 0) {
-              changeMonth(1);  // 向左滑動 -> 下個月
+              changeMonth(1);
             } else {
-              changeMonth(-1); // 向右滑動 -> 上個月
+              changeMonth(-1);
             }
           }
           return;
@@ -704,12 +755,11 @@
         if (!isDragging) return;
         isDragging = false;
         if (selectedDates.size > 0) {
-          createParticles(x || window.innerWidth/2, y || window.innerHeight/2);
+          createParticles(x || window.innerWidth/2, y || window.innerHeight/2, 20);
           openModal();
         }
       };
 
-      // 觸控事件
       container.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         startSelection(t.clientX, t.clientY);
@@ -725,7 +775,6 @@
         endSelection(t.clientX, t.clientY);
       });
 
-      // 滑鼠事件
       container.addEventListener('mousedown', (e) => startSelection(e.clientX, e.clientY));
       container.addEventListener('mousemove', (e) => moveSelection(e.clientX, e.clientY));
       window.addEventListener('mouseup', (e) => endSelection(e.clientX, e.clientY));
@@ -782,26 +831,29 @@
       closeModal();
     }
 
-    function createParticles(x, y) {
-      const colors = ['#00f2fe', '#ff007f', '#7928ca', '#43e97b', '#ffd700'];
-      for (let i = 0; i < 12; i++) {
+    // 爆發華麗粒子效果
+    function createParticles(x, y, count = 15) {
+      const colors = ['#00f2fe', '#ff007f', '#7928ca', '#43e97b', '#ffd700', '#ff5858'];
+      for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         document.body.appendChild(p);
 
-        const size = Math.random() * 6 + 4;
+        const size = Math.random() * 8 + 4;
         p.style.width = `${size}px`;
         p.style.height = `${size}px`;
-        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        p.style.background = color;
+        p.style.color = color;
         p.style.left = `${x}px`;
         p.style.top = `${y}px`;
 
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 50 + 20;
+        const speed = Math.random() * 80 + 30;
         p.style.setProperty('--dx', `${Math.cos(angle) * speed}px`);
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
-        setTimeout(() => p.remove(), 600);
+        setTimeout(() => p.remove(), 700);
       }
     }
 
