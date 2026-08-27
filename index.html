@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>滿版華麗互動班表</title>
+  <title>滿版華麗互動班表 (班別於日期正下方)</title>
 
-  <!-- 引入 Firebase SDK (v9 模組化 CDN) -->
+  <!-- 引入 Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
     const firebaseConfig = {
       databaseURL: "https://workshift-a66f0-default-rtdb.firebaseio.com/"
@@ -22,6 +22,7 @@
     window.dbOnValue = onValue;
     window.dbSet = set;
     window.dbRemove = remove;
+    window.dbUpdate = update;
   </script>
 
   <style>
@@ -32,22 +33,21 @@
       --text-main: #ffffff;
       --text-muted: rgba(255, 255, 255, 0.6);
       
-      /* 依需求調整之配色 */
-      --shift-day-bg: linear-gradient(135deg, #2563eb, #3b82f6); /* 藍色 */
+      --shift-day-bg: linear-gradient(135deg, #2563eb, #3b82f6);
       --shift-day-glow: rgba(59, 130, 246, 0.6);
       
-      --shift-noon-bg: linear-gradient(135deg, #f59e0b, #fbbf24); /* 中班金黃 */
+      --shift-noon-bg: linear-gradient(135deg, #f59e0b, #fbbf24);
       --shift-noon-glow: rgba(245, 158, 11, 0.6);
 
-      --shift-night-bg: linear-gradient(135deg, #7c3aed, #a855f7); /* 晚班紫色 */
+      --shift-night-bg: linear-gradient(135deg, #7c3aed, #a855f7);
       --shift-night-glow: rgba(168, 85, 247, 0.6);
       
-      --shift-r-off-cell-bg: rgba(220, 38, 38, 0.35); /* 輪休：整格背景變紅 */
+      --shift-r-off-cell-bg: rgba(220, 38, 38, 0.35);
       --shift-r-off-cell-border: rgba(248, 113, 113, 0.8);
-      --shift-r-off-bg: linear-gradient(135deg, #dc2626, #ef4444); /* 輪休標籤紅 */
+      --shift-r-off-bg: linear-gradient(135deg, #dc2626, #ef4444);
       --shift-r-off-glow: rgba(239, 68, 68, 0.8);
 
-      --shift-off-bg: linear-gradient(135deg, #ec4899, #f472b6); /* 休假粉紅色 */
+      --shift-off-bg: linear-gradient(135deg, #ec4899, #f472b6);
       --shift-off-glow: rgba(244, 114, 182, 0.7);
       
       --shift-custom-bg: linear-gradient(135deg, #ff007f, #7928ca);
@@ -60,12 +60,14 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
     html, body {
       height: 100vh;
       width: 100vw;
-      overflow: hidden; /* 防止螢幕滾動，達成真正滿版 */
+      overflow: hidden;
+      touch-action: none;
     }
 
     body {
@@ -78,7 +80,6 @@
       position: relative;
     }
 
-    /* 背景浮動光斑 */
     .bg-glow {
       position: absolute;
       border-radius: 50%;
@@ -105,7 +106,6 @@
       100% { transform: translate(30px, 40px) scale(1.15); }
     }
 
-    /* 滿版玻璃擬態容器 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -178,7 +178,6 @@
       box-shadow: 0 0 8px #38f9d7;
     }
 
-    /* 星期欄位 */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -195,33 +194,30 @@
       color: #f472b6;
     }
 
-    /* 日曆動態網格：填滿剩餘高度 */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: repeat(6, 1fr); /* 彈性撐滿 6 週空間 */
+      grid-template-rows: repeat(6, 1fr);
       gap: 4px;
-      flex-grow: 1; /* 自動拉長填充剩餘高度 */
+      flex-grow: 1;
       height: 100%;
     }
 
+    /* 格子內容佈局修正：設為從上到下排列，緊貼日期下方 */
     .day-cell {
       border-radius: 10px;
       padding: 4px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start; /* 向上對齊 */
+      gap: 3px; /* 日期與班別標籤之間的間距 */
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.15 ease, background 0.2s ease;
-    }
-
-    .day-cell:active {
-      transform: scale(0.92);
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
     }
 
     .day-cell.empty {
@@ -234,6 +230,7 @@
       font-size: 0.85rem;
       font-weight: 700;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      line-height: 1.2;
     }
 
     .day-cell.today {
@@ -253,14 +250,19 @@
       box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
     }
 
-    /* 輪休：整格變紅色 */
+    .day-cell.selected {
+      border: 2px solid #00f2fe !important;
+      background: rgba(0, 242, 254, 0.25) !important;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.6) !important;
+      transform: scale(0.96);
+    }
+
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
       border: 1px solid var(--shift-r-off-cell-border) !important;
       box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.4);
     }
 
-    /* 可顯示更多文字之標籤 */
     .shift-tag {
       width: 96%;
       text-align: center;
@@ -271,8 +273,7 @@
       color: #fff;
       line-height: 1.15;
       word-break: break-all;
-      white-space: normal; /* 允許換行顯示更多字 */
-      max-height: 70%;
+      white-space: normal;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -285,7 +286,6 @@
     .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 8px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 8px var(--shift-custom-glow); }
 
-    /* 編輯視窗 (Modal) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -420,7 +420,7 @@
 
     <div class="status-bar">
       <div class="status-dot"></div>
-      <span>Firebase 雲端同步中</span>
+      <span>Firebase 雲端同步 (支援滑動多選)</span>
     </div>
 
     <div class="weekdays">
@@ -430,10 +430,9 @@
     <div class="days-grid" id="days-grid"></div>
   </div>
 
-  <!-- 編輯視窗 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
-      <h3 id="modal-date-title">設定班別與備註</h3>
+      <h3 id="modal-date-title">統一設定班別與備註</h3>
       
       <div class="quick-btns">
         <button class="quick-btn shift-day" onclick="setQuick('早班')">早班</button>
@@ -451,15 +450,17 @@
 
       <div class="modal-actions">
         <button class="btn-action btn-cancel" onclick="closeModal()">取消</button>
-        <button class="btn-action btn-save" onclick="saveData()">儲存同步</button>
+        <button class="btn-action btn-save" onclick="saveData()">批量儲存</button>
       </div>
     </div>
   </div>
 
   <script>
     let currentDate = new Date();
-    let selectedDateStr = '';
     let shiftData = {};
+
+    let isDragging = false;
+    let selectedDates = new Set();
 
     window.addEventListener('DOMContentLoaded', () => {
       const checkFirebase = setInterval(() => {
@@ -468,6 +469,8 @@
           initFirebaseListener();
         }
       }, 100);
+
+      setupDragSelection();
     });
 
     function initFirebaseListener() {
@@ -504,11 +507,7 @@
         cell.className = 'day-cell';
 
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        
-        cell.onclick = (e) => {
-          createParticles(e.clientX, e.clientY);
-          openModal(dateStr, day);
-        };
+        cell.dataset.date = dateStr;
 
         if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
           cell.classList.add('today');
@@ -525,20 +524,14 @@
           shiftNode.className = 'shift-tag';
           shiftNode.innerText = shift;
 
-          if (shift === '早班' || shift === '早') {
-            shiftNode.classList.add('shift-day');
-          } else if (shift === '中班' || shift === '中') {
-            shiftNode.classList.add('shift-noon');
-          } else if (shift === '晚班' || shift === '晚') {
-            shiftNode.classList.add('shift-night');
-          } else if (shift === '輪休') {
+          if (shift === '早班' || shift === '早') shiftNode.classList.add('shift-day');
+          else if (shift === '中班' || shift === '中') shiftNode.classList.add('shift-noon');
+          else if (shift === '晚班' || shift === '晚') shiftNode.classList.add('shift-night');
+          else if (shift === '輪休') {
             shiftNode.classList.add('shift-r-off');
-            cell.classList.add('cell-r-off'); // 輪休時，整格日期變紅背景
-          } else if (shift === '休假' || shift === '休') {
-            shiftNode.classList.add('shift-off');
-          } else {
-            shiftNode.classList.add('shift-custom');
-          }
+            cell.classList.add('cell-r-off');
+          } else if (shift === '休假' || shift === '休') shiftNode.classList.add('shift-off');
+          else shiftNode.classList.add('shift-custom');
 
           cell.appendChild(shiftNode);
         }
@@ -547,16 +540,91 @@
       }
     }
 
-    function openModal(dateStr, day) {
-      selectedDateStr = dateStr;
-      const month = currentDate.getMonth() + 1;
-      document.getElementById('modal-date-title').innerText = `${month}月${day}日 班別與備註`;
-      document.getElementById('shift-input').value = shiftData[dateStr] || '';
+    function setupDragSelection() {
+      const grid = document.getElementById('days-grid');
+
+      const getCellFromPoint = (x, y) => {
+        const elem = document.elementFromPoint(x, y);
+        return elem ? elem.closest('.day-cell:not(.empty)') : null;
+      };
+
+      const startSelection = (x, y) => {
+        const cell = getCellFromPoint(x, y);
+        if (!cell) return;
+        isDragging = true;
+        selectedDates.clear();
+        toggleCellSelection(cell);
+      };
+
+      const moveSelection = (x, y) => {
+        if (!isDragging) return;
+        const cell = getCellFromPoint(x, y);
+        if (cell) {
+          toggleCellSelection(cell);
+        }
+      };
+
+      const endSelection = (x, y) => {
+        if (!isDragging) return;
+        isDragging = false;
+        if (selectedDates.size > 0) {
+          createParticles(x || window.innerWidth/2, y || window.innerHeight/2);
+          openModal();
+        }
+      };
+
+      grid.addEventListener('touchstart', (e) => {
+        const t = e.touches[0];
+        startSelection(t.clientX, t.clientY);
+      }, { passive: true });
+
+      grid.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        moveSelection(t.clientX, t.clientY);
+      }, { passive: true });
+
+      grid.addEventListener('touchend', (e) => {
+        const t = e.changedTouches[0];
+        endSelection(t.clientX, t.clientY);
+      });
+
+      grid.addEventListener('mousedown', (e) => startSelection(e.clientX, e.clientY));
+      grid.addEventListener('mousemove', (e) => moveSelection(e.clientX, e.clientY));
+      window.addEventListener('mouseup', (e) => endSelection(e.clientX, e.clientY));
+    }
+
+    function toggleCellSelection(cell) {
+      const dateStr = cell.dataset.date;
+      if (!dateStr) return;
+      if (!selectedDates.has(dateStr)) {
+        selectedDates.add(dateStr);
+        cell.classList.add('selected');
+      }
+    }
+
+    function clearSelectionUI() {
+      document.querySelectorAll('.day-cell.selected').forEach(cell => {
+        cell.classList.remove('selected');
+      });
+      selectedDates.clear();
+    }
+
+    function openModal() {
+      const title = document.getElementById('modal-date-title');
+      if (selectedDates.size === 1) {
+        const date = Array.from(selectedDates)[0];
+        title.innerText = `${parseInt(date.split('-')[1])}月${parseInt(date.split('-')[2])}日 班別設定`;
+        document.getElementById('shift-input').value = shiftData[date] || '';
+      } else {
+        title.innerText = `已選擇 ${selectedDates.size} 天，統一設定班別：`;
+        document.getElementById('shift-input').value = '';
+      }
       document.getElementById('modal-overlay').classList.add('active');
     }
 
     function closeModal() {
       document.getElementById('modal-overlay').classList.remove('active');
+      clearSelectionUI();
     }
 
     function setQuick(val) {
@@ -566,14 +634,13 @@
 
     function saveData() {
       const val = document.getElementById('shift-input').value.trim();
-      const targetRef = window.dbRef(window.db, `shifts/${selectedDateStr}`);
+      const updates = {};
 
-      if (val) {
-        window.dbSet(targetRef, val);
-      } else {
-        window.dbRemove(targetRef);
-      }
-      
+      selectedDates.forEach(dateStr => {
+        updates[`shifts/${dateStr}`] = val ? val : null;
+      });
+
+      window.dbUpdate(window.dbRef(window.db), updates);
       closeModal();
     }
 
@@ -583,7 +650,7 @@
     }
 
     function createParticles(x, y) {
-      const colors = ['#ff007f', '#7928ca', '#00f2fe', '#43e97b', '#ffd700'];
+      const colors = ['#00f2fe', '#ff007f', '#7928ca', '#43e97b', '#ffd700'];
       for (let i = 0; i < 12; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
