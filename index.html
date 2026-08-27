@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>滿版華麗互動班表 (班別於日期正下方)</title>
+  <title>滿版華麗互動班表 (支援多選與換行備註)</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -203,15 +203,14 @@
       height: 100%;
     }
 
-    /* 格子內容佈局修正：設為從上到下排列，緊貼日期下方 */
     .day-cell {
       border-radius: 10px;
-      padding: 4px 2px;
+      padding: 3px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start; /* 向上對齊 */
-      gap: 3px; /* 日期與班別標籤之間的間距 */
+      justify-content: flex-start;
+      gap: 2px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
       cursor: pointer;
@@ -227,10 +226,10 @@
     }
 
     .day-number {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      line-height: 1.2;
+      line-height: 1.1;
     }
 
     .day-cell.today {
@@ -242,11 +241,11 @@
       background: #ffd700;
       color: #000;
       border-radius: 50%;
-      width: 20px; height: 20px;
+      width: 18px; height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
     }
 
@@ -263,20 +262,22 @@
       box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.4);
     }
 
+    /* 班別與備註標籤：支援換行 (pre-wrap) */
     .shift-tag {
-      width: 96%;
+      width: 98%;
       text-align: center;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 800;
-      padding: 3px 2px;
-      border-radius: 6px;
+      padding: 2px 1px;
+      border-radius: 5px;
       color: #fff;
       line-height: 1.15;
       word-break: break-all;
-      white-space: normal;
+      white-space: pre-wrap; /* 支援換行顯示 */
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
@@ -359,18 +360,22 @@
       margin-bottom: 6px;
     }
 
-    .input-group input {
+    /* 多行文字輸入框 (Textarea) */
+    .input-group textarea {
       width: 100%;
-      padding: 10px 12px;
+      height: 64px;
+      padding: 8px 10px;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: #fff;
       outline: none;
+      resize: none;
+      user-select: text;
     }
 
-    .input-group input:focus {
+    .input-group textarea:focus {
       border-color: #ff007f;
       box-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
     }
@@ -420,7 +425,7 @@
 
     <div class="status-bar">
       <div class="status-dot"></div>
-      <span>Firebase 雲端同步 (支援滑動多選)</span>
+      <span>Firebase 雲端同步 (支援換行備註)</span>
     </div>
 
     <div class="weekdays">
@@ -444,13 +449,13 @@
       </div>
 
       <div class="input-group">
-        <label>自訂備註 / 班別：</label>
-        <input type="text" id="shift-input" placeholder="例：特休、會議、支援" maxlength="12">
+        <label>自訂備註 / 班別（可按 Enter 換行）：</label>
+        <textarea id="shift-input" placeholder="例如：&#10;早班&#10;開會"></textarea>
       </div>
 
       <div class="modal-actions">
         <button class="btn-action btn-cancel" onclick="closeModal()">取消</button>
-        <button class="btn-action btn-save" onclick="saveData()">批量儲存</button>
+        <button class="btn-action btn-save" onclick="saveData()">儲存同步</button>
       </div>
     </div>
   </div>
@@ -524,13 +529,15 @@
           shiftNode.className = 'shift-tag';
           shiftNode.innerText = shift;
 
-          if (shift === '早班' || shift === '早') shiftNode.classList.add('shift-day');
-          else if (shift === '中班' || shift === '中') shiftNode.classList.add('shift-noon');
-          else if (shift === '晚班' || shift === '晚') shiftNode.classList.add('shift-night');
-          else if (shift === '輪休') {
+          const firstLine = shift.split('\n')[0].trim();
+
+          if (firstLine === '早班' || firstLine === '早') shiftNode.classList.add('shift-day');
+          else if (firstLine === '中班' || firstLine === '中') shiftNode.classList.add('shift-noon');
+          else if (firstLine === '晚班' || firstLine === '晚') shiftNode.classList.add('shift-night');
+          else if (firstLine === '輪休') {
             shiftNode.classList.add('shift-r-off');
             cell.classList.add('cell-r-off');
-          } else if (shift === '休假' || shift === '休') shiftNode.classList.add('shift-off');
+          } else if (firstLine === '休假' || firstLine === '休') shiftNode.classList.add('shift-off');
           else shiftNode.classList.add('shift-custom');
 
           cell.appendChild(shiftNode);
