@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>即時同步華麗互動班表</title>
+  <title>滿版華麗互動班表</title>
 
   <!-- 引入 Firebase SDK (v9 模組化 CDN) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Firebase 配置 (連結您的 Realtime Database)
     const firebaseConfig = {
       databaseURL: "https://workshift-a66f0-default-rtdb.firebaseio.com/"
     };
 
-    // 初始化 Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 將 Firebase 操控方法暴露給全域腳本使用
     window.db = db;
     window.dbRef = ref;
     window.dbOnValue = onValue;
@@ -29,28 +26,29 @@
 
   <style>
     :root {
-      /* 華麗夜空主題配色 */
       --bg-gradient: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
       --card-glass: rgba(255, 255, 255, 0.12);
       --card-border: rgba(255, 255, 255, 0.2);
       --text-main: #ffffff;
       --text-muted: rgba(255, 255, 255, 0.6);
       
-      /* 霓虹班別色彩 (帶發光效果) */
-      --shift-day-bg: linear-gradient(135deg, #ff7eb3, #ff758c);
-      --shift-day-glow: rgba(255, 117, 140, 0.6);
+      /* 依需求調整之配色 */
+      --shift-day-bg: linear-gradient(135deg, #2563eb, #3b82f6); /* 藍色 */
+      --shift-day-glow: rgba(59, 130, 246, 0.6);
       
-      --shift-noon-bg: linear-gradient(135deg, #f6d365, #fda085);
-      --shift-noon-glow: rgba(253, 160, 133, 0.6);
+      --shift-noon-bg: linear-gradient(135deg, #f59e0b, #fbbf24); /* 中班金黃 */
+      --shift-noon-glow: rgba(245, 158, 11, 0.6);
 
-      --shift-night-bg: linear-gradient(135deg, #7f7fd5, #86a8e7);
-      --shift-night-glow: rgba(134, 168, 231, 0.6);
+      --shift-night-bg: linear-gradient(135deg, #7c3aed, #a855f7); /* 晚班紫色 */
+      --shift-night-glow: rgba(168, 85, 247, 0.6);
       
-      --shift-r-off-bg: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-      --shift-r-off-glow: rgba(161, 196, 253, 0.6);
+      --shift-r-off-cell-bg: rgba(220, 38, 38, 0.35); /* 輪休：整格背景變紅 */
+      --shift-r-off-cell-border: rgba(248, 113, 113, 0.8);
+      --shift-r-off-bg: linear-gradient(135deg, #dc2626, #ef4444); /* 輪休標籤紅 */
+      --shift-r-off-glow: rgba(239, 68, 68, 0.8);
 
-      --shift-off-bg: linear-gradient(135deg, #43e97b, #38f9d7);
-      --shift-off-glow: rgba(67, 233, 123, 0.5);
+      --shift-off-bg: linear-gradient(135deg, #ec4899, #f472b6); /* 休假粉紅色 */
+      --shift-off-glow: rgba(244, 114, 182, 0.7);
       
       --shift-custom-bg: linear-gradient(135deg, #ff007f, #7928ca);
       --shift-custom-glow: rgba(255, 0, 127, 0.6);
@@ -64,19 +62,23 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html, body {
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden; /* 防止螢幕滾動，達成真正滿版 */
+    }
+
     body {
       background: var(--bg-gradient);
-      min-height: 100vh;
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 12px 6px;
-      overflow-x: hidden;
+      padding: 8px;
       position: relative;
     }
 
-    /* 華麗背景浮動光斑 */
+    /* 背景浮動光斑 */
     .bg-glow {
       position: absolute;
       border-radius: 50%;
@@ -103,33 +105,36 @@
       100% { transform: translate(30px, 40px) scale(1.15); }
     }
 
-    /* 玻璃擬態卡片容器 */
+    /* 滿版玻璃擬態容器 */
     .calendar-container {
       position: relative;
       z-index: 1;
       width: 100%;
       max-width: 480px;
+      height: 100%;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
       background: var(--card-glass);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 20px 12px;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5),
-                  inset 0 0 15px rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 12px 8px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.1);
     }
 
-    /* 頂部標題與切換按鈕 */
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding: 0 8px;
+      margin-bottom: 6px;
+      padding: 0 4px;
+      flex-shrink: 0;
     }
 
     .header h2 {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: 1px;
       background: linear-gradient(to right, #fff, #a5b4fc);
@@ -141,13 +146,11 @@
     .nav-btn {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 8px 14px;
-      font-size: 0.85rem;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
       color: #fff;
       cursor: pointer;
-      backdrop-filter: blur(5px);
-      transition: all 0.2s ease;
     }
 
     .nav-btn:active {
@@ -155,27 +158,27 @@
       background: rgba(255, 255, 255, 0.25);
     }
 
-    /* 雲端連線狀態燈 */
     .status-bar {
       text-align: center;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: #38f9d7;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      flex-shrink: 0;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       background-color: #38f9d7;
       border-radius: 50%;
       box-shadow: 0 0 8px #38f9d7;
     }
 
-    /* 星期標籤 (週一至週日) */
+    /* 星期欄位 */
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -183,24 +186,27 @@
       font-size: 0.85rem;
       font-weight: 700;
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 6px;
+      flex-shrink: 0;
     }
 
     .weekdays div:nth-child(6),
     .weekdays div:nth-child(7) {
-      color: #ff758c;
+      color: #f472b6;
     }
 
-    /* 日曆網格與日期卡片 */
+    /* 日曆動態網格：填滿剩餘高度 */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
+      grid-template-rows: repeat(6, 1fr); /* 彈性撐滿 6 週空間 */
+      gap: 4px;
+      flex-grow: 1; /* 自動拉長填充剩餘高度 */
+      height: 100%;
     }
 
     .day-cell {
-      aspect-ratio: 1 / 1.3;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 4px 2px;
       display: flex;
       flex-direction: column;
@@ -211,11 +217,11 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      transition: transform 0.15 ease, background 0.2s ease;
     }
 
     .day-cell:active {
-      transform: scale(0.9);
+      transform: scale(0.92);
     }
 
     .day-cell.empty {
@@ -230,47 +236,56 @@
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
-    /* 當天金邊標示 */
     .day-cell.today {
       border: 2px solid #ffd700;
-      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     }
 
     .day-cell.today .day-number {
       background: #ffd700;
       color: #000;
       border-radius: 50%;
-      width: 22px; height: 22px;
+      width: 20px; height: 20px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.75rem;
-      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.8);
     }
 
-    /* 班別發光標籤 */
+    /* 輪休：整格變紅色 */
+    .day-cell.cell-r-off {
+      background: var(--shift-r-off-cell-bg) !important;
+      border: 1px solid var(--shift-r-off-cell-border) !important;
+      box-shadow: inset 0 0 10px rgba(239, 68, 68, 0.4);
+    }
+
+    /* 可顯示更多文字之標籤 */
     .shift-tag {
-      width: 95%;
+      width: 96%;
       text-align: center;
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       font-weight: 800;
-      padding: 3px 0;
+      padding: 3px 2px;
       border-radius: 6px;
       color: #fff;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      letter-spacing: 0.5px;
+      line-height: 1.15;
+      word-break: break-all;
+      white-space: normal; /* 允許換行顯示更多字 */
+      max-height: 70%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
     .shift-noon { background: var(--shift-noon-bg); color: #4a2800; box-shadow: 0 0 8px var(--shift-noon-glow); }
     .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
-    .shift-r-off { background: var(--shift-r-off-bg); color: #0f3460; box-shadow: 0 0 8px var(--shift-r-off-glow); }
-    .shift-off { background: var(--shift-off-bg); color: #042f2e; box-shadow: 0 0 8px var(--shift-off-glow); }
+    .shift-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 8px var(--shift-r-off-glow); }
+    .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 8px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 8px var(--shift-custom-glow); }
 
-    /* 華麗彈出視窗 (Modal) */
+    /* 編輯視窗 (Modal) */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -291,7 +306,7 @@
     }
 
     .modal {
-      background: rgba(30, 27, 75, 0.9);
+      background: rgba(30, 27, 75, 0.92);
       border: 1px solid var(--card-border);
       width: 90%;
       max-width: 340px;
@@ -327,7 +342,6 @@
       font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.1s ease;
     }
 
     .quick-btn:active {
@@ -379,7 +393,6 @@
     .btn-cancel { background: rgba(255, 255, 255, 0.15); color: #fff; }
     .btn-save { background: linear-gradient(135deg, #ff007f, #7928ca); color: #fff; box-shadow: 0 0 10px rgba(255, 0, 127, 0.5); }
 
-    /* 粒子特效 */
     .particle {
       position: absolute;
       pointer-events: none;
@@ -395,7 +408,6 @@
 </head>
 <body>
 
-  <!-- 浮動背景霓虹光暈 -->
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
 
@@ -406,13 +418,11 @@
       <button class="nav-btn" onclick="changeMonth(1)">下個月 ›</button>
     </div>
 
-    <!-- Firebase 即時同步連線狀態 -->
     <div class="status-bar">
       <div class="status-dot"></div>
       <span>Firebase 雲端同步中</span>
     </div>
 
-    <!-- 週一至週日 -->
     <div class="weekdays">
       <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
     </div>
@@ -420,12 +430,11 @@
     <div class="days-grid" id="days-grid"></div>
   </div>
 
-  <!-- 華麗編輯視窗 -->
+  <!-- 編輯視窗 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3 id="modal-date-title">設定班別與備註</h3>
       
-      <!-- 快速按鈕區：早班 中班 晚班 輪休 休假 -->
       <div class="quick-btns">
         <button class="quick-btn shift-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn shift-noon" onclick="setQuick('中班')">中班</button>
@@ -437,7 +446,7 @@
 
       <div class="input-group">
         <label>自訂備註 / 班別：</label>
-        <input type="text" id="shift-input" placeholder="例：特休、會議、支援" maxlength="6">
+        <input type="text" id="shift-input" placeholder="例：特休、會議、支援" maxlength="12">
       </div>
 
       <div class="modal-actions">
@@ -450,9 +459,8 @@
   <script>
     let currentDate = new Date();
     let selectedDateStr = '';
-    let shiftData = {}; // 來自 Firebase 的資料
+    let shiftData = {};
 
-    // 當頁面加載完成後，開始監聽 Firebase 資料庫變動
     window.addEventListener('DOMContentLoaded', () => {
       const checkFirebase = setInterval(() => {
         if (window.db) {
@@ -464,8 +472,6 @@
 
     function initFirebaseListener() {
       const shiftsRef = window.dbRef(window.db, 'shifts');
-      
-      // onValue 會在開啟頁面或資料庫內容被任何人更改時，即時觸發更新
       window.dbOnValue(shiftsRef, (snapshot) => {
         const val = snapshot.val();
         shiftData = val || {};
@@ -519,12 +525,20 @@
           shiftNode.className = 'shift-tag';
           shiftNode.innerText = shift;
 
-          if (shift === '早班' || shift === '早') shiftNode.classList.add('shift-day');
-          else if (shift === '中班' || shift === '中') shiftNode.classList.add('shift-noon');
-          else if (shift === '晚班' || shift === '晚') shiftNode.classList.add('shift-night');
-          else if (shift === '輪休') shiftNode.classList.add('shift-r-off');
-          else if (shift === '休假' || shift === '休') shiftNode.classList.add('shift-off');
-          else shiftNode.classList.add('shift-custom');
+          if (shift === '早班' || shift === '早') {
+            shiftNode.classList.add('shift-day');
+          } else if (shift === '中班' || shift === '中') {
+            shiftNode.classList.add('shift-noon');
+          } else if (shift === '晚班' || shift === '晚') {
+            shiftNode.classList.add('shift-night');
+          } else if (shift === '輪休') {
+            shiftNode.classList.add('shift-r-off');
+            cell.classList.add('cell-r-off'); // 輪休時，整格日期變紅背景
+          } else if (shift === '休假' || shift === '休') {
+            shiftNode.classList.add('shift-off');
+          } else {
+            shiftNode.classList.add('shift-custom');
+          }
 
           cell.appendChild(shiftNode);
         }
@@ -550,7 +564,6 @@
       saveData();
     }
 
-    // 儲存寫入 Firebase 雲端資料庫
     function saveData() {
       const val = document.getElementById('shift-input').value.trim();
       const targetRef = window.dbRef(window.db, `shifts/${selectedDateStr}`);
@@ -558,7 +571,7 @@
       if (val) {
         window.dbSet(targetRef, val);
       } else {
-        window.dbRemove(targetRef); // 如果空白則從資料庫移除該日
+        window.dbRemove(targetRef);
       }
       
       closeModal();
@@ -569,7 +582,6 @@
       renderCalendar();
     }
 
-    /* 點擊爆發火花特效 */
     function createParticles(x, y) {
       const colors = ['#ff007f', '#7928ca', '#00f2fe', '#43e97b', '#ffd700'];
       for (let i = 0; i < 12; i++) {
