@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v6.0 - 清新明亮極光版</title>
+  <title>瑋的班表 v6.5 - 彩色流光日期框版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -36,7 +36,7 @@
     }
 
     :root {
-      /* ☀️ 清新明亮極光主題變數 */
+      /* ☀️ 清新極光主題變數 */
       --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
       --card-glass: rgba(255, 255, 255, 0.75);
       --card-border: rgba(255, 255, 255, 0.9);
@@ -44,26 +44,18 @@
       --text-muted: #607d8b;
       
       --shift-day-bg: linear-gradient(135deg, #00b4db, #0083b0);
-      --shift-day-glow: rgba(0, 180, 219, 0.4);
-      
       --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
-      --shift-noon-glow: rgba(255, 117, 140, 0.4);
-
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
-      --shift-night-glow: rgba(142, 45, 226, 0.4);
       
-      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.12) 0%, rgba(121, 40, 202, 0.15) 100%);
+      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.15) 0%, rgba(121, 40, 202, 0.18) 100%);
       --shift-r-off-cell-border: #ff007f;
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
-      --shift-r-off-glow: rgba(255, 0, 127, 0.5);
 
-      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.15) 0%, rgba(247, 112, 98, 0.15) 100%);
+      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.18) 0%, rgba(247, 112, 98, 0.18) 100%);
       --shift-off-cell-border: #fe5196;
       --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
-      --shift-off-glow: rgba(254, 81, 150, 0.5);
       
       --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
-      --shift-custom-glow: rgba(142, 45, 226, 0.4);
     }
 
     * {
@@ -405,6 +397,7 @@
       flex-shrink: 0;
     }
 
+    /* 🌈 彩色動態流光日期框（RGB Flow Border） */
     .day-cell {
       border-radius: 12px;
       padding: 4px 2px;
@@ -413,13 +406,25 @@
       align-items: center;
       justify-content: flex-start;
       gap: 2px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px solid transparent;
+      background-clip: padding-box;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.2s ease;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .day-cell::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #00b4db, #ff758c, #8e2de2, #ffb300, #00b4db);
+      border-radius: 12px;
+      z-index: -1;
+      animation: rotateGradient 4s linear infinite;
+      opacity: 0.7;
     }
 
     .day-cell.empty {
@@ -427,6 +432,10 @@
       background: transparent;
       box-shadow: none;
       cursor: default;
+    }
+
+    .day-cell.empty::before {
+      display: none;
     }
 
     .day-number {
@@ -437,8 +446,14 @@
     }
 
     .day-cell.today {
-      border: 2px solid #ffb300;
-      box-shadow: 0 0 12px rgba(255, 179, 0, 0.4);
+      border: 2px solid transparent !important;
+      box-shadow: 0 0 15px rgba(255, 179, 0, 0.5);
+    }
+
+    .day-cell.today::before {
+      background: conic-gradient(from var(--angle), #ffb300, #ff8c00, #ff007f, #ffb300);
+      opacity: 1;
+      animation-duration: 2s;
     }
 
     .day-cell.today .day-number {
@@ -454,33 +469,22 @@
     }
 
     .day-cell.selected {
-      border: 2px solid transparent !important;
       background: rgba(0, 180, 219, 0.15) !important;
-      box-shadow: 0 0 15px rgba(0, 180, 219, 0.5) !important;
+      box-shadow: 0 0 18px rgba(0, 180, 219, 0.6) !important;
       transform: scale(0.94);
-      position: relative;
     }
 
     .day-cell.selected::before {
-      content: '';
-      position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #00b4db, #ff007f, #00b4db);
-      border-radius: 12px;
-      z-index: -1;
-      animation: rotateGradient 2s linear infinite;
+      opacity: 1;
+      animation-duration: 1.5s;
     }
 
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
-      border: 1.5px solid var(--shift-r-off-cell-border) !important;
-      box-shadow: 0 0 12px rgba(255, 0, 127, 0.25) !important;
     }
 
     .day-cell.cell-off {
       background: var(--shift-off-cell-bg) !important;
-      border: 1.5px solid var(--shift-off-cell-border) !important;
-      box-shadow: 0 0 12px rgba(254, 81, 150, 0.25) !important;
     }
 
     .shift-tag {
@@ -529,7 +533,7 @@
 
     .shift-custom { background: var(--shift-custom-bg); }
 
-    /* ✈️ 旅遊規劃週視圖 - 清新版 */
+    /* ✈️ 旅遊規劃週視圖 */
     .travel-header {
       display: flex;
       justify-content: space-between;
@@ -557,11 +561,23 @@
       justify-content: center;
       padding: 6px 2px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
+      border: 1.5px solid transparent;
+      background-clip: padding-box;
       cursor: pointer;
       position: relative;
       transition: all 0.2s ease;
+    }
+
+    .week-day-card::before {
+      content: '';
+      position: absolute;
+      top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
+      background: conic-gradient(from var(--angle), #00b4db, #ff758c, #8e2de2, #00b4db);
+      border-radius: 10px;
+      z-index: -1;
+      animation: rotateGradient 4s linear infinite;
+      opacity: 0.5;
     }
 
     .week-day-card .w-name {
@@ -579,9 +595,13 @@
 
     .week-day-card.active {
       background: #ffffff;
-      border: 1px solid #00b4db;
       box-shadow: 0 4px 12px rgba(0, 180, 219, 0.25);
       transform: scale(1.05);
+    }
+
+    .week-day-card.active::before {
+      opacity: 1;
+      animation-duration: 2s;
     }
 
     .has-plan-dot {
@@ -610,7 +630,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.9);
       border-left: 4px solid #00b4db;
       border-radius: 16px;
