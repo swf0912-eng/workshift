@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.8 - 邊框旋轉光條版</title>
+  <title>瑋的班表 v8.8 - 頂層流光邊框版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -425,12 +425,12 @@
       gap: 1px;
       background: rgba(255, 255, 255, 0.92);
       border: 2px solid transparent;
-      background-clip: padding-box;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.2s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      z-index: 1;
     }
 
     .day-cell.empty {
@@ -445,6 +445,7 @@
       font-weight: 900;
       color: #1a252f;
       line-height: 1;
+      z-index: 1;
     }
 
     .day-cell.today {
@@ -480,37 +481,45 @@
       transform: scale(0.94);
     }
 
-    /* 🌸 輪休：邊框順時針旋轉霓虹光條 */
+    /* 🌸 輪休：最上層邊框順時針旋轉霓虹流光 */
     .day-cell.cell-r-off {
       background: rgba(255, 255, 255, 0.95);
-      border: 2px solid transparent;
-      box-shadow: 0 2px 8px rgba(255, 0, 127, 0.15);
+      box-shadow: 0 2px 8px rgba(255, 0, 127, 0.2);
     }
 
-    .day-cell.cell-r-off::before {
+    .day-cell.cell-r-off::after {
       content: '';
       position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #ff007f, #ff758c, #ff8ed4, #ff007f);
+      inset: 0;
+      padding: 2px;
       border-radius: 10px;
-      z-index: -1;
+      background: conic-gradient(from var(--angle), #ff007f, #ff758c, #ff8ed4, #ff007f);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 2;
+      pointer-events: none;
       animation: rotateGradient 3s linear infinite;
     }
 
-    /* 🌺 休假：邊框順時針旋轉霓虹光條 */
+    /* 🌺 休假：最上層邊框順時針旋轉霓虹流光 */
     .day-cell.cell-off {
       background: rgba(255, 255, 255, 0.95);
-      border: 2px solid transparent;
-      box-shadow: 0 2px 8px rgba(254, 81, 150, 0.15);
+      box-shadow: 0 2px 8px rgba(254, 81, 150, 0.2);
     }
 
-    .day-cell.cell-off::before {
+    .day-cell.cell-off::after {
       content: '';
       position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #ff758c, #ff9a9e, #fe5196, #ff758c);
+      inset: 0;
+      padding: 2px;
       border-radius: 10px;
-      z-index: -1;
+      background: conic-gradient(from var(--angle), #ff758c, #ff9a9e, #fe5196, #ff758c);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 2;
+      pointer-events: none;
       animation: rotateGradient 3s linear infinite;
     }
 
@@ -530,6 +539,7 @@
       justify-content: center;
       overflow: hidden;
       box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      z-index: 1;
     }
 
     .shift-day { background: var(--shift-day-bg); }
@@ -592,19 +602,24 @@
       border-radius: 10px;
       background: rgba(255, 255, 255, 0.9);
       border: 2px solid transparent;
-      background-clip: padding-box;
       cursor: pointer;
       position: relative;
       transition: all 0.2s ease;
+      z-index: 1;
     }
 
-    .week-day-card::before {
+    .week-day-card::after {
       content: '';
       position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #00c6ff, #ff758c, #8e2de2, #00c6ff);
+      inset: 0;
+      padding: 2px;
       border-radius: 10px;
-      z-index: -1;
+      background: conic-gradient(from var(--angle), #00c6ff, #ff758c, #8e2de2, #00c6ff);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 2;
+      pointer-events: none;
       animation: rotateGradient 4s linear infinite;
       opacity: 0.7;
     }
@@ -613,6 +628,7 @@
       font-size: 0.7rem;
       font-weight: 800;
       color: var(--text-muted);
+      z-index: 1;
     }
 
     .week-day-card .w-num {
@@ -620,6 +636,7 @@
       font-weight: 900;
       color: #2c3e50;
       margin-top: 2px;
+      z-index: 1;
     }
 
     .week-day-card.active {
@@ -628,7 +645,7 @@
       transform: scale(1.05);
     }
 
-    .week-day-card.active::before {
+    .week-day-card.active::after {
       opacity: 1;
       animation-duration: 2s;
     }
@@ -641,6 +658,7 @@
       box-shadow: 0 0 6px #00b4db;
       position: absolute;
       bottom: 3px;
+      z-index: 1;
     }
 
     .timeline-container {
