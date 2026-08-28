@@ -2,8 +2,11 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>瑋的班表</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>瑋的班表 v2.1 - 🎉快樂輪休版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -42,10 +45,11 @@
       --shift-night-bg: linear-gradient(135deg, #8a2387, #e94057, #f27121);
       --shift-night-glow: rgba(233, 64, 87, 0.8);
       
-      --shift-r-off-cell-bg: rgba(239, 68, 68, 0.25);
-      --shift-r-off-cell-border: rgba(248, 113, 113, 0.8);
-      --shift-r-off-bg: linear-gradient(135deg, #ff0844, #ffb199);
-      --shift-r-off-glow: rgba(255, 8, 68, 0.8);
+      /* 升級：輪休專屬快樂耀眼風格 */
+      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.35) 0%, rgba(121, 40, 202, 0.45) 100%);
+      --shift-r-off-cell-border: #ff007f;
+      --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
+      --shift-r-off-glow: rgba(255, 0, 127, 0.9);
 
       --shift-off-bg: linear-gradient(135deg, #f77062, #fe5196);
       --shift-off-glow: rgba(254, 81, 150, 0.8);
@@ -58,9 +62,10 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
     }
 
     html, body {
@@ -68,6 +73,7 @@
       width: 100vw;
       overflow: hidden;
       touch-action: none;
+      background: #050515;
     }
 
     body {
@@ -80,14 +86,16 @@
       position: relative;
     }
 
-    /* 華麗背景極光光暈 */
+    /* 背景極光光暈 */
     .bg-glow {
       position: absolute;
       border-radius: 50%;
       filter: blur(90px);
+      -webkit-filter: blur(90px);
       z-index: 0;
       opacity: 0.8;
       animation: float 10s ease-in-out infinite alternate;
+      pointer-events: none;
     }
 
     .bg-glow-1 {
@@ -148,7 +156,6 @@
       flex-shrink: 0;
     }
 
-    /* 模式切換按鈕炫彩特效 */
     .mode-toggle-btn {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid var(--card-border);
@@ -161,8 +168,9 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.3s ease;
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .mode-toggle-btn.edit-mode {
@@ -257,6 +265,7 @@
       position: relative;
       overflow: hidden;
       perspective: 1000px;
+      touch-action: none;
     }
 
     .days-grid {
@@ -269,14 +278,14 @@
       position: absolute;
       top: 0;
       left: 0;
-      transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.35s ease;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      will-change: transform, opacity;
     }
 
-    /* 切換月份 3D 炫彩動畫 */
-    .slide-left-out { transform: translateX(-100%) rotateY(-20deg) scale(0.9); opacity: 0; }
-    .slide-left-in { transform: translateX(100%) rotateY(20deg) scale(0.9); opacity: 0; }
-    .slide-right-out { transform: translateX(100%) rotateY(20deg) scale(0.9); opacity: 0; }
-    .slide-right-in { transform: translateX(-100%) rotateY(-20deg) scale(0.9); opacity: 0; }
+    .slide-left-out { transform: translate3d(-100%, 0, 0) scale(0.9); opacity: 0; }
+    .slide-left-in { transform: translate3d(100%, 0, 0) scale(0.9); opacity: 0; }
+    .slide-right-out { transform: translate3d(100%, 0, 0) scale(0.9); opacity: 0; }
+    .slide-right-in { transform: translate3d(-100%, 0, 0) scale(0.9); opacity: 0; }
 
     .day-cell {
       border-radius: 12px;
@@ -291,7 +300,7 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.2s ease;
     }
 
     .day-cell.empty {
@@ -307,7 +316,6 @@
       line-height: 1.1;
     }
 
-    /* 今日炫光光暈 */
     .day-cell.today {
       border: 2px solid #ffd700;
       box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 215, 0, 0.3);
@@ -332,7 +340,6 @@
       box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
     }
 
-    /* 選取狀態炫光 */
     .day-cell.selected {
       border: 2px solid #00f2fe !important;
       background: rgba(0, 242, 254, 0.3) !important;
@@ -340,13 +347,19 @@
       transform: scale(0.94);
     }
 
+    /* 🎆 超華麗輪休日日期格特效 🎆 */
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
-      border: 1px solid var(--shift-r-off-cell-border) !important;
-      box-shadow: inset 0 0 12px rgba(255, 8, 68, 0.5);
+      border: 1.5px solid var(--shift-r-off-cell-border) !important;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6), inset 0 0 12px rgba(255, 0, 127, 0.4) !important;
+      animation: rOffGlow 2.5s ease-in-out infinite alternate;
     }
 
-    /* 班別標籤霓虹質感 */
+    @keyframes rOffGlow {
+      0% { box-shadow: 0 0 8px rgba(255, 0, 127, 0.5), inset 0 0 6px rgba(255, 0, 127, 0.3); transform: scale(1); }
+      100% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.9), 0 0 30px rgba(121, 40, 202, 0.8); transform: scale(1.02); }
+    }
+
     .shift-tag {
       width: 98%;
       text-align: center;
@@ -364,16 +377,46 @@
       overflow: hidden;
       text-shadow: 0 1px 3px rgba(0,0,0,0.6);
       backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
     }
 
     .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 10px var(--shift-day-glow); }
     .shift-noon { background: var(--shift-noon-bg); color: #fff; box-shadow: 0 0 10px var(--shift-noon-glow); }
     .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 10px var(--shift-night-glow); }
-    .shift-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 10px var(--shift-r-off-glow); }
+    
+    /* 🎆 輪休標籤閃光與霓虹特效 🎆 */
+    .shift-r-off { 
+      background: var(--shift-r-off-bg); 
+      background-size: 200% 200%;
+      box-shadow: 0 0 12px var(--shift-r-off-glow); 
+      position: relative;
+      animation: gradientShift 3s ease infinite;
+    }
+
+    .shift-r-off::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.8) 50%, transparent 70%);
+      transform: rotate(30deg);
+      animation: shine 2.5s infinite;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-150%) rotate(30deg); }
+      100% { transform: translateX(150%) rotate(30deg); }
+    }
+
     .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 10px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
-    /* Modal 玻璃與光暈 */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -403,7 +446,7 @@
       padding: 22px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 0, 127, 0.5);
       transform: scale(0.7) translateY(30px);
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: all 0.35s ease;
     }
 
     .modal-overlay.active .modal {
@@ -433,11 +476,6 @@
       font-size: 0.88rem;
       font-weight: 800;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .quick-btn:active {
-      transform: scale(0.92);
     }
 
     .input-group {
@@ -464,7 +502,7 @@
       outline: none;
       resize: none;
       user-select: text;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-user-select: text;
     }
 
     .input-group textarea:focus {
@@ -494,23 +532,21 @@
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
     }
 
-    /* 爆發星芒粒子特效 */
+    /* 🎆 五彩慶祝煙火粒子動畫 🎆 */
     .particle {
       position: absolute;
       pointer-events: none;
-      border-radius: 50%;
-      animation: explode 0.7s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+      animation: confetti 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
     }
 
-    @keyframes explode {
-      0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 6px currentColor); }
-      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
+    @keyframes confetti {
+      0% { transform: translate(0, 0) scale(1.8) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(720deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 背景流動極光 -->
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
   <div class="bg-glow bg-glow-3"></div>
@@ -549,7 +585,7 @@
         <button class="quick-btn shift-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn shift-noon" onclick="setQuick('中班')">中班</button>
         <button class="quick-btn shift-night" onclick="setQuick('晚班')">晚班</button>
-        <button class="quick-btn shift-r-off" onclick="setQuick('輪休')">輪休</button>
+        <button class="quick-btn shift-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
         <button class="quick-btn shift-off" onclick="setQuick('休假')">休假</button>
         <button class="quick-btn" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="setQuick('')">清除</button>
       </div>
@@ -570,11 +606,10 @@
     let currentDate = new Date();
     let shiftData = {};
 
-    let isEditMode = false; // 預設檢視模式
+    let isEditMode = false;
     let isDragging = false;
     let selectedDates = new Set();
 
-    // 手勢滑動監聽變數
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
@@ -659,18 +694,30 @@
         if (shift) {
           const shiftNode = document.createElement('div');
           shiftNode.className = 'shift-tag';
-          shiftNode.innerText = shift;
 
           const firstLine = shift.split('\n')[0].trim();
 
-          if (firstLine === '早班' || firstLine === '早') shiftNode.classList.add('shift-day');
-          else if (firstLine === '中班' || firstLine === '中') shiftNode.classList.add('shift-noon');
-          else if (firstLine === '晚班' || firstLine === '晚') shiftNode.classList.add('shift-night');
-          else if (firstLine === '輪休') {
+          if (firstLine === '早班' || firstLine === '早') {
+            shiftNode.innerText = shift;
+            shiftNode.classList.add('shift-day');
+          } else if (firstLine === '中班' || firstLine === '中') {
+            shiftNode.innerText = shift;
+            shiftNode.classList.add('shift-noon');
+          } else if (firstLine === '晚班' || firstLine === '晚') {
+            shiftNode.innerText = shift;
+            shiftNode.classList.add('shift-night');
+          } else if (firstLine.includes('輪休')) {
+            // 輪休自動加上慶祝小冠冕，爽度加倍！🎉
+            shiftNode.innerText = shift.includes('🎉') ? shift : `🎉 ${shift}`;
             shiftNode.classList.add('shift-r-off');
             cell.classList.add('cell-r-off');
-          } else if (firstLine === '休假' || firstLine === '休') shiftNode.classList.add('shift-off');
-          else shiftNode.classList.add('shift-custom');
+          } else if (firstLine === '休假' || firstLine === '休') {
+            shiftNode.innerText = shift;
+            shiftNode.classList.add('shift-off');
+          } else {
+            shiftNode.innerText = shift;
+            shiftNode.classList.add('shift-custom');
+          }
 
           cell.appendChild(shiftNode);
         }
@@ -716,9 +763,14 @@
         touchEndX = x;
         touchEndY = y;
 
+        const cell = getCellFromPoint(x, y);
+        if (cell && cell.classList.contains('cell-r-off')) {
+          // 點擊輪休日觸發華麗五彩慶祝煙火
+          createParticles(x, y, 30);
+        }
+
         if (!isEditMode) return;
 
-        const cell = getCellFromPoint(x, y);
         if (!cell) return;
         isDragging = true;
         selectedDates.clear();
@@ -742,7 +794,7 @@
           const diffX = touchEndX - touchStartX;
           const diffY = touchEndY - touchStartY;
 
-          if (Math.abs(diffX) > 50 && Math.abs(diffY) < 60) {
+          if (Math.abs(diffX) > 40 && Math.abs(diffY) < 50) {
             if (diffX < 0) {
               changeMonth(1);
             } else {
@@ -763,12 +815,12 @@
       container.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         startSelection(t.clientX, t.clientY);
-      }, { passive: true });
+      }, { passive: false });
 
       container.addEventListener('touchmove', (e) => {
         const t = e.touches[0];
         moveSelection(t.clientX, t.clientY);
-      }, { passive: true });
+      }, { passive: false });
 
       container.addEventListener('touchend', (e) => {
         const t = e.changedTouches[0];
@@ -831,17 +883,23 @@
       closeModal();
     }
 
-    // 爆發華麗粒子效果
-    function createParticles(x, y, count = 15) {
-      const colors = ['#00f2fe', '#ff007f', '#7928ca', '#43e97b', '#ffd700', '#ff5858'];
+    /* 🎆 華麗五彩慶祝粒子煙火 🎆 */
+    function createParticles(x, y, count = 20) {
+      const colors = ['#ff007f', '#7928ca', '#00f2fe', '#ffd700', '#ff8c00', '#ff0844', '#00ffcc'];
+      const shapes = ['circle', 'rect'];
+
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         document.body.appendChild(p);
 
-        const size = Math.random() * 8 + 4;
+        const size = Math.random() * 9 + 4;
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        
         p.style.width = `${size}px`;
-        p.style.height = `${size}px`;
+        p.style.height = shape === 'rect' ? `${size * 1.8}px` : `${size}px`;
+        p.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+        
         const color = colors[Math.floor(Math.random() * colors.length)];
         p.style.background = color;
         p.style.color = color;
@@ -849,11 +907,11 @@
         p.style.top = `${y}px`;
 
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 80 + 30;
+        const speed = Math.random() * 110 + 40;
         p.style.setProperty('--dx', `${Math.cos(angle) * speed}px`);
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
-        setTimeout(() => p.remove(), 700);
+        setTimeout(() => p.remove(), 800);
       }
     }
 
