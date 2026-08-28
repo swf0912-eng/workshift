@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v3.5 - 班表與旅遊規劃版</title>
+  <title>瑋的班表 v3.8 - 地圖超連結版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -204,7 +204,6 @@
       transition: transform 0.15s ease-out;
     }
 
-    /* ✈️ 頂部分頁 Tab Bar */
     .nav-tabs {
       display: flex;
       background: rgba(0, 0, 0, 0.3);
@@ -233,7 +232,6 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
-    /* 頁面容器切換 */
     .page-content {
       display: none;
       flex-direction: column;
@@ -580,7 +578,7 @@
 
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
-    /* ✈️ 旅遊行程頁面樣式 (Travel Section) */
+    /* ✈️ 旅遊行程頁面樣式 */
     .travel-header {
       display: flex;
       justify-content: space-between;
@@ -638,6 +636,21 @@
       flex-grow: 1;
     }
 
+    /* 🗺️ Google 地圖動態超連結樣式 */
+    .map-link {
+      color: #ffffff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .map-link:active {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+
     .timeline-title {
       font-size: 0.98rem;
       font-weight: 800;
@@ -645,14 +658,20 @@
       margin-bottom: 4px;
     }
 
+    .timeline-title .map-link {
+      color: #00f2fe;
+      text-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
+    }
+
     .timeline-location {
       font-size: 0.78rem;
-      color: #ff007f;
       font-weight: 700;
       margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    }
+
+    .timeline-location .map-link {
+      color: #ff007f;
+      text-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
     }
 
     .timeline-notes {
@@ -845,7 +864,6 @@
 
   <div class="calendar-container" id="tilt-card">
     
-    <!-- ✈️ 頁面切換分頁 Bar -->
     <div class="nav-tabs">
       <div class="tab-btn active" onclick="switchPage('shift')">📅 班表管理</div>
       <div class="tab-btn" onclick="switchPage('travel')">✈️ 旅遊規劃</div>
@@ -936,17 +954,17 @@
 
       <div class="input-group">
         <label>行程 / 景點名稱：</label>
-        <input type="text" id="travel-title-input" placeholder="例如：築地市場吃早餐">
+        <input type="text" id="travel-title-input" placeholder="例如：東京晴空塔">
       </div>
 
       <div class="input-group">
         <label>地點 / 分類：</label>
-        <input type="text" id="travel-loc-input" placeholder="例如：📍 東京築地">
+        <input type="text" id="travel-loc-input" placeholder="例如：📍 墨田區">
       </div>
 
       <div class="input-group">
         <label>詳細備註：</label>
-        <textarea id="travel-notes-input" placeholder="例如：預約 09:30 門票、準備現金"></textarea>
+        <textarea id="travel-notes-input" placeholder="例如：預約 09:30 展望台門票"></textarea>
       </div>
 
       <div class="modal-actions">
@@ -972,7 +990,6 @@
     let isHorizontalGesture = false;
 
     window.addEventListener('DOMContentLoaded', () => {
-      // 預設旅遊日期為今天 YYYY-MM-DD
       const todayStr = new Date().toISOString().split('T')[0];
       document.getElementById('travel-date-input').value = todayStr;
 
@@ -989,14 +1006,12 @@
     });
 
     function initFirebaseListener() {
-      // 班表監聽
       const shiftsRef = window.dbRef(window.db, 'shifts');
       window.dbOnValue(shiftsRef, (snapshot) => {
         shiftData = snapshot.val() || {};
         renderAllCalendars();
       });
 
-      // 旅遊行程監聽
       const travelRef = window.dbRef(window.db, 'travel');
       window.dbOnValue(travelRef, (snapshot) => {
         travelData = snapshot.val() || {};
@@ -1134,7 +1149,14 @@
       }, 300);
     }
 
-    /* ✈️ 旅遊行程載入與管理邏輯 */
+    /* 🗺️ 核心邏輯：動態生成 Google 地圖搜尋 URL */
+    function getGoogleMapsUrl(query) {
+      // 移除 Emoji 特殊符號，保留純景點文字
+      const cleanQuery = query.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanQuery)}`;
+    }
+
+    /* ✈️ 載入旅遊行程（含 Google 地圖導航超連結） */
     function loadTravelItinerary() {
       const dateStr = document.getElementById('travel-date-input').value;
       const timelineContainer = document.getElementById('timeline-list');
@@ -1152,11 +1174,25 @@
         const item = dayTravel[key];
         const itemElem = document.createElement('div');
         itemElem.className = 'timeline-item';
+
+        // 搜尋優先權：若有地點/分類則以地點為主，無則使用景點標題
+        const mapSearchTarget = item.location ? item.location : item.title;
+        const mapUrl = getGoogleMapsUrl(mapSearchTarget);
+
         itemElem.innerHTML = `
           <div class="timeline-time">${item.time}</div>
           <div class="timeline-info">
-            <div class="timeline-title">${item.title}</div>
-            ${item.location ? `<div class="timeline-location">${item.location}</div>` : ''}
+            <div class="timeline-title">
+              <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
+                ${item.title} 🗺️
+              </a>
+            </div>
+            ${item.location ? `
+              <div class="timeline-location">
+                <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
+                  ${item.location}
+                </a>
+              </div>` : ''}
             ${item.notes ? `<div class="timeline-notes">${item.notes}</div>` : ''}
           </div>
           <button class="timeline-delete" onclick="deleteTravelItem('${dateStr}', '${key}')">✕</button>
