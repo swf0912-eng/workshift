@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.9 - 天氣預報降雨機率版</title>
+  <title>瑋的班表 v9.0 - 縣市氣象降雨機率版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -1035,7 +1035,7 @@
 
       <div class="input-group">
         <label>景點 / 住宿名稱：</label>
-        <input type="text" id="travel-title-input" placeholder="例如：東京星野飯店 / 東京鐵塔" oninput="updateEmbeddedMap(this.value)">
+        <input type="text" id="travel-title-input" placeholder="例如：台北101 / 宜蘭礁溪溫泉 / 台中逢甲夜市" oninput="updateEmbeddedMap(this.value)">
       </div>
 
       <div class="embedded-map-container" id="map-iframe-box">
@@ -1057,7 +1057,7 @@
 
     let shiftData = {};
     let travelData = {};
-    let weatherCache = {}; // 快取天氣數據避免重複 API 請求
+    let weatherCache = {};
 
     let isEditMode = false;
     let isDragging = false;
@@ -1068,8 +1068,37 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
-    // 免費天氣 API Key (WeatherAPI)
-    const WEATHER_API_KEY = "8973aefebaa94d458df83850242207"; 
+    // 免費 WeatherAPI key
+    const WEATHER_API_KEY = "8973aefebaa94d458df83850242207";
+
+    // 台灣常見縣市對應表（確保解析精確性）
+    const CITY_MAP = [
+      { name: '台北', query: 'Taipei' },
+      { name: '臺北', query: 'Taipei' },
+      { name: '新北', query: 'New Taipei' },
+      { name: '桃園', query: 'Taoyuan' },
+      { name: '台中', query: 'Taichung' },
+      { name: '臺中', query: 'Taichung' },
+      { name: '台南', query: 'Tainan' },
+      { name: '臺南', query: 'Tainan' },
+      { name: '高雄', query: 'Kaohsiung' },
+      { name: '基隆', query: 'Keelung' },
+      { name: '新竹', query: 'Hsinchu' },
+      { name: '苗栗', query: 'Miaoli' },
+      { name: '彰化', query: 'Changhua' },
+      { name: '南投', query: 'Nantou' },
+      { name: '雲林', query: 'Yunlin' },
+      { name: '嘉義', query: 'Chiayi' },
+      { name: '屏東', query: 'Pingtung' },
+      { name: '宜蘭', query: 'Yilan' },
+      { name: '花蓮', query: 'Hualien' },
+      { name: '台東', query: 'Taitung' },
+      { name: '臺東', query: 'Taitung' },
+      { name: '澎湖', query: 'Penghu' },
+      { name: '金門', query: 'Kinmen' },
+      { name: '連江', query: 'Lienchiang' },
+      { name: '馬祖', query: 'Matsu' }
+    ];
 
     window.addEventListener('DOMContentLoaded', () => {
       const checkFirebase = setInterval(() => {
@@ -1288,16 +1317,29 @@
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     }
 
-    /* 🌧️ 抓取降雨機率的核心 API 函式 */
+    /* 🏙️ 從地名提取縣市名稱 */
+    function extractCityQuery(locationName) {
+      for (const item of CITY_MAP) {
+        if (locationName.includes(item.name)) {
+          return item.query;
+        }
+      }
+      // 若無匹配則預設送出地名給 WeatherAPI 進行自動定位
+      return locationName;
+    }
+
+    /* 🌧️ 抓取縣市當天降雨機率 */
     async function fetchRainChance(locationName, dateStr) {
-      const cacheKey = `${locationName}_${dateStr}`;
+      const cityQuery = extractCityQuery(locationName);
+      const cacheKey = `${cityQuery}_${dateStr}`;
+
       if (weatherCache[cacheKey] !== undefined) {
         return weatherCache[cacheKey];
       }
 
       try {
-        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(locationName)}&dt=${dateStr}&days=1`);
-        if (!res.ok) throw new Error('API request failed');
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(cityQuery)}&dt=${dateStr}&days=1`);
+        if (!res.ok) throw new Error('API Error');
         
         const data = await res.json();
         const forecastDay = data.forecast?.forecastday?.[0]?.day;
@@ -1308,7 +1350,7 @@
           return chance;
         }
       } catch (e) {
-        // 查無天氣資料或失敗時不顯示
+        // 氣象 API 連線失敗或日期超出免費預報範圍時自動忽略
       }
 
       weatherCache[cacheKey] = null;
@@ -1356,7 +1398,7 @@
         `;
         timelineContainer.appendChild(itemElem);
 
-        // 異步抓取降雨機率並動態更新至畫面
+        // 自動取得該縣市當日降雨機率
         fetchRainChance(item.title, dateStr).then(rainChance => {
           const container = document.getElementById(`rain-${key}`);
           if (container && rainChance !== null) {
