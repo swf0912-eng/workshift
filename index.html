@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表</title>
+  <title>瑋的班表 v2.3 - 最上層特效版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -256,7 +256,6 @@
       text-shadow: 0 0 8px rgba(255, 88, 88, 0.5);
     }
 
-    /* 滑動核心容器：支援三頁連貫拖拽 */
     .days-grid-container {
       flex-grow: 1;
       height: 100%;
@@ -271,7 +270,7 @@
       height: 100%;
       position: absolute;
       top: 0;
-      left: -100%; /* 預設停在中間頁 (當月) */
+      left: -100%;
       will-change: transform;
     }
 
@@ -532,9 +531,11 @@
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
     }
 
+    /* 🎆 粒子特效移至最上層 (z-index: 9999) 🎆 */
     .particle {
       position: absolute;
       pointer-events: none;
+      z-index: 9999;
       animation: confetti 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
     }
 
@@ -614,7 +615,6 @@
     let isSwiping = false;
     let selectedDates = new Set();
 
-    // 順滑滑動控制變數
     let startX = 0;
     let startY = 0;
     let currentX = 0;
@@ -661,7 +661,6 @@
       }
     }
 
-    /* 渲染三個月 (前一個月, 當月, 下一個月) 以支援無縫拖拽 */
     function renderAllCalendars() {
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -740,7 +739,6 @@
       }
     }
 
-    /* 按鈕切換月份 */
     function changeMonth(delta) {
       const track = document.getElementById('slider-track');
       const containerWidth = document.getElementById('days-grid-container').offsetWidth;
@@ -757,7 +755,6 @@
       }, 300);
     }
 
-    /* 手指拖拽與編輯模式選取手勢控制 */
     function setupGestureControls() {
       const container = document.getElementById('days-grid-container');
       const track = document.getElementById('slider-track');
@@ -838,12 +835,11 @@
         if (isSwiping) {
           isSwiping = false;
           const containerWidth = container.offsetWidth;
-          const threshold = containerWidth * 0.22; // 滑動超過 22% 寬度即自動切換
+          const threshold = containerWidth * 0.22;
 
           track.classList.add('animate');
 
           if (dragDeltaX < -threshold) {
-            // 向左拖拽 -> 下個月
             track.style.transform = `translate3d(-${2 * containerWidth}px, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
@@ -852,7 +848,6 @@
               track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
             }, 300);
           } else if (dragDeltaX > threshold) {
-            // 向右拖拽 -> 上個月
             track.style.transform = `translate3d(0px, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
@@ -861,13 +856,11 @@
               track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
             }, 300);
           } else {
-            // 未達到閥值 -> 彈回當月
             track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
           }
         }
       };
 
-      // Touch Events
       container.addEventListener('touchstart', (e) => {
         const t = e.touches[0];
         onStart(t.clientX, t.clientY);
@@ -883,7 +876,6 @@
         onEnd(t.clientX, t.clientY);
       });
 
-      // Mouse Events
       container.addEventListener('mousedown', (e) => onStart(e.clientX, e.clientY));
       container.addEventListener('mousemove', (e) => onMove(e.clientX, e.clientY));
       window.addEventListener('mouseup', (e) => onEnd(e.clientX, e.clientY));
