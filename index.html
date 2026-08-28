@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v2.3 - 最上層特效版</title>
+  <title>瑋的班表 v2.4 - 特效修復版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -384,11 +384,13 @@
     .shift-noon { background: var(--shift-noon-bg); color: #fff; box-shadow: 0 0 10px var(--shift-noon-glow); }
     .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 10px var(--shift-night-glow); }
     
+    /* 班表內的輪休標籤閃光特效 */
     .shift-r-off { 
       background: var(--shift-r-off-bg); 
       background-size: 200% 200%;
       box-shadow: 0 0 12px var(--shift-r-off-glow); 
       position: relative;
+      overflow: hidden;
       animation: gradientShift 3s ease infinite;
     }
 
@@ -400,6 +402,7 @@
       background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.8) 50%, transparent 70%);
       transform: rotate(30deg);
       animation: shine 2.5s infinite;
+      pointer-events: none;
     }
 
     @keyframes gradientShift {
@@ -416,9 +419,10 @@
     .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 10px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
+    /* Modal 獨立修正：確保選單不繼承日曆過度的動畫屬性 */
     .modal-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
@@ -445,7 +449,7 @@
       padding: 22px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 0, 127, 0.5);
       transform: scale(0.7) translateY(30px);
-      transition: all 0.35s ease;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .modal-overlay.active .modal {
@@ -474,8 +478,18 @@
       border-radius: 10px;
       font-size: 0.88rem;
       font-weight: 800;
+      color: #fff;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
+
+    /* 彈窗按鈕專屬純淨樣式 */
+    .quick-btn.q-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
+    .quick-btn.q-noon { background: var(--shift-noon-bg); box-shadow: 0 0 8px var(--shift-noon-glow); }
+    .quick-btn.q-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
+    .quick-btn.q-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 10px var(--shift-r-off-glow); }
+    .quick-btn.q-off { background: var(--shift-off-bg); box-shadow: 0 0 8px var(--shift-off-glow); }
 
     .input-group {
       margin-bottom: 20px;
@@ -531,7 +545,7 @@
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
     }
 
-    /* 🎆 粒子特效移至最上層 (z-index: 9999) 🎆 */
+    /* 粒子特效最高層級 */
     .particle {
       position: absolute;
       pointer-events: none;
@@ -586,11 +600,11 @@
       <h3 id="modal-date-title">統一設定班別與備註</h3>
       
       <div class="quick-btns">
-        <button class="quick-btn shift-day" onclick="setQuick('早班')">早班</button>
-        <button class="quick-btn shift-noon" onclick="setQuick('中班')">中班</button>
-        <button class="quick-btn shift-night" onclick="setQuick('晚班')">晚班</button>
-        <button class="quick-btn shift-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
-        <button class="quick-btn shift-off" onclick="setQuick('休假')">休假</button>
+        <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
+        <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
+        <button class="quick-btn q-night" onclick="setQuick('晚班')">晚班</button>
+        <button class="quick-btn q-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
+        <button class="quick-btn q-off" onclick="setQuick('休假')">休假</button>
         <button class="quick-btn" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="setQuick('')">清除</button>
       </div>
 
@@ -670,6 +684,11 @@
       renderSingleGrid(document.getElementById('prev-grid'), new Date(year, month - 1, 1));
       renderSingleGrid(document.getElementById('current-grid'), new Date(year, month, 1));
       renderSingleGrid(document.getElementById('next-grid'), new Date(year, month + 1, 1));
+
+      // 每次重新渲染確保軌道維持在中間頁
+      const track = document.getElementById('slider-track');
+      const containerWidth = document.getElementById('days-grid-container').offsetWidth || 300;
+      track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
     }
 
     function renderSingleGrid(gridElem, targetDate) {
@@ -751,7 +770,6 @@
         track.classList.remove('animate');
         currentDate.setMonth(currentDate.getMonth() + delta);
         renderAllCalendars();
-        track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
       }, 300);
     }
 
@@ -845,7 +863,6 @@
               track.classList.remove('animate');
               currentDate.setMonth(currentDate.getMonth() + 1);
               renderAllCalendars();
-              track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
             }, 300);
           } else if (dragDeltaX > threshold) {
             track.style.transform = `translate3d(0px, 0, 0)`;
@@ -853,7 +870,6 @@
               track.classList.remove('animate');
               currentDate.setMonth(currentDate.getMonth() - 1);
               renderAllCalendars();
-              track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
             }, 300);
           } else {
             track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
