@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.5 - 平穩極光版</title>
+  <title>瑋的班表 v9.0 - 60FPS 極致流暢版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -36,7 +36,6 @@
     }
 
     :root {
-      /* ☀️ 清新極光主題變數 */
       --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
       --card-glass: rgba(255, 255, 255, 0.88);
       --card-border: rgba(255, 255, 255, 0.95);
@@ -48,11 +47,9 @@
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
       
       --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.18) 0%, rgba(121, 40, 202, 0.22) 100%);
-      --shift-r-off-cell-border: #ff007f;
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
 
       --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.22) 0%, rgba(247, 112, 98, 0.22) 100%);
-      --shift-off-cell-border: #fe5196;
       --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
       
       --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
@@ -138,12 +135,13 @@
     .bg-glow {
       position: absolute;
       border-radius: 50%;
-      filter: blur(100px);
-      -webkit-filter: blur(100px);
+      filter: blur(80px);
+      -webkit-filter: blur(80px);
       z-index: 0;
-      opacity: 0.6;
-      animation: float 10s ease-in-out infinite alternate;
+      opacity: 0.5;
+      animation: float 12s ease-in-out infinite alternate;
       pointer-events: none;
+      will-change: transform;
     }
 
     .bg-glow-1 {
@@ -164,13 +162,13 @@
       background: radial-gradient(circle, #ffecd2 0%, #fcb69f 100%);
       top: 40%; left: 30%;
       animation-delay: -2.5s;
-      opacity: 0.5;
+      opacity: 0.4;
     }
 
     @keyframes float {
       0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      50% { transform: translate(40px, 30px) scale(1.2) rotate(180deg); }
-      100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
+      50% { transform: translate(30px, 20px) scale(1.1) rotate(180deg); }
+      100% { transform: translate(-20px, 40px) scale(0.95) rotate(360deg); }
     }
 
     .calendar-container {
@@ -183,14 +181,14 @@
       display: flex;
       flex-direction: column;
       background: var(--card-glass);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       border: 1.5px solid var(--card-border);
       border-radius: 24px;
       padding: 10px 8px 12px 8px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
                   inset 0 0 20px rgba(255, 255, 255, 0.9),
-                  0 0 20px rgba(0, 180, 219, 0.2);
+                  0 0 20px rgba(0, 180, 219, 0.15);
       overflow: hidden;
     }
 
@@ -214,7 +212,7 @@
       color: var(--text-muted);
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: all 0.2s ease;
     }
 
     .tab-btn.active {
@@ -257,9 +255,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
       position: relative;
       z-index: 1;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -313,12 +309,12 @@
       font-weight: 700;
       color: #2c3e50;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .nav-btn:active {
-      transform: scale(0.9);
+      transform: scale(0.92);
       background: #ffffff;
     }
 
@@ -342,7 +338,7 @@
 
     @keyframes pulse {
       0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
+      50% { transform: scale(1.3); opacity: 0.6; }
     }
 
     .weekdays {
@@ -366,9 +362,10 @@
       height: 100%;
       position: relative;
       overflow: hidden;
-      touch-action: none;
+      touch-action: pan-y;
     }
 
+    /* ⚡ 硬體加速獨立圖層修復滑動卡頓 */
     .slider-track {
       display: flex;
       width: 300%;
@@ -378,10 +375,11 @@
       left: 0;
       transform: translate3d(-33.3333%, 0, 0);
       will-change: transform;
+      contain: layout style paint;
     }
 
     .slider-track.animate {
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .days-grid {
@@ -409,8 +407,8 @@
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      contain: content;
     }
 
     .day-cell::before {
@@ -420,8 +418,8 @@
       background: conic-gradient(from var(--angle), #00c6ff, #0072ff, #ff007f, #7928ca, #ff8c00, #00c6ff);
       border-radius: 10px;
       z-index: -1;
-      animation: rotateGradient 3s linear infinite;
-      opacity: 0.95;
+      animation: rotateGradient 4s linear infinite;
+      opacity: 0.9;
     }
 
     .day-cell.empty {
@@ -444,13 +442,13 @@
 
     .day-cell.today {
       border: 3px solid transparent !important;
-      box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+      box-shadow: 0 0 12px rgba(255, 140, 0, 0.5);
     }
 
     .day-cell.today::before {
       background: conic-gradient(from var(--angle), #ff8c00, #ff007f, #ffd700, #ff8c00);
       opacity: 1;
-      animation-duration: 1.5s;
+      animation-duration: 2s;
     }
 
     .day-cell.today .day-number {
@@ -467,13 +465,8 @@
 
     .day-cell.selected {
       background: rgba(0, 198, 255, 0.2) !important;
-      box-shadow: 0 0 18px rgba(0, 198, 255, 0.8) !important;
-      transform: scale(0.94);
-    }
-
-    .day-cell.selected::before {
-      opacity: 1;
-      animation-duration: 1s;
+      box-shadow: 0 0 15px rgba(0, 198, 255, 0.7) !important;
+      transform: scale(0.95);
     }
 
     .day-cell.cell-r-off {
@@ -499,7 +492,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .shift-day { background: var(--shift-day-bg); }
@@ -509,17 +502,13 @@
     .shift-r-off { 
       background: var(--shift-r-off-bg); 
       background-size: 200% 200%;
-      position: relative;
-      overflow: hidden;
-      animation: gradientShift 3s ease infinite;
+      animation: gradientShift 4s ease infinite;
     }
 
     .shift-off { 
       background: var(--shift-off-bg); 
       background-size: 200% 200%;
-      position: relative;
-      overflow: hidden;
-      animation: gradientShift 2.5s ease infinite;
+      animation: gradientShift 3.5s ease infinite;
     }
 
     @keyframes gradientShift {
@@ -635,8 +624,6 @@
       padding: 14px 12px;
       position: relative;
       box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
       transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
       touch-action: none;
     }
@@ -675,7 +662,6 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
     }
 
     .map-link:active { opacity: 0.7; }
@@ -736,14 +722,14 @@
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(240, 244, 253, 0.6);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       display: flex;
       justify-content: center;
       align-items: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.25s ease;
       z-index: 1000;
     }
 
@@ -760,8 +746,8 @@
       border-radius: 24px;
       padding: 22px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      transform: scale(0.7) translateY(30px);
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform: scale(0.8) translateY(20px);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .modal-overlay.active .modal {
@@ -791,8 +777,6 @@
       font-weight: 800;
       color: #fff;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
     }
 
     .quick-btn.q-day { background: var(--shift-day-bg); }
@@ -862,8 +846,8 @@
     }
 
     @keyframes confetti {
-      0% { transform: translate(0, 0) scale(1.8) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
-      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(720deg); opacity: 0; }
+      0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
@@ -1007,6 +991,7 @@
     let isEditMode = false;
     let isDragging = false;
     let isSwiping = false;
+    let isCanvasActive = true;
     let selectedDates = new Set();
 
     let startX = 0; startY = 0; currentX = 0; currentY = 0; dragDeltaX = 0;
@@ -1064,7 +1049,7 @@
         btn.classList.add('edit-mode');
         icon.innerText = '✏️';
         text.innerText = '編輯模式';
-        createParticles(btn.offsetLeft + btn.offsetWidth/2, btn.offsetTop + btn.offsetHeight/2, 16);
+        createParticles(btn.offsetLeft + btn.offsetWidth/2, btn.offsetTop + btn.offsetHeight/2, 12);
       } else {
         btn.classList.remove('edit-mode');
         icon.innerText = '👁️';
@@ -1168,7 +1153,7 @@
         currentYear = nextDate.getFullYear();
         currentMonth = nextDate.getMonth();
         renderAllCalendars();
-      }, 300);
+      }, 250);
     }
 
     function getMonday(d) {
@@ -1419,6 +1404,7 @@
       window.dbRemove(window.dbRef(window.db, `travel/${dateStr}/${key}`));
     }
 
+    /* ⚡ 60FPS 極速手勢控制器 */
     function setupGestureControls() {
       const container = document.getElementById('days-grid-container');
       const track = document.getElementById('slider-track');
@@ -1430,8 +1416,7 @@
 
       const onStart = (x, y) => {
         startX = x; startY = y; currentX = x; currentY = y; dragDeltaX = 0; isHorizontalGesture = false;
-
-        if (window.triggerTouchPointer) triggerTouchPointer(x, y);
+        isCanvasActive = false; // 暫停 Canvas 動畫釋放 GPU
 
         if (isEditMode) {
           const cell = getCellFromPoint(x, y);
@@ -1447,7 +1432,7 @@
 
         const cell = getCellFromPoint(x, y);
         if (cell && (cell.classList.contains('cell-r-off') || cell.classList.contains('cell-off'))) {
-          createParticles(x, y, 30);
+          createParticles(x, y, 16);
         }
       };
 
@@ -1455,8 +1440,6 @@
         currentX = x; currentY = y;
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
-
-        if (window.triggerTouchPointer) triggerTouchPointer(x, y);
 
         if (isEditMode && isDragging) {
           const cell = getCellFromPoint(x, y);
@@ -1481,11 +1464,13 @@
       };
 
       const onEnd = (x, y) => {
+        isCanvasActive = true; // 恢復 Canvas 動畫
+
         if (isEditMode) {
           if (isDragging) {
             isDragging = false;
             if (selectedDates.size > 0) {
-              createParticles(x || window.innerWidth/2, y || window.innerHeight/2, 20);
+              createParticles(x || window.innerWidth/2, y || window.innerHeight/2, 16);
               openModal();
             }
           }
@@ -1495,7 +1480,7 @@
         if (isSwiping) {
           isSwiping = false;
           const containerWidth = container.offsetWidth || 300;
-          const threshold = containerWidth * 0.22;
+          const threshold = containerWidth * 0.2;
 
           track.classList.add('animate');
 
@@ -1507,7 +1492,7 @@
               currentYear = nextDate.getFullYear();
               currentMonth = nextDate.getMonth();
               renderAllCalendars();
-            }, 300);
+            }, 250);
           } else if (dragDeltaX > threshold) {
             track.style.transform = `translate3d(0%, 0, 0)`;
             setTimeout(() => {
@@ -1516,7 +1501,7 @@
               currentYear = nextDate.getFullYear();
               currentMonth = nextDate.getMonth();
               renderAllCalendars();
-            }, 300);
+            }, 250);
           } else {
             track.style.transform = `translate3d(-33.3333%, 0, 0)`;
           }
@@ -1594,30 +1579,26 @@
       closeModal();
     }
 
-    function createParticles(x, y, count = 20) {
+    function createParticles(x, y, count = 16) {
       const colors = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300', '#fe5196'];
-      const shapes = ['circle', 'rect'];
 
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         document.body.appendChild(p);
 
-        const size = Math.random() * 9 + 4;
-        const shape = shapes[Math.floor(Math.random() * shapes.length)];
-        
+        const size = Math.random() * 8 + 4;
         p.style.width = `${size}px`;
-        p.style.height = shape === 'rect' ? `${size * 1.8}px` : `${size}px`;
-        p.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+        p.style.height = `${size}px`;
+        p.style.borderRadius = '50%';
         
         const color = colors[Math.floor(Math.random() * colors.length)];
         p.style.background = color;
-        p.style.color = color;
         p.style.left = `${x}px`;
         p.style.top = `${y}px`;
 
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 110 + 40;
+        const speed = Math.random() * 90 + 30;
         p.style.setProperty('--dx', `${Math.cos(angle) * speed}px`);
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
@@ -1625,6 +1606,7 @@
       }
     }
 
+    /* ⚡ 效能優化版 Canvas 背景粒子 */
     function initBackgroundParticles() {
       const canvas = document.getElementById('bg-canvas');
       const ctx = canvas.getContext('2d');
@@ -1632,8 +1614,7 @@
       let height = canvas.height = window.innerHeight;
 
       const particles = [];
-      const particleCount = 80;
-      let touchPos = { x: -1000, y: -1000, radius: 120 };
+      const particleCount = 50; // 降低粒子總數
 
       window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
@@ -1644,11 +1625,11 @@
         constructor() {
           this.x = Math.random() * width;
           this.y = Math.random() * height;
-          this.vx = (Math.random() - 0.5) * 0.8;
-          this.vy = (Math.random() - 0.5) * 0.8;
+          this.vx = (Math.random() - 0.5) * 0.6;
+          this.vy = (Math.random() - 0.5) * 0.6;
           this.radius = Math.random() * 2 + 1;
           this.color = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300'][Math.floor(Math.random() * 4)];
-          this.alpha = Math.random() * 0.5 + 0.3;
+          this.alpha = Math.random() * 0.4 + 0.2;
         }
 
         update() {
@@ -1657,17 +1638,6 @@
 
           if (this.x < 0 || this.x > width) this.vx *= -1;
           if (this.y < 0 || this.y > height) this.vy *= -1;
-
-          const dx = touchPos.x - this.x;
-          const dy = touchPos.y - this.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < touchPos.radius) {
-            const angle = Math.atan2(dy, dx);
-            const force = (touchPos.radius - dist) / touchPos.radius;
-            this.x -= Math.cos(angle) * force * 4;
-            this.y -= Math.sin(angle) * force * 4;
-          }
         }
 
         draw() {
@@ -1676,8 +1646,6 @@
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
           ctx.fillStyle = this.color;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = this.color;
           ctx.fill();
           ctx.restore();
         }
@@ -1687,18 +1655,14 @@
         particles.push(new Particle());
       }
 
-      window.triggerTouchPointer = (x, y) => {
-        touchPos.x = x;
-        touchPos.y = y;
-        setTimeout(() => { touchPos.x = -1000; touchPos.y = -1000; }, 300);
-      };
-
       function loop() {
-        ctx.clearRect(0, 0, width, height);
-        particles.forEach(p => {
-          p.update();
-          p.draw();
-        });
+        if (isCanvasActive) {
+          ctx.clearRect(0, 0, width, height);
+          particles.forEach(p => {
+            p.update();
+            p.draw();
+          });
+        }
         requestAnimationFrame(loop);
       }
       loop();
