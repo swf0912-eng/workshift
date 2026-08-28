@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v5.0 - 行程拖曳排序版</title>
+  <title>瑋的班表 v6.0 - 清新明亮極光版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -36,33 +36,34 @@
     }
 
     :root {
-      --bg-gradient: linear-gradient(135deg, #050515 0%, #100b32 40%, #1a0b2e 70%, #080014 100%);
-      --card-glass: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.18);
-      --text-main: #ffffff;
-      --text-muted: rgba(255, 255, 255, 0.65);
+      /* ☀️ 清新明亮極光主題變數 */
+      --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
+      --card-glass: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(255, 255, 255, 0.9);
+      --text-main: #2c3e50;
+      --text-muted: #607d8b;
       
-      --shift-day-bg: linear-gradient(135deg, #00c6ff, #0072ff);
-      --shift-day-glow: rgba(0, 198, 255, 0.8);
+      --shift-day-bg: linear-gradient(135deg, #00b4db, #0083b0);
+      --shift-day-glow: rgba(0, 180, 219, 0.4);
       
-      --shift-noon-bg: linear-gradient(135deg, #f857a6, #ff5858);
-      --shift-noon-glow: rgba(248, 87, 166, 0.8);
+      --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
+      --shift-noon-glow: rgba(255, 117, 140, 0.4);
 
-      --shift-night-bg: linear-gradient(135deg, #8a2387, #e94057, #f27121);
-      --shift-night-glow: rgba(233, 64, 87, 0.8);
+      --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
+      --shift-night-glow: rgba(142, 45, 226, 0.4);
       
-      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.35) 0%, rgba(121, 40, 202, 0.45) 100%);
+      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.12) 0%, rgba(121, 40, 202, 0.15) 100%);
       --shift-r-off-cell-border: #ff007f;
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
-      --shift-r-off-glow: rgba(255, 0, 127, 0.9);
+      --shift-r-off-glow: rgba(255, 0, 127, 0.5);
 
-      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.3) 0%, rgba(247, 112, 98, 0.3) 100%);
+      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.15) 0%, rgba(247, 112, 98, 0.15) 100%);
       --shift-off-cell-border: #fe5196;
       --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
-      --shift-off-glow: rgba(254, 81, 150, 0.95);
+      --shift-off-glow: rgba(254, 81, 150, 0.5);
       
-      --shift-custom-bg: linear-gradient(135deg, #b224ef, #7579ff);
-      --shift-custom-glow: rgba(178, 36, 239, 0.8);
+      --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
+      --shift-custom-glow: rgba(142, 45, 226, 0.4);
     }
 
     * {
@@ -80,7 +81,7 @@
       width: 100vw;
       overflow: hidden;
       touch-action: none;
-      background: #050515;
+      background: #f0f4fd;
     }
 
     body {
@@ -108,7 +109,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(5, 5, 21, 0.96);
+      background: rgba(240, 244, 253, 0.96);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 99999;
@@ -129,7 +130,7 @@
       font-size: 1.1rem;
       font-weight: 800;
       letter-spacing: 1px;
-      background: linear-gradient(to right, #00f2fe, #ff007f);
+      background: linear-gradient(to right, #0083b0, #ff007f);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -146,30 +147,30 @@
     .bg-glow {
       position: absolute;
       border-radius: 50%;
-      filter: blur(90px);
-      -webkit-filter: blur(90px);
+      filter: blur(100px);
+      -webkit-filter: blur(100px);
       z-index: 0;
-      opacity: 0.8;
+      opacity: 0.6;
       animation: float 10s ease-in-out infinite alternate;
       pointer-events: none;
     }
 
     .bg-glow-1 {
       width: 320px; height: 320px;
-      background: radial-gradient(circle, #7928ca 0%, #ff007f 100%);
+      background: radial-gradient(circle, #a1c4fd 0%, #c2e9fb 100%);
       top: -80px; left: -80px;
     }
 
     .bg-glow-2 {
       width: 300px; height: 300px;
-      background: radial-gradient(circle, #00f2fe 0%, #4facfe 100%);
+      background: radial-gradient(circle, #fbc2eb 0%, #a6c1ee 100%);
       bottom: -60px; right: -60px;
       animation-delay: -5s;
     }
 
     .bg-glow-3 {
       width: 200px; height: 200px;
-      background: radial-gradient(circle, #ff0844 0%, #ffb199 100%);
+      background: radial-gradient(circle, #ffecd2 0%, #fcb69f 100%);
       top: 40%; left: 30%;
       animation-delay: -2.5s;
       opacity: 0.5;
@@ -196,9 +197,9 @@
       border: 1px solid var(--card-border);
       border-radius: 24px;
       padding: 12px 10px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 
-                  inset 0 0 20px rgba(255, 255, 255, 0.15),
-                  0 0 15px rgba(255, 0, 127, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
+                  inset 0 0 20px rgba(255, 255, 255, 0.8),
+                  0 0 20px rgba(0, 180, 219, 0.15);
       overflow: hidden;
       transform-style: preserve-3d;
       transition: transform 0.15s ease-out;
@@ -206,12 +207,13 @@
 
     .nav-tabs {
       display: flex;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(255, 255, 255, 0.5);
       border-radius: 16px;
       padding: 4px;
       margin-bottom: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
 
     .tab-btn {
@@ -227,9 +229,9 @@
     }
 
     .tab-btn.active {
-      color: #fff;
-      background: linear-gradient(135deg, rgba(255, 0, 127, 0.6), rgba(0, 242, 254, 0.6));
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.3);
+      color: #333;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     .page-content {
@@ -255,13 +257,13 @@
     }
 
     .mode-toggle-btn {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--card-border);
       border-radius: 20px;
       padding: 5px 14px;
       font-size: 0.78rem;
       font-weight: 800;
-      color: #fff;
+      color: #333;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -271,12 +273,13 @@
       -webkit-backdrop-filter: blur(10px);
       position: relative;
       z-index: 1;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
     .mode-toggle-btn.edit-mode {
-      background: #0d0722;
+      background: #ffffff;
       border: 1px solid transparent;
-      box-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
       transform: scale(1.05);
     }
 
@@ -284,7 +287,7 @@
       content: '';
       position: absolute;
       top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #ff007f, #00f2fe, #7928ca, #ff007f);
+      background: conic-gradient(from var(--angle), #ff007f, #00b4db, #7928ca, #ff007f);
       border-radius: 22px;
       z-index: -1;
       animation: rotateGradient 3s linear infinite;
@@ -307,47 +310,44 @@
       font-size: 1.35rem;
       font-weight: 900;
       letter-spacing: 1.5px;
-      background: linear-gradient(to right, #ffffff, #00f2fe, #ff007f);
+      background: linear-gradient(to right, #0083b0, #ff007f);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
     }
 
     .nav-btn {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.8);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 6px 14px;
       font-size: 0.82rem;
       font-weight: 700;
-      color: #fff;
+      color: #2c3e50;
       cursor: pointer;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .nav-btn:active {
       transform: scale(0.9);
-      background: rgba(255, 255, 255, 0.3);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      background: #ffffff;
     }
 
     .status-bar {
       font-size: 0.72rem;
-      font-weight: 600;
-      color: #00f2fe;
+      font-weight: 700;
+      color: #0083b0;
       display: flex;
       align-items: center;
       gap: 6px;
-      text-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
-      background-color: #00f2fe;
+      background-color: #00b4db;
       border-radius: 50%;
-      box-shadow: 0 0 10px #00f2fe, 0 0 20px #00f2fe;
+      box-shadow: 0 0 8px #00b4db;
       animation: pulse 2s infinite;
     }
 
@@ -369,8 +369,7 @@
 
     .weekdays div:nth-child(6),
     .weekdays div:nth-child(7) {
-      color: #ff5858;
-      text-shadow: 0 0 8px rgba(255, 88, 88, 0.5);
+      color: #e53935;
     }
 
     .days-grid-container {
@@ -414,41 +413,37 @@
       align-items: center;
       justify-content: flex-start;
       gap: 2px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
 
     .day-cell.empty {
       border: none;
       background: transparent;
+      box-shadow: none;
       cursor: default;
     }
 
     .day-number {
       font-size: 0.85rem;
       font-weight: 800;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+      color: #2c3e50;
       line-height: 1.1;
     }
 
     .day-cell.today {
-      border: 2px solid #ffd700;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), inset 0 0 10px rgba(255, 215, 0, 0.3);
-      animation: todayGlow 3s infinite alternate;
-    }
-
-    @keyframes todayGlow {
-      0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
-      100% { box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.5); }
+      border: 2px solid #ffb300;
+      box-shadow: 0 0 12px rgba(255, 179, 0, 0.4);
     }
 
     .day-cell.today .day-number {
-      background: linear-gradient(135deg, #ffd700, #ff8c00);
-      color: #000;
+      background: linear-gradient(135deg, #ffb300, #ff8c00);
+      color: #fff;
       border-radius: 50%;
       width: 20px; height: 20px;
       display: flex;
@@ -456,13 +451,12 @@
       justify-content: center;
       font-size: 0.72rem;
       font-weight: 900;
-      box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
     }
 
     .day-cell.selected {
       border: 2px solid transparent !important;
-      background: rgba(0, 242, 254, 0.2) !important;
-      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9) !important;
+      background: rgba(0, 180, 219, 0.15) !important;
+      box-shadow: 0 0 15px rgba(0, 180, 219, 0.5) !important;
       transform: scale(0.94);
       position: relative;
     }
@@ -471,7 +465,7 @@
       content: '';
       position: absolute;
       top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #00f2fe, #ff007f, #00f2fe);
+      background: conic-gradient(from var(--angle), #00b4db, #ff007f, #00b4db);
       border-radius: 12px;
       z-index: -1;
       animation: rotateGradient 2s linear infinite;
@@ -480,25 +474,13 @@
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
       border: 1.5px solid var(--shift-r-off-cell-border) !important;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6), inset 0 0 12px rgba(255, 0, 127, 0.4) !important;
-      animation: rOffGlow 2.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes rOffGlow {
-      0% { box-shadow: 0 0 8px rgba(255, 0, 127, 0.5), inset 0 0 6px rgba(255, 0, 127, 0.3); transform: scale(1); }
-      100% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.9), 0 0 30px rgba(121, 40, 202, 0.8); transform: scale(1.02); }
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.25) !important;
     }
 
     .day-cell.cell-off {
       background: var(--shift-off-cell-bg) !important;
       border: 1.5px solid var(--shift-off-cell-border) !important;
-      box-shadow: 0 0 15px rgba(254, 81, 150, 0.7), inset 0 0 12px rgba(254, 81, 150, 0.4) !important;
-      animation: offGlow 2.5s ease-in-out infinite alternate;
-    }
-
-    @keyframes offGlow {
-      0% { box-shadow: 0 0 8px rgba(254, 81, 150, 0.5), inset 0 0 6px rgba(254, 81, 150, 0.3); transform: scale(1); }
-      100% { box-shadow: 0 0 22px rgba(254, 81, 150, 0.95), 0 0 32px rgba(255, 117, 140, 0.8); transform: scale(1.02); }
+      box-shadow: 0 0 12px rgba(254, 81, 150, 0.25) !important;
     }
 
     .shift-tag {
@@ -516,54 +498,27 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .shift-day { background: var(--shift-day-bg); box-shadow: 0 0 10px var(--shift-day-glow); }
-    .shift-noon { background: var(--shift-noon-bg); color: #fff; box-shadow: 0 0 10px var(--shift-noon-glow); }
-    .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 10px var(--shift-night-glow); }
+    .shift-day { background: var(--shift-day-bg); }
+    .shift-noon { background: var(--shift-noon-bg); }
+    .shift-night { background: var(--shift-night-bg); }
     
     .shift-r-off { 
       background: var(--shift-r-off-bg); 
       background-size: 200% 200%;
-      box-shadow: 0 0 12px var(--shift-r-off-glow); 
       position: relative;
       overflow: hidden;
       animation: gradientShift 3s ease infinite;
     }
 
-    .shift-r-off::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.8) 50%, transparent 70%);
-      transform: rotate(30deg);
-      animation: shine 2.5s infinite;
-      pointer-events: none;
-    }
-
     .shift-off { 
       background: var(--shift-off-bg); 
       background-size: 200% 200%;
-      color: #fff; 
-      box-shadow: 0 0 14px var(--shift-off-glow); 
       position: relative;
       overflow: hidden;
       animation: gradientShift 2.5s ease infinite;
-    }
-
-    .shift-off::after {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.9) 50%, transparent 70%);
-      transform: rotate(30deg);
-      animation: shine 2s infinite;
-      pointer-events: none;
     }
 
     @keyframes gradientShift {
@@ -572,14 +527,9 @@
       100% { background-position: 0% 50%; }
     }
 
-    @keyframes shine {
-      0% { transform: translateX(-150%) rotate(30deg); }
-      100% { transform: translateX(150%) rotate(30deg); }
-    }
+    .shift-custom { background: var(--shift-custom-bg); }
 
-    .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
-
-    /* ✈️ 旅遊規劃週視圖 */
+    /* ✈️ 旅遊規劃週視圖 - 清新版 */
     .travel-header {
       display: flex;
       justify-content: space-between;
@@ -593,10 +543,10 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
       margin-bottom: 12px;
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(255, 255, 255, 0.5);
       padding: 6px;
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       flex-shrink: 0;
     }
 
@@ -607,8 +557,8 @@
       justify-content: center;
       padding: 6px 2px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       cursor: pointer;
       position: relative;
       transition: all 0.2s ease;
@@ -623,14 +573,14 @@
     .week-day-card .w-num {
       font-size: 0.85rem;
       font-weight: 900;
-      color: #fff;
+      color: #2c3e50;
       margin-top: 2px;
     }
 
     .week-day-card.active {
-      background: linear-gradient(135deg, rgba(0, 242, 254, 0.4), rgba(255, 0, 127, 0.4));
-      border: 1px solid #00f2fe;
-      box-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+      background: #ffffff;
+      border: 1px solid #00b4db;
+      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.25);
       transform: scale(1.05);
     }
 
@@ -638,8 +588,8 @@
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #00f2fe;
-      box-shadow: 0 0 6px #00f2fe, 0 0 10px #ff007f;
+      background: #00b4db;
+      box-shadow: 0 0 6px #00b4db;
       position: absolute;
       bottom: 3px;
     }
@@ -655,45 +605,44 @@
       touch-action: pan-y;
     }
 
-    /* 🖐️ 支援拖曳排序的卡片樣式 */
     .timeline-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-left: 4px solid #00f2fe;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-left: 4px solid #00b4db;
       border-radius: 16px;
       padding: 14px 12px;
       position: relative;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       cursor: grab;
-      transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, opacity 0.2s ease;
     }
 
     .timeline-item.dragging {
-      opacity: 0.4;
+      opacity: 0.5;
       transform: scale(0.98);
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.8);
+      box-shadow: 0 0 15px rgba(0, 180, 219, 0.4);
     }
 
     .drag-handle {
-      color: rgba(255, 255, 255, 0.3);
+      color: #b0bec5;
       font-size: 1.1rem;
       cursor: grab;
       margin-right: 4px;
     }
 
-    .timeline-item.type-food { border-left-color: #ff007f; }
-    .timeline-item.type-hotel { border-left-color: #b224ef; }
+    .timeline-item.type-food { border-left-color: #ff758c; }
+    .timeline-item.type-hotel { border-left-color: #8e2de2; }
 
     .timeline-info { flex-grow: 1; display: flex; align-items: center; }
 
     .map-link {
-      color: #ffffff;
+      color: #2c3e50;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
@@ -701,14 +650,14 @@
       transition: all 0.2s ease;
     }
 
-    .map-link:active { opacity: 0.7; transform: scale(0.98); }
+    .map-link:active { opacity: 0.7; }
 
-    .timeline-title { font-size: 1rem; font-weight: 800; color: #fff; }
+    .timeline-title { font-size: 0.98rem; font-weight: 800; color: #2c3e50; }
 
     .timeline-delete {
-      background: rgba(255, 88, 88, 0.2);
+      background: rgba(229, 57, 53, 0.1);
       border: none;
-      color: #ff5858;
+      color: #e53935;
       width: 26px; height: 26px;
       border-radius: 50%;
       font-size: 0.85rem;
@@ -726,9 +675,9 @@
       width: 52px;
       height: 52px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #ff007f, #7928ca);
-      box-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.5);
+      background: linear-gradient(135deg, #00b4db, #0083b0);
+      box-shadow: 0 8px 20px rgba(0, 180, 219, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.8);
       color: #fff;
       font-size: 1.8rem;
       display: flex;
@@ -744,8 +693,8 @@
       height: 160px;
       border-radius: 14px;
       overflow: hidden;
-      border: 1px solid rgba(0, 242, 254, 0.3);
-      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 180, 219, 0.3);
+      background: rgba(255, 255, 255, 0.5);
       display: none;
     }
 
@@ -758,7 +707,7 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(240, 244, 253, 0.6);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
       display: flex;
@@ -776,13 +725,13 @@
     }
 
     .modal {
-      background: rgba(20, 15, 45, 0.95);
-      border: 1px solid rgba(255, 0, 127, 0.4);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(255, 255, 255, 1);
       width: 90%;
       max-width: 340px;
       border-radius: 24px;
       padding: 22px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 30px rgba(255, 0, 127, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       transform: scale(0.7) translateY(30px);
       transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -796,8 +745,7 @@
       font-weight: 800;
       margin-bottom: 16px;
       text-align: center;
-      color: #fff;
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+      color: #2c3e50;
     }
 
     .quick-btns {
@@ -819,11 +767,11 @@
       overflow: hidden;
     }
 
-    .quick-btn.q-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
-    .quick-btn.q-noon { background: var(--shift-noon-bg); box-shadow: 0 0 8px var(--shift-noon-glow); }
-    .quick-btn.q-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
-    .quick-btn.q-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 10px var(--shift-r-off-glow); }
-    .quick-btn.q-off { background: var(--shift-off-bg); box-shadow: 0 0 10px var(--shift-off-glow); }
+    .quick-btn.q-day { background: var(--shift-day-bg); }
+    .quick-btn.q-noon { background: var(--shift-noon-bg); }
+    .quick-btn.q-night { background: var(--shift-night-bg); }
+    .quick-btn.q-r-off { background: var(--shift-r-off-bg); }
+    .quick-btn.q-off { background: var(--shift-off-bg); }
 
     .input-group {
       margin-bottom: 14px;
@@ -840,19 +788,19 @@
     .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
+      background: rgba(240, 244, 253, 0.8);
+      border: 1px solid rgba(0, 180, 219, 0.2);
       border-radius: 12px;
       font-size: 0.92rem;
-      color: #fff;
+      color: #2c3e50;
       outline: none;
       user-select: text;
       -webkit-user-select: text;
     }
 
     .input-group select {
-      background: rgba(30, 20, 60, 0.9);
-      color: #fff;
+      background: rgba(255, 255, 255, 0.9);
+      color: #2c3e50;
     }
 
     .modal-actions {
@@ -871,11 +819,11 @@
       cursor: pointer;
     }
 
-    .btn-cancel { background: rgba(255, 255, 255, 0.15); color: #fff; }
+    .btn-cancel { background: rgba(0, 0, 0, 0.08); color: #607d8b; }
     .btn-save { 
-      background: linear-gradient(135deg, #ff007f, #7928ca); 
+      background: linear-gradient(135deg, #00b4db, #0083b0); 
       color: #fff; 
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
+      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); 
     }
 
     .particle {
@@ -942,11 +890,11 @@
       </div>
     </div>
 
-    <!-- ✈️ 第二頁：旅遊規劃（週視圖 + 拖曳排序功能） -->
+    <!-- ✈️ 第二頁：旅遊規劃 -->
     <div class="page-content" id="travel-page">
       <div class="travel-header">
         <button class="nav-btn" onclick="changeTravelWeek(-1)">‹ 上一週</button>
-        <h2 id="travel-week-title" style="font-size: 1.05rem; font-weight: 900; background: linear-gradient(to right, #00f2fe, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
+        <h2 id="travel-week-title" style="font-size: 1.05rem; font-weight: 900; background: linear-gradient(to right, #0083b0, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
         <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
       </div>
 
@@ -974,7 +922,7 @@
         <button class="quick-btn q-night" onclick="setQuick('晚班')">晚班</button>
         <button class="quick-btn q-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
         <button class="quick-btn q-off" onclick="setQuick('休假')">🌸 休假</button>
-        <button class="quick-btn" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="setQuick('')">清除</button>
+        <button class="quick-btn" style="background: rgba(0,0,0,0.1); color:#607d8b;" onclick="setQuick('')">清除</button>
       </div>
 
       <div class="input-group">
@@ -1296,7 +1244,6 @@
       });
     }
 
-    /* 🖐️ 核心手勢／滑鼠 Drag & Drop 拖曳排序實作 */
     function setupDragAndDrop() {
       const container = document.getElementById('timeline-list');
       let draggedItem = null;
@@ -1343,7 +1290,6 @@
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
 
-    /* 雲端資料排序位置更新 */
     function saveReorderedItems() {
       const dateStr = formatDateStr(travelCurrentDate);
       const items = [...document.querySelectorAll('.timeline-item')];
@@ -1588,7 +1534,7 @@
     }
 
     function createParticles(x, y, count = 20) {
-      const colors = ['#ff007f', '#fe5196', '#7928ca', '#00f2fe', '#ffd700', '#ff8c00', '#ff7eb3'];
+      const colors = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300', '#fe5196'];
       const shapes = ['circle', 'rect'];
 
       for (let i = 0; i < count; i++) {
@@ -1640,7 +1586,7 @@
           this.vx = (Math.random() - 0.5) * 0.8;
           this.vy = (Math.random() - 0.5) * 0.8;
           this.radius = Math.random() * 2 + 1;
-          this.color = ['#00f2fe', '#ff007f', '#7928ca', '#fe5196'][Math.floor(Math.random() * 4)];
+          this.color = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300'][Math.floor(Math.random() * 4)];
           this.alpha = Math.random() * 0.5 + 0.3;
         }
 
