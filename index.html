@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.7 - 粉色系極光美化版</title>
+  <title>瑋的班表 v8.8 - 邊框旋轉光條版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -48,12 +48,10 @@
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
       
       /* 🌸 櫻花蜜桃粉 (輪休風格) */
-      --shift-r-off-cell-bg: linear-gradient(135deg, rgba(255, 117, 140, 0.15) 0%, rgba(255, 142, 212, 0.22) 100%);
-      --shift-r-off-bg: linear-gradient(135deg, #ff758c, #ff8ed4, #f77062);
+      --shift-r-off-bg: linear-gradient(135deg, #ff007f, #ff758c, #ff8ed4);
 
       /* 🌺 夢幻晨曦粉 (休假風格) */
-      --shift-off-cell-bg: linear-gradient(135deg, rgba(255, 154, 158, 0.15) 0%, rgba(254, 207, 239, 0.25) 100%);
-      --shift-off-bg: linear-gradient(135deg, #ff9a9e, #fecfef, #feada6);
+      --shift-off-bg: linear-gradient(135deg, #ff758c, #ff9a9e, #fe5196);
       
       --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
     }
@@ -426,7 +424,7 @@
       justify-content: flex-start;
       gap: 1px;
       background: rgba(255, 255, 255, 0.92);
-      border: 3px solid transparent;
+      border: 2px solid transparent;
       background-clip: padding-box;
       cursor: pointer;
       position: relative;
@@ -435,26 +433,11 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    .day-cell::before {
-      content: '';
-      position: absolute;
-      top: -3px; left: -3px; right: -3px; bottom: -3px;
-      background: conic-gradient(from var(--angle), #00c6ff, #0072ff, #ff007f, #7928ca, #ff8c00, #00c6ff);
-      border-radius: 10px;
-      z-index: -1;
-      animation: rotateGradient 3s linear infinite;
-      opacity: 0.95;
-    }
-
     .day-cell.empty {
       border: none;
       background: transparent;
       box-shadow: none;
       cursor: default;
-    }
-
-    .day-cell.empty::before {
-      display: none;
     }
 
     .day-number {
@@ -465,14 +448,18 @@
     }
 
     .day-cell.today {
-      border: 3px solid transparent !important;
-      box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+      border: 2.5px solid transparent !important;
+      box-shadow: 0 0 12px rgba(255, 140, 0, 0.5);
     }
 
     .day-cell.today::before {
+      content: '';
+      position: absolute;
+      top: -2.5px; left: -2.5px; right: -2.5px; bottom: -2.5px;
       background: conic-gradient(from var(--angle), #ff8c00, #ff007f, #ffd700, #ff8c00);
-      opacity: 1;
-      animation-duration: 1.5s;
+      border-radius: 10px;
+      z-index: -1;
+      animation: rotateGradient 1.5s linear infinite;
     }
 
     .day-cell.today .day-number {
@@ -488,25 +475,43 @@
     }
 
     .day-cell.selected {
-      background: rgba(0, 198, 255, 0.2) !important;
-      box-shadow: 0 0 18px rgba(0, 198, 255, 0.8) !important;
+      background: rgba(0, 198, 255, 0.15) !important;
+      box-shadow: 0 0 15px rgba(0, 198, 255, 0.6) !important;
       transform: scale(0.94);
     }
 
-    .day-cell.selected::before {
-      opacity: 1;
-      animation-duration: 1s;
-    }
-
-    /* 🌸 滿格美化：櫻花蜜桃粉與夢幻晨曦粉柔光背景 */
+    /* 🌸 輪休：邊框順時針旋轉霓虹光條 */
     .day-cell.cell-r-off {
-      background: var(--shift-r-off-cell-bg) !important;
-      box-shadow: inset 0 0 10px rgba(255, 117, 140, 0.3), 0 2px 8px rgba(255, 117, 140, 0.15) !important;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(255, 0, 127, 0.15);
     }
 
+    .day-cell.cell-r-off::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #ff007f, #ff758c, #ff8ed4, #ff007f);
+      border-radius: 10px;
+      z-index: -1;
+      animation: rotateGradient 3s linear infinite;
+    }
+
+    /* 🌺 休假：邊框順時針旋轉霓虹光條 */
     .day-cell.cell-off {
-      background: var(--shift-off-cell-bg) !important;
-      box-shadow: inset 0 0 10px rgba(255, 154, 158, 0.3), 0 2px 8px rgba(255, 154, 158, 0.15) !important;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid transparent;
+      box-shadow: 0 2px 8px rgba(254, 81, 150, 0.15);
+    }
+
+    .day-cell.cell-off::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #ff758c, #ff9a9e, #fe5196, #ff758c);
+      border-radius: 10px;
+      z-index: -1;
+      animation: rotateGradient 3s linear infinite;
     }
 
     .shift-tag {
