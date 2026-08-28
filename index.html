@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v2.4 - 特效修復版</title>
+  <title>瑋的班表 v2.6 - 正確月份校正版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -384,7 +384,6 @@
     .shift-noon { background: var(--shift-noon-bg); color: #fff; box-shadow: 0 0 10px var(--shift-noon-glow); }
     .shift-night { background: var(--shift-night-bg); box-shadow: 0 0 10px var(--shift-night-glow); }
     
-    /* 班表內的輪休標籤閃光特效 */
     .shift-r-off { 
       background: var(--shift-r-off-bg); 
       background-size: 200% 200%;
@@ -419,7 +418,6 @@
     .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 10px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
-    /* Modal 獨立修正：確保選單不繼承日曆過度的動畫屬性 */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -484,7 +482,6 @@
       overflow: hidden;
     }
 
-    /* 彈窗按鈕專屬純淨樣式 */
     .quick-btn.q-day { background: var(--shift-day-bg); box-shadow: 0 0 8px var(--shift-day-glow); }
     .quick-btn.q-noon { background: var(--shift-noon-bg); box-shadow: 0 0 8px var(--shift-noon-glow); }
     .quick-btn.q-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
@@ -545,7 +542,6 @@
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); 
     }
 
-    /* 粒子特效最高層級 */
     .particle {
       position: absolute;
       pointer-events: none;
@@ -621,7 +617,10 @@
   </div>
 
   <script>
-    let currentDate = new Date();
+    // 全域目前顯示的年與月（0 表示 1 月，7 表示 8 月）
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth(); 
+
     let shiftData = {};
 
     let isEditMode = false;
@@ -676,29 +675,30 @@
     }
 
     function renderAllCalendars() {
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
+      // 標題顯示正確的 1~12 月
+      document.getElementById('month-title').innerText = `${currentYear} 年 ${currentMonth + 1} 月`;
 
-      document.getElementById('month-title').innerText = `${year} 年 ${month + 1} 月`;
+      // 嚴謹計算上個月、當月、下個月
+      renderSingleGrid(document.getElementById('prev-grid'), currentYear, currentMonth - 1);
+      renderSingleGrid(document.getElementById('current-grid'), currentYear, currentMonth);
+      renderSingleGrid(document.getElementById('next-grid'), currentYear, currentMonth + 1);
 
-      renderSingleGrid(document.getElementById('prev-grid'), new Date(year, month - 1, 1));
-      renderSingleGrid(document.getElementById('current-grid'), new Date(year, month, 1));
-      renderSingleGrid(document.getElementById('next-grid'), new Date(year, month + 1, 1));
-
-      // 每次重新渲染確保軌道維持在中間頁
       const track = document.getElementById('slider-track');
       const containerWidth = document.getElementById('days-grid-container').offsetWidth || 300;
       track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
     }
 
-    function renderSingleGrid(gridElem, targetDate) {
+    function renderSingleGrid(gridElem, year, month) {
       gridElem.innerHTML = '';
-      const year = targetDate.getFullYear();
-      const month = targetDate.getMonth();
 
-      const firstDay = new Date(year, month, 1).getDay();
+      // 使用 Date 物件自動規範化跨年與月份 (例如 month = -1 會自動變成前一年的 12 月)
+      const targetDate = new Date(year, month, 1);
+      const realYear = targetDate.getFullYear();
+      const realMonth = targetDate.getMonth();
+
+      const firstDay = new Date(realYear, realMonth, 1).getDay();
       const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
-      const totalDays = new Date(year, month + 1, 0).getDate();
+      const totalDays = new Date(realYear, realMonth + 1, 0).getDate();
 
       for (let i = 0; i < startOffset; i++) {
         const emptyCell = document.createElement('div');
@@ -711,10 +711,11 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell';
 
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        // 格式化為 YYYY-MM-DD
+        const dateStr = `${realYear}-${String(realMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         cell.dataset.date = dateStr;
 
-        if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+        if (day === today.getDate() && realMonth === today.getMonth() && realYear === today.getFullYear()) {
           cell.classList.add('today');
         }
 
@@ -768,7 +769,10 @@
 
       setTimeout(() => {
         track.classList.remove('animate');
-        currentDate.setMonth(currentDate.getMonth() + delta);
+        // 安全調整全域月份與年份
+        const nextDate = new Date(currentYear, currentMonth + delta, 1);
+        currentYear = nextDate.getFullYear();
+        currentMonth = nextDate.getMonth();
         renderAllCalendars();
       }, 300);
     }
@@ -861,14 +865,18 @@
             track.style.transform = `translate3d(-${2 * containerWidth}px, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
-              currentDate.setMonth(currentDate.getMonth() + 1);
+              const nextDate = new Date(currentYear, currentMonth + 1, 1);
+              currentYear = nextDate.getFullYear();
+              currentMonth = nextDate.getMonth();
               renderAllCalendars();
             }, 300);
           } else if (dragDeltaX > threshold) {
             track.style.transform = `translate3d(0px, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
-              currentDate.setMonth(currentDate.getMonth() - 1);
+              const nextDate = new Date(currentYear, currentMonth - 1, 1);
+              currentYear = nextDate.getFullYear();
+              currentMonth = nextDate.getMonth();
               renderAllCalendars();
             }, 300);
           } else {
