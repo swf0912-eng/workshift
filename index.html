@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v3.8 - 地圖超連結版</title>
+  <title>瑋的班表 v4.0 - 旅遊規劃週視圖與地圖搜尋版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -238,6 +238,7 @@
       flex-grow: 1;
       height: 100%;
       overflow: hidden;
+      position: relative;
     }
 
     .page-content.active {
@@ -578,24 +579,70 @@
 
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
-    /* ✈️ 旅遊行程頁面樣式 */
+    /* ✈️ 4. 旅遊規劃 - 週視圖與行程樣式 (Weekly Grid) */
     .travel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       padding: 0 4px;
     }
 
-    .travel-date-picker {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--card-border);
-      color: #fff;
-      font-size: 0.9rem;
+    .travel-week-bar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .week-day-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 2px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .week-day-card .w-name {
+      font-size: 0.7rem;
       font-weight: 800;
-      padding: 6px 12px;
-      border-radius: 12px;
-      outline: none;
+      color: var(--text-muted);
+    }
+
+    .week-day-card .w-num {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    .week-day-card.active {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.4), rgba(255, 0, 127, 0.4));
+      border: 1px solid #00f2fe;
+      box-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* 🌟 行程提示點：有規劃的日期會在卡片下方亮點 */
+    .has-plan-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #00f2fe;
+      box-shadow: 0 0 6px #00f2fe, 0 0 10px #ff007f;
+      position: absolute;
+      bottom: 3px;
     }
 
     .timeline-container {
@@ -604,7 +651,8 @@
       padding-right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
+      padding-bottom: 75px; /* 避免被浮動按鈕遮擋 */
     }
 
     .timeline-item {
@@ -622,6 +670,10 @@
       -webkit-backdrop-filter: blur(10px);
     }
 
+    .timeline-item.type-food {
+      border-left-color: #ff007f;
+    }
+
     .timeline-time {
       font-size: 0.85rem;
       font-weight: 900;
@@ -632,11 +684,15 @@
       white-space: nowrap;
     }
 
+    .timeline-item.type-food .timeline-time {
+      color: #ff007f;
+      background: rgba(255, 0, 127, 0.15);
+    }
+
     .timeline-info {
       flex-grow: 1;
     }
 
-    /* 🗺️ Google 地圖動態超連結樣式 */
     .map-link {
       color: #ffffff;
       text-decoration: none;
@@ -655,30 +711,6 @@
       font-size: 0.98rem;
       font-weight: 800;
       color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .timeline-title .map-link {
-      color: #00f2fe;
-      text-shadow: 0 0 6px rgba(0, 242, 254, 0.6);
-    }
-
-    .timeline-location {
-      font-size: 0.78rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .timeline-location .map-link {
-      color: #ff007f;
-      text-shadow: 0 0 6px rgba(255, 0, 127, 0.6);
-    }
-
-    .timeline-notes {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      line-height: 1.3;
-      white-space: pre-wrap;
     }
 
     .timeline-delete {
@@ -695,9 +727,10 @@
       justify-content: center;
     }
 
+    /* ✈️ 1. 浮動新增按鈕位置上移調整 */
     .add-travel-btn {
       position: absolute;
-      bottom: 20px;
+      bottom: 35px; /* 上移避開邊界與系統導航 */
       right: 20px;
       width: 52px;
       height: 52px;
@@ -711,7 +744,32 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 10;
+      z-index: 100;
+    }
+
+    /* 🗺️ Google 地圖自動建議下拉清單 */
+    .map-suggestions {
+      margin-top: 6px;
+      background: rgba(15, 10, 35, 0.95);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      border-radius: 12px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .map-suggestion-item {
+      padding: 10px;
+      font-size: 0.82rem;
+      color: #00f2fe;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .map-suggestion-item:last-child {
+      border-bottom: none;
     }
 
     .modal-overlay {
@@ -796,7 +854,7 @@
       margin-bottom: 6px;
     }
 
-    .input-group input, .input-group textarea {
+    .input-group input, .input-group select, .input-group textarea {
       width: 100%;
       padding: 10px;
       background: rgba(255, 255, 255, 0.08);
@@ -809,9 +867,9 @@
       -webkit-user-select: text;
     }
 
-    .input-group textarea {
-      height: 60px;
-      resize: none;
+    .input-group select {
+      background: rgba(30, 20, 60, 0.9);
+      color: #fff;
     }
 
     .modal-actions {
@@ -900,15 +958,21 @@
       </div>
     </div>
 
-    <!-- ✈️ 第二頁：旅遊規劃 -->
+    <!-- ✈️ 第二頁：旅遊規劃（改為週視圖） -->
     <div class="page-content" id="travel-page">
       <div class="travel-header">
-        <h2 style="font-size: 1.2rem; font-weight: 900; background: linear-gradient(to right, #00f2fe, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">旅遊行程規劃</h2>
-        <input type="date" class="travel-date-picker" id="travel-date-input" onchange="loadTravelItinerary()">
+        <button class="nav-btn" onclick="changeTravelWeek(-1)">‹ 上一週</button>
+        <h2 id="travel-week-title" style="font-size: 1.05rem; font-weight: 900; background: linear-gradient(to right, #00f2fe, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
+        <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
+      </div>
+
+      <!-- 週切換快捷列 -->
+      <div class="travel-week-bar" id="travel-week-bar">
+        <!-- 動態渲染一週七天 -->
       </div>
 
       <div class="timeline-container" id="timeline-list">
-        <!-- 動態渲染旅遊行程 -->
+        <!-- 動態渲染行程 -->
       </div>
 
       <button class="add-travel-btn" onclick="openTravelModal()">+</button>
@@ -942,7 +1006,7 @@
     </div>
   </div>
 
-  <!-- 旅遊行程新增彈窗 -->
+  <!-- ✈️ 2. 旅遊行程精簡彈窗：名稱、選擇類別、自動地圖 -->
   <div class="modal-overlay" id="travel-modal-overlay">
     <div class="modal">
       <h3>新增旅遊行程</h3>
@@ -952,19 +1016,20 @@
         <input type="time" id="travel-time-input" value="09:00">
       </div>
 
+      <!-- 3. 類別改為下拉選擇：餐廳 / 景點 -->
       <div class="input-group">
-        <label>行程 / 景點名稱：</label>
-        <input type="text" id="travel-title-input" placeholder="例如：東京晴空塔">
+        <label>類別：</label>
+        <select id="travel-type-input">
+          <option value="spot">🎡 景點</option>
+          <option value="food">🍴 餐廳</option>
+        </select>
       </div>
 
+      <!-- 精簡名稱 + 動態帶入 Google 地圖定位 -->
       <div class="input-group">
-        <label>地點 / 分類：</label>
-        <input type="text" id="travel-loc-input" placeholder="例如：📍 墨田區">
-      </div>
-
-      <div class="input-group">
-        <label>詳細備註：</label>
-        <textarea id="travel-notes-input" placeholder="例如：預約 09:30 展望台門票"></textarea>
+        <label>景點 / 地點名稱：</label>
+        <input type="text" id="travel-title-input" placeholder="例如：東京晴空塔" oninput="handleMapSearchInput(this.value)">
+        <div class="map-suggestions" id="map-suggestions"></div>
       </div>
 
       <div class="modal-actions">
@@ -978,6 +1043,9 @@
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
 
+    // 週視圖目前選擇基準日
+    let travelCurrentDate = new Date();
+
     let shiftData = {};
     let travelData = {};
 
@@ -990,9 +1058,6 @@
     let isHorizontalGesture = false;
 
     window.addEventListener('DOMContentLoaded', () => {
-      const todayStr = new Date().toISOString().split('T')[0];
-      document.getElementById('travel-date-input').value = todayStr;
-
       const checkFirebase = setInterval(() => {
         if (window.db) {
           clearInterval(checkFirebase);
@@ -1015,7 +1080,7 @@
       const travelRef = window.dbRef(window.db, 'travel');
       window.dbOnValue(travelRef, (snapshot) => {
         travelData = snapshot.val() || {};
-        loadTravelItinerary();
+        renderTravelWeekBar();
       });
     }
 
@@ -1029,7 +1094,7 @@
       } else {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('travel-page').classList.add('active');
-        loadTravelItinerary();
+        renderTravelWeekBar();
       }
     }
 
@@ -1149,16 +1214,67 @@
       }, 300);
     }
 
-    /* 🗺️ 核心邏輯：動態生成 Google 地圖搜尋 URL */
-    function getGoogleMapsUrl(query) {
-      // 移除 Emoji 特殊符號，保留純景點文字
-      const cleanQuery = query.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanQuery)}`;
+    /* ✈️ 4. 旅遊規劃 - 週視圖與一目瞭然的提示點 */
+    function getMonday(d) {
+      const date = new Date(d);
+      const day = date.getDay();
+      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+      return new Date(date.setDate(diff));
     }
 
-    /* ✈️ 載入旅遊行程（含 Google 地圖導航超連結） */
-    function loadTravelItinerary() {
-      const dateStr = document.getElementById('travel-date-input').value;
+    function formatDateStr(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function changeTravelWeek(delta) {
+      travelCurrentDate.setDate(travelCurrentDate.getDate() + (delta * 7));
+      renderTravelWeekBar();
+    }
+
+    function renderTravelWeekBar() {
+      const monday = getMonday(travelCurrentDate);
+      const weekBar = document.getElementById('travel-week-bar');
+      weekBar.innerHTML = '';
+
+      const weekNames = ['一', '二', '三', '四', '五', '六', '日'];
+      const selectedDateStr = formatDateStr(travelCurrentDate);
+
+      document.getElementById('travel-week-title').innerText = `${monday.getFullYear()} 年 ${monday.getMonth() + 1} 月週行程`;
+
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(monday);
+        day.setDate(monday.getDate() + i);
+        const dateStr = formatDateStr(day);
+
+        const card = document.createElement('div');
+        card.className = `week-day-card ${dateStr === selectedDateStr ? 'active' : ''}`;
+        card.onclick = () => {
+          travelCurrentDate = new Date(day);
+          renderTravelWeekBar();
+        };
+
+        const hasPlan = travelData[dateStr] && Object.keys(travelData[dateStr]).length > 0;
+
+        card.innerHTML = `
+          <div class="w-name">週${weekNames[i]}</div>
+          <div class="w-num">${day.getDate()}</div>
+          ${hasPlan ? `<div class="has-plan-dot"></div>` : ''}
+        `;
+
+        weekBar.appendChild(card);
+      }
+
+      loadTravelItinerary(selectedDateStr);
+    }
+
+    function getGoogleMapsUrl(query) {
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+
+    function loadTravelItinerary(dateStr) {
       const timelineContainer = document.getElementById('timeline-list');
       timelineContainer.innerHTML = '';
 
@@ -1166,34 +1282,27 @@
       const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].time > dayTravel[b].time ? 1 : -1));
 
       if (keys.length === 0) {
-        timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:40px;">尚未新增這天的旅遊行程 ✨<br>點擊右下角「+」開始規劃！</div>`;
+        timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:35px;">這天尚未規劃行程 ✨<br>點擊右下角「+」即可新增！</div>`;
         return;
       }
 
       keys.forEach(key => {
         const item = dayTravel[key];
         const itemElem = document.createElement('div');
-        itemElem.className = 'timeline-item';
+        const isFood = item.type === 'food';
+        itemElem.className = `timeline-item ${isFood ? 'type-food' : ''}`;
 
-        // 搜尋優先權：若有地點/分類則以地點為主，無則使用景點標題
-        const mapSearchTarget = item.location ? item.location : item.title;
-        const mapUrl = getGoogleMapsUrl(mapSearchTarget);
+        const mapUrl = getGoogleMapsUrl(item.title);
+        const icon = isFood ? '🍴' : '🎡';
 
         itemElem.innerHTML = `
           <div class="timeline-time">${item.time}</div>
           <div class="timeline-info">
             <div class="timeline-title">
               <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
-                ${item.title} 🗺️
+                ${icon} ${item.title} 🗺️
               </a>
             </div>
-            ${item.location ? `
-              <div class="timeline-location">
-                <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
-                  ${item.location}
-                </a>
-              </div>` : ''}
-            ${item.notes ? `<div class="timeline-notes">${item.notes}</div>` : ''}
           </div>
           <button class="timeline-delete" onclick="deleteTravelItem('${dateStr}', '${key}')">✕</button>
         `;
@@ -1201,10 +1310,32 @@
       });
     }
 
+    /* 🗺️ 即時輸入景點建議列表 */
+    function handleMapSearchInput(val) {
+      const suggestionsElem = document.getElementById('map-suggestions');
+      const text = val.trim();
+
+      if (!text) {
+        suggestionsElem.style.display = 'none';
+        return;
+      }
+
+      suggestionsElem.style.display = 'block';
+      suggestionsElem.innerHTML = `
+        <div class="map-suggestion-item" onclick="selectMapSuggestion('${text}')">
+          🗺️ 在 Google 地圖搜尋「<strong>${text}</strong>」
+        </div>
+      `;
+    }
+
+    function selectMapSuggestion(text) {
+      document.getElementById('travel-title-input').value = text;
+      document.getElementById('map-suggestions').style.display = 'none';
+    }
+
     function openTravelModal() {
       document.getElementById('travel-title-input').value = '';
-      document.getElementById('travel-loc-input').value = '';
-      document.getElementById('travel-notes-input').value = '';
+      document.getElementById('map-suggestions').style.display = 'none';
       document.getElementById('travel-modal-overlay').classList.add('active');
     }
 
@@ -1213,20 +1344,19 @@
     }
 
     function saveTravelItem() {
-      const dateStr = document.getElementById('travel-date-input').value;
+      const dateStr = formatDateStr(travelCurrentDate);
       const time = document.getElementById('travel-time-input').value;
+      const type = document.getElementById('travel-type-input').value;
       const title = document.getElementById('travel-title-input').value.trim();
-      const location = document.getElementById('travel-loc-input').value.trim();
-      const notes = document.getElementById('travel-notes-input').value.trim();
 
       if (!title) {
-        alert('請輸入行程名稱！');
+        alert('請輸入景點名稱！');
         return;
       }
 
       const itemKey = Date.now().toString();
       const updates = {};
-      updates[`travel/${dateStr}/${itemKey}`] = { time, title, location, notes };
+      updates[`travel/${dateStr}/${itemKey}`] = { time, type, title };
 
       window.dbUpdate(window.dbRef(window.db), updates);
       closeTravelModal();
