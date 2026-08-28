@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.0 - 純文字精密排版版</title>
+  <title>瑋的班表 v8.5 - 平穩極光版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -84,7 +84,6 @@
       align-items: center;
       padding: 6px;
       position: relative;
-      perspective: 1000px;
     }
 
     #bg-canvas {
@@ -193,8 +192,6 @@
                   inset 0 0 20px rgba(255, 255, 255, 0.9),
                   0 0 20px rgba(0, 180, 219, 0.2);
       overflow: hidden;
-      transform-style: preserve-3d;
-      transition: transform 0.15s ease-out;
     }
 
     .nav-tabs {
@@ -883,7 +880,7 @@
   <div class="bg-glow bg-glow-2"></div>
   <div class="bg-glow bg-glow-3"></div>
 
-  <div class="calendar-container" id="tilt-card">
+  <div class="calendar-container">
     
     <div class="nav-tabs">
       <div class="tab-btn active" onclick="switchPage('shift')">📅 班表管理</div>
@@ -947,7 +944,6 @@
     <div class="modal">
       <h3 id="modal-date-title">統一設定班別與備註</h3>
       
-      <!-- 🛠️ 修正：移除按鈕文字前的 Emoji 圖示 -->
       <div class="quick-btns">
         <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
@@ -1027,7 +1023,6 @@
 
       setupGestureControls();
       initBackgroundParticles();
-      initGyroscopeTilt();
       setupDragAndDrop();
     });
 
@@ -1129,8 +1124,6 @@
           shiftNode.className = 'shift-tag';
 
           const firstLine = shift.split('\n')[0].trim();
-
-          /* 🛠️ 修正：完全清除輪休/休假文字前的小圖示 */
           const cleanShift = shift.replace(/🎉|🌸/g, '').trim();
 
           if (firstLine === '早班' || firstLine === '早') {
@@ -1709,30 +1702,6 @@
         requestAnimationFrame(loop);
       }
       loop();
-    }
-
-    function initGyroscopeTilt() {
-      const card = document.getElementById('tilt-card');
-
-      window.addEventListener('mousemove', (e) => {
-        if (window.innerWidth < 600) return;
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        const dx = (e.clientX - cx) / cx;
-        const dy = (e.clientY - cy) / cy;
-
-        card.style.transform = `rotateY(${dx * 8}deg) rotateX(${-dy * 8}deg)`;
-      });
-
-      if (window.DeviceOrientationEvent) {
-        window.addEventListener('deviceorientation', (e) => {
-          if (!e.gamma || !e.beta) return;
-          const tiltX = Math.min(Math.max(e.gamma, -25), 25) / 2.5;
-          const tiltY = Math.min(Math.max(e.beta - 40, -25), 25) / 2.5;
-
-          card.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
-        }, true);
-      }
     }
   </script>
 </body>
