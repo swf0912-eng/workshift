@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v7.5 - 完美 6 排高度適應版</title>
+  <title>瑋的班表 v8.0 - 純文字精密排版版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -174,7 +174,6 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
-    /* 🛠️ 修復：容器邊距與彈性高度，確保第 6 排不被擠壓 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -388,7 +387,6 @@
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    /* 🛠️ 修復：網格改為自適應行高與 gap 微調 */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -400,7 +398,6 @@
       padding-bottom: 2px;
     }
 
-    /* 🌈 彩色流光日期框（3.0px Double-Layer Border） */
     .day-cell {
       border-radius: 10px;
       padding: 3px 1px;
@@ -950,12 +947,13 @@
     <div class="modal">
       <h3 id="modal-date-title">統一設定班別與備註</h3>
       
+      <!-- 🛠️ 修正：移除按鈕文字前的 Emoji 圖示 -->
       <div class="quick-btns">
         <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
         <button class="quick-btn q-night" onclick="setQuick('晚班')">晚班</button>
-        <button class="quick-btn q-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
-        <button class="quick-btn q-off" onclick="setQuick('休假')">🌸 休假</button>
+        <button class="quick-btn q-r-off" onclick="setQuick('輪休')">輪休</button>
+        <button class="quick-btn q-off" onclick="setQuick('休假')">休假</button>
         <button class="quick-btn" style="background: rgba(0,0,0,0.1); color:#607d8b;" onclick="setQuick('')">清除</button>
       </div>
 
@@ -1132,25 +1130,28 @@
 
           const firstLine = shift.split('\n')[0].trim();
 
+          /* 🛠️ 修正：完全清除輪休/休假文字前的小圖示 */
+          const cleanShift = shift.replace(/🎉|🌸/g, '').trim();
+
           if (firstLine === '早班' || firstLine === '早') {
-            shiftNode.innerText = shift;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-day');
           } else if (firstLine === '中班' || firstLine === '中') {
-            shiftNode.innerText = shift;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-noon');
           } else if (firstLine === '晚班' || firstLine === '晚') {
-            shiftNode.innerText = shift;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-night');
           } else if (firstLine.includes('輪休')) {
-            shiftNode.innerText = shift.includes('🎉') ? shift : `🎉 ${shift}`;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-r-off');
             cell.classList.add('cell-r-off');
           } else if (firstLine.includes('休假') || firstLine === '休') {
-            shiftNode.innerText = shift.includes('🌸') ? shift : `🌸 ${shift}`;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-off');
             cell.classList.add('cell-off');
           } else {
-            shiftNode.innerText = shift;
+            shiftNode.innerText = cleanShift;
             shiftNode.classList.add('shift-custom');
           }
 
