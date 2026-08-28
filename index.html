@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.8 - 頂層流光邊框版</title>
+  <title>瑋的班表 v8.9 - 天氣預報降雨機率版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -726,11 +726,33 @@
       align-items: center;
       gap: 6px;
       transition: all 0.2s ease;
+      flex-wrap: wrap;
     }
 
     .map-link:active { opacity: 0.7; }
 
     .timeline-title { font-size: 0.98rem; font-weight: 800; color: #2c3e50; }
+
+    /* 🌧️ 降雨機率標籤樣式 */
+    .rain-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(0, 180, 219, 0.12);
+      color: #00779a;
+      border: 1px solid rgba(0, 180, 219, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 6px;
+    }
+
+    .rain-badge.high-rain {
+      background: rgba(229, 57, 53, 0.12);
+      color: #d32f2f;
+      border-color: rgba(229, 57, 53, 0.3);
+    }
 
     .timeline-delete {
       background: rgba(229, 57, 53, 0.1);
@@ -1035,6 +1057,7 @@
 
     let shiftData = {};
     let travelData = {};
+    let weatherCache = {}; // 快取天氣數據避免重複 API 請求
 
     let isEditMode = false;
     let isDragging = false;
@@ -1044,6 +1067,9 @@
     let startX = 0; startY = 0; currentX = 0; currentY = 0; dragDeltaX = 0;
     let isHorizontalGesture = false;
     let mapTimer = null;
+
+    // 免費天氣 API Key (WeatherAPI)
+    const WEATHER_API_KEY = "8973aefebaa94d458df83850242207"; 
 
     window.addEventListener('DOMContentLoaded', () => {
       const checkFirebase = setInterval(() => {
@@ -1262,7 +1288,34 @@
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     }
 
-    function loadTravelItinerary(dateStr) {
+    /* 🌧️ 抓取降雨機率的核心 API 函式 */
+    async function fetchRainChance(locationName, dateStr) {
+      const cacheKey = `${locationName}_${dateStr}`;
+      if (weatherCache[cacheKey] !== undefined) {
+        return weatherCache[cacheKey];
+      }
+
+      try {
+        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(locationName)}&dt=${dateStr}&days=1`);
+        if (!res.ok) throw new Error('API request failed');
+        
+        const data = await res.json();
+        const forecastDay = data.forecast?.forecastday?.[0]?.day;
+        
+        if (forecastDay && forecastDay.daily_chance_of_rain !== undefined) {
+          const chance = forecastDay.daily_chance_of_rain;
+          weatherCache[cacheKey] = chance;
+          return chance;
+        }
+      } catch (e) {
+        // 查無天氣資料或失敗時不顯示
+      }
+
+      weatherCache[cacheKey] = null;
+      return null;
+    }
+
+    async function loadTravelItinerary(dateStr) {
       const timelineContainer = document.getElementById('timeline-list');
       timelineContainer.innerHTML = '';
 
@@ -1294,13 +1347,27 @@
           <div class="timeline-info">
             <div class="timeline-title">
               <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
-                ${icon} ${item.title} 🗺️
+                <span>${icon} ${item.title}</span>
+                <span class="rain-badge-container" id="rain-${key}"></span>
               </a>
             </div>
           </div>
           <button class="timeline-delete" onclick="deleteTravelItem('${dateStr}', '${key}')">✕</button>
         `;
         timelineContainer.appendChild(itemElem);
+
+        // 異步抓取降雨機率並動態更新至畫面
+        fetchRainChance(item.title, dateStr).then(rainChance => {
+          const container = document.getElementById(`rain-${key}`);
+          if (container && rainChance !== null) {
+            const isHigh = rainChance >= 50;
+            container.innerHTML = `
+              <span class="rain-badge ${isHigh ? 'high-rain' : ''}">
+                🌧️ ${rainChance}%
+              </span>
+            `;
+          }
+        });
       });
     }
 
