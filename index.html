@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.6 - 頂部按鈕優化版</title>
+  <title>瑋的班表 v8.7 - 粉色系極光美化版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -47,13 +47,13 @@
       --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
       
-      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.18) 0%, rgba(121, 40, 202, 0.22) 100%);
-      --shift-r-off-cell-border: #ff007f;
-      --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
+      /* 🌸 櫻花蜜桃粉 (輪休風格) */
+      --shift-r-off-cell-bg: linear-gradient(135deg, rgba(255, 117, 140, 0.15) 0%, rgba(255, 142, 212, 0.22) 100%);
+      --shift-r-off-bg: linear-gradient(135deg, #ff758c, #ff8ed4, #f77062);
 
-      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.22) 0%, rgba(247, 112, 98, 0.22) 100%);
-      --shift-off-cell-border: #fe5196;
-      --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
+      /* 🌺 夢幻晨曦粉 (休假風格) */
+      --shift-off-cell-bg: linear-gradient(135deg, rgba(255, 154, 158, 0.15) 0%, rgba(254, 207, 239, 0.25) 100%);
+      --shift-off-bg: linear-gradient(135deg, #ff9a9e, #fecfef, #feada6);
       
       --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
     }
@@ -322,7 +322,6 @@
       background: #ffffff;
     }
 
-    /* 🛠️ 新增頂部按鈕樣式 */
     .add-travel-btn-top {
       background: linear-gradient(135deg, #00b4db, #0083b0);
       border: 1px solid rgba(255, 255, 255, 0.9);
@@ -499,12 +498,15 @@
       animation-duration: 1s;
     }
 
+    /* 🌸 滿格美化：櫻花蜜桃粉與夢幻晨曦粉柔光背景 */
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
+      box-shadow: inset 0 0 10px rgba(255, 117, 140, 0.3), 0 2px 8px rgba(255, 117, 140, 0.15) !important;
     }
 
     .day-cell.cell-off {
       background: var(--shift-off-cell-bg) !important;
+      box-shadow: inset 0 0 10px rgba(255, 154, 158, 0.3), 0 2px 8px rgba(255, 154, 158, 0.15) !important;
     }
 
     .shift-tag {
@@ -542,6 +544,7 @@
       background-size: 200% 200%;
       position: relative;
       overflow: hidden;
+      color: #ffffff;
       animation: gradientShift 2.5s ease infinite;
     }
 
@@ -642,7 +645,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 20px; /* 🛠️ 不再需要預留懸浮按鈕空間 */
+      padding-bottom: 20px;
       touch-action: pan-y;
       position: relative;
     }
@@ -930,7 +933,6 @@
         <h2 id="travel-week-title" style="font-size: 1rem; font-weight: 900; background: linear-gradient(to right, #0083b0, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
         <div style="display: flex; gap: 6px;">
           <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
-          <!-- 🛠️ 已修正：將新增按鈕移至頂部右側 -->
           <button class="add-travel-btn-top" onclick="openTravelModal()">+ 新增</button>
         </div>
       </div>
