@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v7.0 - 顯眼流光邊框與完美拖曳版</title>
+  <title>瑋的班表 v7.5 - 完美 6 排高度適應版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -38,7 +38,7 @@
     :root {
       /* ☀️ 清新極光主題變數 */
       --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
-      --card-glass: rgba(255, 255, 255, 0.85);
+      --card-glass: rgba(255, 255, 255, 0.88);
       --card-border: rgba(255, 255, 255, 0.95);
       --text-main: #2c3e50;
       --text-muted: #546e7a;
@@ -82,7 +82,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 8px;
+      padding: 6px;
       position: relative;
       perspective: 1000px;
     }
@@ -174,6 +174,7 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
+    /* 🛠️ 修復：容器邊距與彈性高度，確保第 6 排不被擠壓 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -188,7 +189,7 @@
       -webkit-backdrop-filter: blur(25px);
       border: 1.5px solid var(--card-border);
       border-radius: 24px;
-      padding: 12px 10px;
+      padding: 10px 8px 12px 8px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
                   inset 0 0 20px rgba(255, 255, 255, 0.9),
                   0 0 20px rgba(0, 180, 219, 0.2);
@@ -202,7 +203,7 @@
       background: rgba(255, 255, 255, 0.6);
       border-radius: 16px;
       padding: 4px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       border: 1px solid rgba(255, 255, 255, 0.9);
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.03);
@@ -210,7 +211,7 @@
 
     .tab-btn {
       flex: 1;
-      padding: 8px 0;
+      padding: 7px 0;
       text-align: center;
       font-size: 0.88rem;
       font-weight: 800;
@@ -243,7 +244,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       padding: 0 4px;
       flex-shrink: 0;
     }
@@ -252,7 +253,7 @@
       background: rgba(255, 255, 255, 0.85);
       border: 1px solid var(--card-border);
       border-radius: 20px;
-      padding: 5px 14px;
+      padding: 4px 12px;
       font-size: 0.78rem;
       font-weight: 800;
       color: #333;
@@ -293,15 +294,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       padding: 0 4px;
       flex-shrink: 0;
     }
 
     .header h2 {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 900;
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       background: linear-gradient(to right, #0083b0, #ff007f);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -311,8 +312,8 @@
       background: rgba(255, 255, 255, 0.85);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 6px 14px;
-      font-size: 0.82rem;
+      padding: 5px 12px;
+      font-size: 0.8rem;
       font-weight: 700;
       color: #2c3e50;
       cursor: pointer;
@@ -352,10 +353,10 @@
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       text-align: center;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: 800;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       flex-shrink: 0;
     }
 
@@ -387,33 +388,35 @@
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
+    /* 🛠️ 修復：網格改為自適應行高與 gap 微調 */
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      grid-template-rows: repeat(6, 1fr);
-      gap: 5px;
+      grid-template-rows: repeat(6, minmax(0, 1fr));
+      gap: 4px;
       height: 100%;
       width: 33.3333%;
       flex-shrink: 0;
+      padding-bottom: 2px;
     }
 
-    /* 🌈 加粗超明顯的彩色流光日期框（3.0px Double-Layer Border） */
+    /* 🌈 彩色流光日期框（3.0px Double-Layer Border） */
     .day-cell {
-      border-radius: 12px;
-      padding: 4px 2px;
+      border-radius: 10px;
+      padding: 3px 1px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      gap: 2px;
-      background: rgba(255, 255, 255, 0.9);
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.92);
       border: 3px solid transparent;
       background-clip: padding-box;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
     .day-cell::before {
@@ -421,7 +424,7 @@
       position: absolute;
       top: -3px; left: -3px; right: -3px; bottom: -3px;
       background: conic-gradient(from var(--angle), #00c6ff, #0072ff, #ff007f, #7928ca, #ff8c00, #00c6ff);
-      border-radius: 12px;
+      border-radius: 10px;
       z-index: -1;
       animation: rotateGradient 3s linear infinite;
       opacity: 0.95;
@@ -439,15 +442,15 @@
     }
 
     .day-number {
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 900;
       color: #1a252f;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     .day-cell.today {
       border: 3px solid transparent !important;
-      box-shadow: 0 0 18px rgba(255, 140, 0, 0.6);
+      box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
     }
 
     .day-cell.today::before {
@@ -460,17 +463,17 @@
       background: linear-gradient(135deg, #ff8c00, #ff007f);
       color: #fff;
       border-radius: 50%;
-      width: 20px; height: 20px;
+      width: 18px; height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 900;
     }
 
     .day-cell.selected {
       background: rgba(0, 198, 255, 0.2) !important;
-      box-shadow: 0 0 20px rgba(0, 198, 255, 0.8) !important;
+      box-shadow: 0 0 18px rgba(0, 198, 255, 0.8) !important;
       transform: scale(0.94);
     }
 
@@ -490,19 +493,19 @@
     .shift-tag {
       width: 98%;
       text-align: center;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 800;
-      padding: 3px 2px;
-      border-radius: 6px;
+      padding: 2px 1px;
+      border-radius: 5px;
       color: #fff;
-      line-height: 1.15;
+      line-height: 1.1;
       word-break: break-all;
       white-space: pre-wrap;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
     }
 
     .shift-day { background: var(--shift-day-bg); }
@@ -626,7 +629,6 @@
       position: relative;
     }
 
-    /* 🖐️ 雙引擎修復拖曳行程卡片樣式 */
     .timeline-item {
       display: flex;
       align-items: center;
@@ -1276,12 +1278,10 @@
       });
     }
 
-    /* 🖐️ 雙引擎修復版：支援 HTML5 Drag & Drop 與 Mobile Touch Drag */
     function setupDragAndDrop() {
       const container = document.getElementById('timeline-list');
       let draggedItem = null;
 
-      // 1. Desktop HTML5 Drag Event
       container.addEventListener('dragstart', (e) => {
         draggedItem = e.target.closest('.timeline-item');
         if (draggedItem) {
@@ -1309,7 +1309,6 @@
         }
       });
 
-      // 2. Mobile Touch Event
       let activeTouchItem = null;
 
       container.addEventListener('touchstart', (e) => {
