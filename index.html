@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v4.0 - 旅遊規劃週視圖與地圖搜尋版</title>
+  <title>瑋的班表 v4.5 - 地圖實體嵌入與住宿分類版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -579,7 +579,7 @@
 
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
-    /* ✈️ 4. 旅遊規劃 - 週視圖與行程樣式 (Weekly Grid) */
+    /* ✈️ 旅遊規劃週視圖 */
     .travel-header {
       display: flex;
       justify-content: space-between;
@@ -634,7 +634,6 @@
       transform: scale(1.05);
     }
 
-    /* 🌟 行程提示點：有規劃的日期會在卡片下方亮點 */
     .has-plan-dot {
       width: 5px;
       height: 5px;
@@ -652,74 +651,50 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 75px; /* 避免被浮動按鈕遮擋 */
+      padding-bottom: 80px;
     }
 
     .timeline-item {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-left: 4px solid #00f2fe;
       border-radius: 16px;
-      padding: 12px;
+      padding: 14px 12px;
       position: relative;
       box-shadow: 0 8px 20px rgba(0,0,0,0.3);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
 
-    .timeline-item.type-food {
-      border-left-color: #ff007f;
-    }
+    .timeline-item.type-food { border-left-color: #ff007f; }
+    .timeline-item.type-hotel { border-left-color: #b224ef; }
 
-    .timeline-time {
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: #00f2fe;
-      background: rgba(0, 242, 254, 0.15);
-      padding: 4px 8px;
-      border-radius: 8px;
-      white-space: nowrap;
-    }
-
-    .timeline-item.type-food .timeline-time {
-      color: #ff007f;
-      background: rgba(255, 0, 127, 0.15);
-    }
-
-    .timeline-info {
-      flex-grow: 1;
-    }
+    .timeline-info { flex-grow: 1; }
 
     .map-link {
       color: #ffffff;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       transition: all 0.2s ease;
     }
 
-    .map-link:active {
-      opacity: 0.7;
-      transform: scale(0.98);
-    }
+    .map-link:active { opacity: 0.7; transform: scale(0.98); }
 
-    .timeline-title {
-      font-size: 0.98rem;
-      font-weight: 800;
-      color: #fff;
-    }
+    .timeline-title { font-size: 1rem; font-weight: 800; color: #fff; }
 
     .timeline-delete {
       background: rgba(255, 88, 88, 0.2);
       border: none;
       color: #ff5858;
-      width: 24px; height: 24px;
+      width: 26px; height: 26px;
       border-radius: 50%;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
       display: flex;
@@ -727,10 +702,9 @@
       justify-content: center;
     }
 
-    /* ✈️ 1. 浮動新增按鈕位置上移調整 */
     .add-travel-btn {
       position: absolute;
-      bottom: 35px; /* 上移避開邊界與系統導航 */
+      bottom: 35px;
       right: 20px;
       width: 52px;
       height: 52px;
@@ -747,29 +721,22 @@
       z-index: 100;
     }
 
-    /* 🗺️ Google 地圖自動建議下拉清單 */
-    .map-suggestions {
-      margin-top: 6px;
-      background: rgba(15, 10, 35, 0.95);
-      border: 1px solid rgba(0, 242, 254, 0.4);
-      border-radius: 12px;
+    /* 🗺️ 嵌入式動態地圖 iframe 樣式 */
+    .embedded-map-container {
+      margin-top: 10px;
+      width: 100%;
+      height: 160px;
+      border-radius: 14px;
       overflow: hidden;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(0, 0, 0, 0.4);
       display: none;
     }
 
-    .map-suggestion-item {
-      padding: 10px;
-      font-size: 0.82rem;
-      color: #00f2fe;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .map-suggestion-item:last-child {
-      border-bottom: none;
+    .embedded-map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
 
     .modal-overlay {
@@ -843,7 +810,7 @@
     .quick-btn.q-off { background: var(--shift-off-bg); box-shadow: 0 0 10px var(--shift-off-glow); }
 
     .input-group {
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .input-group label {
@@ -875,6 +842,7 @@
     .modal-actions {
       display: flex;
       gap: 12px;
+      margin-top: 10px;
     }
 
     .btn-action {
@@ -958,7 +926,7 @@
       </div>
     </div>
 
-    <!-- ✈️ 第二頁：旅遊規劃（改為週視圖） -->
+    <!-- ✈️ 第二頁：旅遊規劃（週視圖） -->
     <div class="page-content" id="travel-page">
       <div class="travel-header">
         <button class="nav-btn" onclick="changeTravelWeek(-1)">‹ 上一週</button>
@@ -966,7 +934,6 @@
         <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
       </div>
 
-      <!-- 週切換快捷列 -->
       <div class="travel-week-bar" id="travel-week-bar">
         <!-- 動態渲染一週七天 -->
       </div>
@@ -980,7 +947,7 @@
 
   </div>
 
-  <!-- 班表彈窗 -->
+  <!-- 班表設定彈窗 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3 id="modal-date-title">統一設定班別與備註</h3>
@@ -1006,30 +973,30 @@
     </div>
   </div>
 
-  <!-- ✈️ 2. 旅遊行程精簡彈窗：名稱、選擇類別、自動地圖 -->
+  <!-- ✈️ 新增旅遊行程彈窗：取消時間、增加住宿分類、實體 Google 地圖預覽 -->
   <div class="modal-overlay" id="travel-modal-overlay">
     <div class="modal">
       <h3>新增旅遊行程</h3>
       
+      <!-- 分類選擇：景點 / 餐廳 / 住宿 -->
       <div class="input-group">
-        <label>時間：</label>
-        <input type="time" id="travel-time-input" value="09:00">
-      </div>
-
-      <!-- 3. 類別改為下拉選擇：餐廳 / 景點 -->
-      <div class="input-group">
-        <label>類別：</label>
+        <label>行程類別：</label>
         <select id="travel-type-input">
           <option value="spot">🎡 景點</option>
           <option value="food">🍴 餐廳</option>
+          <option value="hotel">🏨 住宿</option>
         </select>
       </div>
 
-      <!-- 精簡名稱 + 動態帶入 Google 地圖定位 -->
+      <!-- 景點/地點名稱輸入，驅動即時 Google 地圖 -->
       <div class="input-group">
-        <label>景點 / 地點名稱：</label>
-        <input type="text" id="travel-title-input" placeholder="例如：東京晴空塔" oninput="handleMapSearchInput(this.value)">
-        <div class="map-suggestions" id="map-suggestions"></div>
+        <label>景點 / 住宿名稱：</label>
+        <input type="text" id="travel-title-input" placeholder="例如：東京星野飯店 / 東京鐵塔" oninput="updateEmbeddedMap(this.value)">
+      </div>
+
+      <!-- 實體嵌入式 Google 地圖視窗 -->
+      <div class="embedded-map-container" id="map-iframe-box">
+        <iframe id="map-iframe" src="" loading="lazy"></iframe>
       </div>
 
       <div class="modal-actions">
@@ -1043,7 +1010,6 @@
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
 
-    // 週視圖目前選擇基準日
     let travelCurrentDate = new Date();
 
     let shiftData = {};
@@ -1056,6 +1022,7 @@
 
     let startX = 0; startY = 0; currentX = 0; currentY = 0; dragDeltaX = 0;
     let isHorizontalGesture = false;
+    let mapTimer = null;
 
     window.addEventListener('DOMContentLoaded', () => {
       const checkFirebase = setInterval(() => {
@@ -1214,7 +1181,6 @@
       }, 300);
     }
 
-    /* ✈️ 4. 旅遊規劃 - 週視圖與一目瞭然的提示點 */
     function getMonday(d) {
       const date = new Date(d);
       const day = date.getDay();
@@ -1279,7 +1245,7 @@
       timelineContainer.innerHTML = '';
 
       const dayTravel = travelData[dateStr] || {};
-      const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].time > dayTravel[b].time ? 1 : -1));
+      const keys = Object.keys(dayTravel);
 
       if (keys.length === 0) {
         timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:35px;">這天尚未規劃行程 ✨<br>點擊右下角「+」即可新增！</div>`;
@@ -1289,14 +1255,16 @@
       keys.forEach(key => {
         const item = dayTravel[key];
         const itemElem = document.createElement('div');
-        const isFood = item.type === 'food';
-        itemElem.className = `timeline-item ${isFood ? 'type-food' : ''}`;
+        
+        let typeClass = 'type-spot';
+        let icon = '🎡';
+        if (item.type === 'food') { typeClass = 'type-food'; icon = '🍴'; }
+        if (item.type === 'hotel') { typeClass = 'type-hotel'; icon = '🏨'; }
 
+        itemElem.className = `timeline-item ${typeClass}`;
         const mapUrl = getGoogleMapsUrl(item.title);
-        const icon = isFood ? '🍴' : '🎡';
 
         itemElem.innerHTML = `
-          <div class="timeline-time">${item.time}</div>
           <div class="timeline-info">
             <div class="timeline-title">
               <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
@@ -1310,32 +1278,30 @@
       });
     }
 
-    /* 🗺️ 即時輸入景點建議列表 */
-    function handleMapSearchInput(val) {
-      const suggestionsElem = document.getElementById('map-suggestions');
-      const text = val.trim();
+    /* 🗺️ 即時嵌入 Google 地圖 iframe 預覽 */
+    function updateEmbeddedMap(val) {
+      clearTimeout(mapTimer);
+      const mapBox = document.getElementById('map-iframe-box');
+      const iframe = document.getElementById('map-iframe');
+      const query = val.trim();
 
-      if (!text) {
-        suggestionsElem.style.display = 'none';
+      if (!query) {
+        mapBox.style.display = 'none';
+        iframe.src = '';
         return;
       }
 
-      suggestionsElem.style.display = 'block';
-      suggestionsElem.innerHTML = `
-        <div class="map-suggestion-item" onclick="selectMapSuggestion('${text}')">
-          🗺️ 在 Google 地圖搜尋「<strong>${text}</strong>」
-        </div>
-      `;
-    }
-
-    function selectMapSuggestion(text) {
-      document.getElementById('travel-title-input').value = text;
-      document.getElementById('map-suggestions').style.display = 'none';
+      // 防抖動優化（使用者停頓 500ms 後才載入地圖）
+      mapTimer = setTimeout(() => {
+        mapBox.style.display = 'block';
+        iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      }, 500);
     }
 
     function openTravelModal() {
       document.getElementById('travel-title-input').value = '';
-      document.getElementById('map-suggestions').style.display = 'none';
+      document.getElementById('map-iframe-box').style.display = 'none';
+      document.getElementById('map-iframe').src = '';
       document.getElementById('travel-modal-overlay').classList.add('active');
     }
 
@@ -1345,7 +1311,6 @@
 
     function saveTravelItem() {
       const dateStr = formatDateStr(travelCurrentDate);
-      const time = document.getElementById('travel-time-input').value;
       const type = document.getElementById('travel-type-input').value;
       const title = document.getElementById('travel-title-input').value.trim();
 
@@ -1356,7 +1321,7 @@
 
       const itemKey = Date.now().toString();
       const updates = {};
-      updates[`travel/${dateStr}/${itemKey}`] = { time, type, title };
+      updates[`travel/${dateStr}/${itemKey}`] = { type, title };
 
       window.dbUpdate(window.dbRef(window.db), updates);
       closeTravelModal();
