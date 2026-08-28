@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v3.0 - 全特效極光版</title>
+  <title>瑋的班表 v3.1 - 休假粉紅特效加強版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -56,8 +56,11 @@
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
       --shift-r-off-glow: rgba(255, 0, 127, 0.9);
 
-      --shift-off-bg: linear-gradient(135deg, #f77062, #fe5196);
-      --shift-off-glow: rgba(254, 81, 150, 0.8);
+      /* 🌸 休假專屬粉紅亮光變數 */
+      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.3) 0%, rgba(247, 112, 98, 0.3) 100%);
+      --shift-off-cell-border: #fe5196;
+      --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
+      --shift-off-glow: rgba(254, 81, 150, 0.95);
       
       --shift-custom-bg: linear-gradient(135deg, #b224ef, #7579ff);
       --shift-custom-glow: rgba(178, 36, 239, 0.8);
@@ -92,7 +95,6 @@
       perspective: 1000px;
     }
 
-    /* 🎨 互動背景 Canvas */
     #bg-canvas {
       position: absolute;
       top: 0;
@@ -103,7 +105,6 @@
       pointer-events: none;
     }
 
-    /* 📱 橫屏旋轉提示 Overlay */
     .orientation-overlay {
       display: none;
       position: fixed;
@@ -181,7 +182,6 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
-    /* 陀螺儀 3D 視差卡片容器 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -214,7 +214,6 @@
       flex-shrink: 0;
     }
 
-    /* 🔥 特效：流光旋轉按鈕 */
     .mode-toggle-btn {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid var(--card-border);
@@ -420,7 +419,6 @@
       box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
     }
 
-    /* 選取日期的流光邊框特效 */
     .day-cell.selected {
       border: 2px solid transparent !important;
       background: rgba(0, 242, 254, 0.2) !important;
@@ -439,6 +437,7 @@
       animation: rotateGradient 2s linear infinite;
     }
 
+    /* 輪休卡片外框閃光 */
     .day-cell.cell-r-off {
       background: var(--shift-r-off-cell-bg) !important;
       border: 1.5px solid var(--shift-r-off-cell-border) !important;
@@ -449,6 +448,19 @@
     @keyframes rOffGlow {
       0% { box-shadow: 0 0 8px rgba(255, 0, 127, 0.5), inset 0 0 6px rgba(255, 0, 127, 0.3); transform: scale(1); }
       100% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.9), 0 0 30px rgba(121, 40, 202, 0.8); transform: scale(1.02); }
+    }
+
+    /* 🌸 休假卡片外框粉紅閃光 */
+    .day-cell.cell-off {
+      background: var(--shift-off-cell-bg) !important;
+      border: 1.5px solid var(--shift-off-cell-border) !important;
+      box-shadow: 0 0 15px rgba(254, 81, 150, 0.7), inset 0 0 12px rgba(254, 81, 150, 0.4) !important;
+      animation: offGlow 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes offGlow {
+      0% { box-shadow: 0 0 8px rgba(254, 81, 150, 0.5), inset 0 0 6px rgba(254, 81, 150, 0.3); transform: scale(1); }
+      100% { box-shadow: 0 0 22px rgba(254, 81, 150, 0.95), 0 0 32px rgba(255, 117, 140, 0.8); transform: scale(1.02); }
     }
 
     .shift-tag {
@@ -495,6 +507,28 @@
       pointer-events: none;
     }
 
+    /* 🌸 休假標籤動態粉紅流光特效 */
+    .shift-off { 
+      background: var(--shift-off-bg); 
+      background-size: 200% 200%;
+      color: #fff; 
+      box-shadow: 0 0 14px var(--shift-off-glow); 
+      position: relative;
+      overflow: hidden;
+      animation: gradientShift 2.5s ease infinite;
+    }
+
+    .shift-off::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.9) 50%, transparent 70%);
+      transform: rotate(30deg);
+      animation: shine 2s infinite;
+      pointer-events: none;
+    }
+
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -506,7 +540,6 @@
       100% { transform: translateX(150%) rotate(30deg); }
     }
 
-    .shift-off { background: var(--shift-off-bg); color: #fff; box-shadow: 0 0 10px var(--shift-off-glow); }
     .shift-custom { background: var(--shift-custom-bg); box-shadow: 0 0 10px var(--shift-custom-glow); }
 
     .modal-overlay {
@@ -577,7 +610,7 @@
     .quick-btn.q-noon { background: var(--shift-noon-bg); box-shadow: 0 0 8px var(--shift-noon-glow); }
     .quick-btn.q-night { background: var(--shift-night-bg); box-shadow: 0 0 8px var(--shift-night-glow); }
     .quick-btn.q-r-off { background: var(--shift-r-off-bg); box-shadow: 0 0 10px var(--shift-r-off-glow); }
-    .quick-btn.q-off { background: var(--shift-off-bg); box-shadow: 0 0 8px var(--shift-off-glow); }
+    .quick-btn.q-off { background: var(--shift-off-bg); box-shadow: 0 0 10px var(--shift-off-glow); }
 
     .input-group {
       margin-bottom: 20px;
@@ -648,10 +681,8 @@
 </head>
 <body>
 
-  <!-- 🎨 背景互動 Canvas -->
   <canvas id="bg-canvas"></canvas>
 
-  <!-- 📱 橫屏旋轉提示 Overlay -->
   <div class="orientation-overlay">
     <div class="orientation-icon">📱</div>
     <p>請將手機轉為直式<br>以獲得最佳體驗✨</p>
@@ -700,7 +731,7 @@
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
         <button class="quick-btn q-night" onclick="setQuick('晚班')">晚班</button>
         <button class="quick-btn q-r-off" onclick="setQuick('輪休')">🎉 輪休</button>
-        <button class="quick-btn q-off" onclick="setQuick('休假')">休假</button>
+        <button class="quick-btn q-off" onclick="setQuick('休假')">🌸 休假</button>
         <button class="quick-btn" style="background: rgba(255,255,255,0.2); color:#fff;" onclick="setQuick('')">清除</button>
       </div>
 
@@ -840,9 +871,11 @@
             shiftNode.innerText = shift.includes('🎉') ? shift : `🎉 ${shift}`;
             shiftNode.classList.add('shift-r-off');
             cell.classList.add('cell-r-off');
-          } else if (firstLine === '休假' || firstLine === '休') {
-            shiftNode.innerText = shift;
+          } else if (firstLine.includes('休假') || firstLine === '休') {
+            /* 🌸 修正重點：判定休假並加入粉紅大外框特效與標籤 */
+            shiftNode.innerText = shift.includes('🌸') ? shift : `🌸 ${shift}`;
             shiftNode.classList.add('shift-off');
+            cell.classList.add('cell-off');
           } else {
             shiftNode.innerText = shift;
             shiftNode.classList.add('shift-custom');
@@ -888,7 +921,6 @@
         dragDeltaX = 0;
         isHorizontalGesture = false;
 
-        // 觸發粒子磁吸點
         if (window.triggerTouchPointer) triggerTouchPointer(x, y);
 
         if (isEditMode) {
@@ -904,7 +936,7 @@
         }
 
         const cell = getCellFromPoint(x, y);
-        if (cell && cell.classList.contains('cell-r-off')) {
+        if (cell && (cell.classList.contains('cell-r-off') || cell.classList.contains('cell-off'))) {
           createParticles(x, y, 30);
         }
       };
@@ -1056,7 +1088,7 @@
     }
 
     function createParticles(x, y, count = 20) {
-      const colors = ['#ff007f', '#7928ca', '#00f2fe', '#ffd700', '#ff8c00', '#ff0844', '#00ffcc'];
+      const colors = ['#ff007f', '#fe5196', '#7928ca', '#00f2fe', '#ffd700', '#ff8c00', '#ff7eb3'];
       const shapes = ['circle', 'rect'];
 
       for (let i = 0; i < count; i++) {
@@ -1086,7 +1118,6 @@
       }
     }
 
-    /* 🎨 1. 互動式粒子系統 (Canvas 2D) */
     function initBackgroundParticles() {
       const canvas = document.getElementById('bg-canvas');
       const ctx = canvas.getContext('2d');
@@ -1109,7 +1140,7 @@
           this.vx = (Math.random() - 0.5) * 0.8;
           this.vy = (Math.random() - 0.5) * 0.8;
           this.radius = Math.random() * 2 + 1;
-          this.color = ['#00f2fe', '#ff007f', '#7928ca', '#ffffff'][Math.floor(Math.random() * 4)];
+          this.color = ['#00f2fe', '#ff007f', '#7928ca', '#fe5196'][Math.floor(Math.random() * 4)];
           this.alpha = Math.random() * 0.5 + 0.3;
         }
 
@@ -1120,7 +1151,6 @@
           if (this.x < 0 || this.x > width) this.vx *= -1;
           if (this.y < 0 || this.y > height) this.vy *= -1;
 
-          // 手指/游標磁吸離心反應
           const dx = touchPos.x - this.x;
           const dy = touchPos.y - this.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -1167,11 +1197,9 @@
       loop();
     }
 
-    /* 📱 2. 陀螺儀 & 鼠標 3D 視差 (Gyroscope & Mouse Tilt) */
     function initGyroscopeTilt() {
       const card = document.getElementById('tilt-card');
 
-      // 電腦端鼠標視差
       window.addEventListener('mousemove', (e) => {
         if (window.innerWidth < 600) return;
         const cx = window.innerWidth / 2;
@@ -1182,12 +1210,11 @@
         card.style.transform = `rotateY(${dx * 8}deg) rotateX(${-dy * 8}deg)`;
       });
 
-      // iOS 手機陀螺儀視差
       if (window.DeviceOrientationEvent) {
         window.addEventListener('deviceorientation', (e) => {
           if (!e.gamma || !e.beta) return;
-          const tiltX = Math.min(Math.max(e.gamma, -25), 25) / 2.5; // 左右傾斜
-          const tiltY = Math.min(Math.max(e.beta - 40, -25), 25) / 2.5; // 前後傾斜
+          const tiltX = Math.min(Math.max(e.gamma, -25), 25) / 2.5;
+          const tiltY = Math.min(Math.max(e.beta - 40, -25), 25) / 2.5;
 
           card.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
         }, true);
