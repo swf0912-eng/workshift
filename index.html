@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v2.6 - 正確月份校正版</title>
+  <title>瑋的班表 v2.7</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -270,7 +270,8 @@
       height: 100%;
       position: absolute;
       top: 0;
-      left: -100%;
+      left: 0;
+      transform: translate3d(-33.3333%, 0, 0); /* 精確固定中間頁 (當月) */
       will-change: transform;
     }
 
@@ -284,7 +285,7 @@
       grid-template-rows: repeat(6, 1fr);
       gap: 5px;
       height: 100%;
-      width: 33.333%;
+      width: 33.3333%;
       flex-shrink: 0;
     }
 
@@ -617,7 +618,7 @@
   </div>
 
   <script>
-    // 全域目前顯示的年與月（0 表示 1 月，7 表示 8 月）
+    // 使用全域年與月，確保 100% 絕對一致（0 表示 1 月）
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
 
@@ -675,29 +676,29 @@
     }
 
     function renderAllCalendars() {
-      // 標題顯示正確的 1~12 月
       document.getElementById('month-title').innerText = `${currentYear} 年 ${currentMonth + 1} 月`;
 
-      // 嚴謹計算上個月、當月、下個月
+      // 渲染上個月、當月與下個月網格
       renderSingleGrid(document.getElementById('prev-grid'), currentYear, currentMonth - 1);
       renderSingleGrid(document.getElementById('current-grid'), currentYear, currentMonth);
       renderSingleGrid(document.getElementById('next-grid'), currentYear, currentMonth + 1);
 
+      // 強制重置軌道停留在中間頁 (-33.3333%)
       const track = document.getElementById('slider-track');
-      const containerWidth = document.getElementById('days-grid-container').offsetWidth || 300;
-      track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
+      track.style.transform = `translate3d(-33.3333%, 0, 0)`;
     }
 
     function renderSingleGrid(gridElem, year, month) {
       gridElem.innerHTML = '';
 
-      // 使用 Date 物件自動規範化跨年與月份 (例如 month = -1 會自動變成前一年的 12 月)
+      // 精確標準化年月
       const targetDate = new Date(year, month, 1);
       const realYear = targetDate.getFullYear();
       const realMonth = targetDate.getMonth();
 
-      const firstDay = new Date(realYear, realMonth, 1).getDay();
-      const startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+      // 精確計算星期一為週首的空白偏移量
+      const firstDay = targetDate.getDay(); 
+      const startOffset = (firstDay + 6) % 7; 
       const totalDays = new Date(realYear, realMonth + 1, 0).getDate();
 
       for (let i = 0; i < startOffset; i++) {
@@ -711,7 +712,6 @@
         const cell = document.createElement('div');
         cell.className = 'day-cell';
 
-        // 格式化為 YYYY-MM-DD
         const dateStr = `${realYear}-${String(realMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         cell.dataset.date = dateStr;
 
@@ -761,15 +761,14 @@
 
     function changeMonth(delta) {
       const track = document.getElementById('slider-track');
-      const containerWidth = document.getElementById('days-grid-container').offsetWidth;
 
       track.classList.add('animate');
-      const targetX = delta > 0 ? -2 * containerWidth : 0;
-      track.style.transform = `translate3d(${targetX}px, 0, 0)`;
+      // 滑動動畫：向後 (-66.6666%) 或向前 (0%)
+      const targetX = delta > 0 ? -66.6666 : 0;
+      track.style.transform = `translate3d(${targetX}%, 0, 0)`;
 
       setTimeout(() => {
         track.classList.remove('animate');
-        // 安全調整全域月份與年份
         const nextDate = new Date(currentYear, currentMonth + delta, 1);
         currentYear = nextDate.getFullYear();
         currentMonth = nextDate.getMonth();
@@ -835,9 +834,10 @@
 
           if (isHorizontalGesture) {
             dragDeltaX = deltaX;
-            const containerWidth = container.offsetWidth;
-            const currentTranslate = -containerWidth + dragDeltaX;
-            track.style.transform = `translate3d(${currentTranslate}px, 0, 0)`;
+            const containerWidth = container.offsetWidth || 300;
+            // 計算百分比位移，完美與視窗連動
+            const percentMove = (dragDeltaX / containerWidth) * 33.3333;
+            track.style.transform = `translate3d(${-33.3333 + percentMove}%, 0, 0)`;
           }
         }
       };
@@ -856,13 +856,13 @@
 
         if (isSwiping) {
           isSwiping = false;
-          const containerWidth = container.offsetWidth;
+          const containerWidth = container.offsetWidth || 300;
           const threshold = containerWidth * 0.22;
 
           track.classList.add('animate');
 
           if (dragDeltaX < -threshold) {
-            track.style.transform = `translate3d(-${2 * containerWidth}px, 0, 0)`;
+            track.style.transform = `translate3d(-66.6666%, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
               const nextDate = new Date(currentYear, currentMonth + 1, 1);
@@ -871,7 +871,7 @@
               renderAllCalendars();
             }, 300);
           } else if (dragDeltaX > threshold) {
-            track.style.transform = `translate3d(0px, 0, 0)`;
+            track.style.transform = `translate3d(0%, 0, 0)`;
             setTimeout(() => {
               track.classList.remove('animate');
               const nextDate = new Date(currentYear, currentMonth - 1, 1);
@@ -880,7 +880,7 @@
               renderAllCalendars();
             }, 300);
           } else {
-            track.style.transform = `translate3d(-${containerWidth}px, 0, 0)`;
+            track.style.transform = `translate3d(-33.3333%, 0, 0)`;
           }
         }
       };
