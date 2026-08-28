@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v2.8</title>
+  <title>瑋的班表 v3.0 - 全特效極光版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -29,6 +29,12 @@
   </script>
 
   <style>
+    @property --angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
     :root {
       --bg-gradient: linear-gradient(135deg, #050515 0%, #100b32 40%, #1a0b2e 70%, #080014 100%);
       --card-glass: rgba(255, 255, 255, 0.08);
@@ -83,9 +89,21 @@
       align-items: center;
       padding: 8px;
       position: relative;
+      perspective: 1000px;
     }
 
-    /* 📱 橫向螢幕強制直式提示遮罩 (Orientation Overlay) */
+    /* 🎨 互動背景 Canvas */
+    #bg-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* 📱 橫屏旋轉提示 Overlay */
     .orientation-overlay {
       display: none;
       position: fixed;
@@ -121,11 +139,8 @@
       50%, 100% { transform: rotate(-90deg); }
     }
 
-    /* 偵測螢幕為橫向時顯示遮罩並隱藏主內容 */
     @media screen and (orientation: landscape) and (max-height: 550px) {
-      .orientation-overlay {
-        display: flex;
-      }
+      .orientation-overlay { display: flex; }
     }
 
     .bg-glow {
@@ -166,6 +181,7 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
+    /* 陀螺儀 3D 視差卡片容器 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -185,6 +201,8 @@
                   inset 0 0 20px rgba(255, 255, 255, 0.15),
                   0 0 15px rgba(255, 0, 127, 0.2);
       overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
     }
 
     .top-bar {
@@ -196,6 +214,7 @@
       flex-shrink: 0;
     }
 
+    /* 🔥 特效：流光旋轉按鈕 */
     .mode-toggle-btn {
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid var(--card-border);
@@ -211,13 +230,29 @@
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
     }
 
     .mode-toggle-btn.edit-mode {
-      background: linear-gradient(135deg, #ff007f, #7928ca);
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.8), 0 0 30px rgba(121, 40, 202, 0.5);
-      border-color: rgba(255, 255, 255, 0.6);
+      background: #0d0722;
+      border: 1px solid transparent;
+      box-shadow: 0 0 20px rgba(255, 0, 127, 0.8);
       transform: scale(1.05);
+    }
+
+    .mode-toggle-btn.edit-mode::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #ff007f, #00f2fe, #7928ca, #ff007f);
+      border-radius: 22px;
+      z-index: -1;
+      animation: rotateGradient 3s linear infinite;
+    }
+
+    @keyframes rotateGradient {
+      to { --angle: 360deg; }
     }
 
     .header {
@@ -385,11 +420,23 @@
       box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
     }
 
+    /* 選取日期的流光邊框特效 */
     .day-cell.selected {
-      border: 2px solid #00f2fe !important;
-      background: rgba(0, 242, 254, 0.3) !important;
-      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9), inset 0 0 10px rgba(0, 242, 254, 0.5) !important;
+      border: 2px solid transparent !important;
+      background: rgba(0, 242, 254, 0.2) !important;
+      box-shadow: 0 0 18px rgba(0, 242, 254, 0.9) !important;
       transform: scale(0.94);
+      position: relative;
+    }
+
+    .day-cell.selected::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #00f2fe, #ff007f, #00f2fe);
+      border-radius: 12px;
+      z-index: -1;
+      animation: rotateGradient 2s linear infinite;
     }
 
     .day-cell.cell-r-off {
@@ -601,6 +648,9 @@
 </head>
 <body>
 
+  <!-- 🎨 背景互動 Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- 📱 橫屏旋轉提示 Overlay -->
   <div class="orientation-overlay">
     <div class="orientation-icon">📱</div>
@@ -611,7 +661,7 @@
   <div class="bg-glow bg-glow-2"></div>
   <div class="bg-glow bg-glow-3"></div>
 
-  <div class="calendar-container">
+  <div class="calendar-container" id="tilt-card">
     <div class="top-bar">
       <div class="status-bar">
         <div class="status-dot"></div>
@@ -693,6 +743,8 @@
       }, 100);
 
       setupGestureControls();
+      initBackgroundParticles();
+      initGyroscopeTilt();
     });
 
     function initFirebaseListener() {
@@ -836,6 +888,9 @@
         dragDeltaX = 0;
         isHorizontalGesture = false;
 
+        // 觸發粒子磁吸點
+        if (window.triggerTouchPointer) triggerTouchPointer(x, y);
+
         if (isEditMode) {
           const cell = getCellFromPoint(x, y);
           if (cell) {
@@ -859,6 +914,8 @@
         currentY = y;
         const deltaX = currentX - startX;
         const deltaY = currentY - startY;
+
+        if (window.triggerTouchPointer) triggerTouchPointer(x, y);
 
         if (isEditMode && isDragging) {
           const cell = getCellFromPoint(x, y);
@@ -1026,6 +1083,114 @@
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
         setTimeout(() => p.remove(), 800);
+      }
+    }
+
+    /* 🎨 1. 互動式粒子系統 (Canvas 2D) */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById('bg-canvas');
+      const ctx = canvas.getContext('2d');
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      const particles = [];
+      const particleCount = 80;
+      let touchPos = { x: -1000, y: -1000, radius: 120 };
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * width;
+          this.y = Math.random() * height;
+          this.vx = (Math.random() - 0.5) * 0.8;
+          this.vy = (Math.random() - 0.5) * 0.8;
+          this.radius = Math.random() * 2 + 1;
+          this.color = ['#00f2fe', '#ff007f', '#7928ca', '#ffffff'][Math.floor(Math.random() * 4)];
+          this.alpha = Math.random() * 0.5 + 0.3;
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+
+          if (this.x < 0 || this.x > width) this.vx *= -1;
+          if (this.y < 0 || this.y > height) this.vy *= -1;
+
+          // 手指/游標磁吸離心反應
+          const dx = touchPos.x - this.x;
+          const dy = touchPos.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < touchPos.radius) {
+            const angle = Math.atan2(dy, dx);
+            const force = (touchPos.radius - dist) / touchPos.radius;
+            this.x -= Math.cos(angle) * force * 4;
+            this.y -= Math.sin(angle) * force * 4;
+          }
+        }
+
+        draw() {
+          ctx.save();
+          ctx.globalAlpha = this.alpha;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+          ctx.fillStyle = this.color;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = this.color;
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+
+      window.triggerTouchPointer = (x, y) => {
+        touchPos.x = x;
+        touchPos.y = y;
+        setTimeout(() => { touchPos.x = -1000; touchPos.y = -1000; }, 300);
+      };
+
+      function loop() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    /* 📱 2. 陀螺儀 & 鼠標 3D 視差 (Gyroscope & Mouse Tilt) */
+    function initGyroscopeTilt() {
+      const card = document.getElementById('tilt-card');
+
+      // 電腦端鼠標視差
+      window.addEventListener('mousemove', (e) => {
+        if (window.innerWidth < 600) return;
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        const dx = (e.clientX - cx) / cx;
+        const dy = (e.clientY - cy) / cy;
+
+        card.style.transform = `rotateY(${dx * 8}deg) rotateX(${-dy * 8}deg)`;
+      });
+
+      // iOS 手機陀螺儀視差
+      if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', (e) => {
+          if (!e.gamma || !e.beta) return;
+          const tiltX = Math.min(Math.max(e.gamma, -25), 25) / 2.5; // 左右傾斜
+          const tiltY = Math.min(Math.max(e.beta - 40, -25), 25) / 2.5; // 前後傾斜
+
+          card.style.transform = `rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
+        }, true);
       }
     }
   </script>
