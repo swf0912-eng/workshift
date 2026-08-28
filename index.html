@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v6.5 - 彩色流光日期框版</title>
+  <title>瑋的班表 v7.0 - 顯眼流光邊框與完美拖曳版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -38,20 +38,20 @@
     :root {
       /* ☀️ 清新極光主題變數 */
       --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
-      --card-glass: rgba(255, 255, 255, 0.75);
-      --card-border: rgba(255, 255, 255, 0.9);
+      --card-glass: rgba(255, 255, 255, 0.85);
+      --card-border: rgba(255, 255, 255, 0.95);
       --text-main: #2c3e50;
-      --text-muted: #607d8b;
+      --text-muted: #546e7a;
       
       --shift-day-bg: linear-gradient(135deg, #00b4db, #0083b0);
       --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
       
-      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.15) 0%, rgba(121, 40, 202, 0.18) 100%);
+      --shift-r-off-cell-bg: radial-gradient(circle, rgba(255, 0, 127, 0.18) 0%, rgba(121, 40, 202, 0.22) 100%);
       --shift-r-off-cell-border: #ff007f;
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #7928ca, #ff8c00);
 
-      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.18) 0%, rgba(247, 112, 98, 0.18) 100%);
+      --shift-off-cell-bg: radial-gradient(circle, rgba(254, 81, 150, 0.22) 0%, rgba(247, 112, 98, 0.22) 100%);
       --shift-off-cell-border: #fe5196;
       --shift-off-bg: linear-gradient(135deg, #ff758c, #ff7eb3, #fe5196);
       
@@ -186,12 +186,12 @@
       background: var(--card-glass);
       backdrop-filter: blur(25px);
       -webkit-backdrop-filter: blur(25px);
-      border: 1px solid var(--card-border);
+      border: 1.5px solid var(--card-border);
       border-radius: 24px;
       padding: 12px 10px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
-                  inset 0 0 20px rgba(255, 255, 255, 0.8),
-                  0 0 20px rgba(0, 180, 219, 0.15);
+                  inset 0 0 20px rgba(255, 255, 255, 0.9),
+                  0 0 20px rgba(0, 180, 219, 0.2);
       overflow: hidden;
       transform-style: preserve-3d;
       transition: transform 0.15s ease-out;
@@ -199,11 +199,11 @@
 
     .nav-tabs {
       display: flex;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 16px;
       padding: 4px;
       margin-bottom: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.03);
     }
@@ -221,7 +221,7 @@
     }
 
     .tab-btn.active {
-      color: #333;
+      color: #1a252f;
       background: #ffffff;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
@@ -249,7 +249,7 @@
     }
 
     .mode-toggle-btn {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       border: 1px solid var(--card-border);
       border-radius: 20px;
       padding: 5px 14px;
@@ -271,7 +271,7 @@
     .mode-toggle-btn.edit-mode {
       background: #ffffff;
       border: 1px solid transparent;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
       transform: scale(1.05);
     }
 
@@ -308,7 +308,7 @@
     }
 
     .nav-btn {
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.85);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 6px 14px;
@@ -397,7 +397,7 @@
       flex-shrink: 0;
     }
 
-    /* 🌈 彩色動態流光日期框（RGB Flow Border） */
+    /* 🌈 加粗超明顯的彩色流光日期框（3.0px Double-Layer Border） */
     .day-cell {
       border-radius: 12px;
       padding: 4px 2px;
@@ -406,25 +406,25 @@
       align-items: center;
       justify-content: flex-start;
       gap: 2px;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1.5px solid transparent;
+      background: rgba(255, 255, 255, 0.9);
+      border: 3px solid transparent;
       background-clip: padding-box;
       cursor: pointer;
       position: relative;
       overflow: hidden;
       transition: all 0.2s ease;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     }
 
     .day-cell::before {
       content: '';
       position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #00b4db, #ff758c, #8e2de2, #ffb300, #00b4db);
+      top: -3px; left: -3px; right: -3px; bottom: -3px;
+      background: conic-gradient(from var(--angle), #00c6ff, #0072ff, #ff007f, #7928ca, #ff8c00, #00c6ff);
       border-radius: 12px;
       z-index: -1;
-      animation: rotateGradient 4s linear infinite;
-      opacity: 0.7;
+      animation: rotateGradient 3s linear infinite;
+      opacity: 0.95;
     }
 
     .day-cell.empty {
@@ -439,25 +439,25 @@
     }
 
     .day-number {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: #2c3e50;
+      font-size: 0.88rem;
+      font-weight: 900;
+      color: #1a252f;
       line-height: 1.1;
     }
 
     .day-cell.today {
-      border: 2px solid transparent !important;
-      box-shadow: 0 0 15px rgba(255, 179, 0, 0.5);
+      border: 3px solid transparent !important;
+      box-shadow: 0 0 18px rgba(255, 140, 0, 0.6);
     }
 
     .day-cell.today::before {
-      background: conic-gradient(from var(--angle), #ffb300, #ff8c00, #ff007f, #ffb300);
+      background: conic-gradient(from var(--angle), #ff8c00, #ff007f, #ffd700, #ff8c00);
       opacity: 1;
-      animation-duration: 2s;
+      animation-duration: 1.5s;
     }
 
     .day-cell.today .day-number {
-      background: linear-gradient(135deg, #ffb300, #ff8c00);
+      background: linear-gradient(135deg, #ff8c00, #ff007f);
       color: #fff;
       border-radius: 50%;
       width: 20px; height: 20px;
@@ -469,14 +469,14 @@
     }
 
     .day-cell.selected {
-      background: rgba(0, 180, 219, 0.15) !important;
-      box-shadow: 0 0 18px rgba(0, 180, 219, 0.6) !important;
+      background: rgba(0, 198, 255, 0.2) !important;
+      box-shadow: 0 0 20px rgba(0, 198, 255, 0.8) !important;
       transform: scale(0.94);
     }
 
     .day-cell.selected::before {
       opacity: 1;
-      animation-duration: 1.5s;
+      animation-duration: 1s;
     }
 
     .day-cell.cell-r-off {
@@ -502,7 +502,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
     }
 
     .shift-day { background: var(--shift-day-bg); }
@@ -547,10 +547,10 @@
       grid-template-columns: repeat(7, 1fr);
       gap: 4px;
       margin-bottom: 12px;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.6);
       padding: 6px;
       border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       flex-shrink: 0;
     }
 
@@ -561,8 +561,8 @@
       justify-content: center;
       padding: 6px 2px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1.5px solid transparent;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid transparent;
       background-clip: padding-box;
       cursor: pointer;
       position: relative;
@@ -572,12 +572,12 @@
     .week-day-card::before {
       content: '';
       position: absolute;
-      top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
-      background: conic-gradient(from var(--angle), #00b4db, #ff758c, #8e2de2, #00b4db);
+      top: -2px; left: -2px; right: -2px; bottom: -2px;
+      background: conic-gradient(from var(--angle), #00c6ff, #ff758c, #8e2de2, #00c6ff);
       border-radius: 10px;
       z-index: -1;
       animation: rotateGradient 4s linear infinite;
-      opacity: 0.5;
+      opacity: 0.7;
     }
 
     .week-day-card .w-name {
@@ -595,7 +595,7 @@
 
     .week-day-card.active {
       background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3);
       transform: scale(1.05);
     }
 
@@ -623,37 +623,49 @@
       gap: 10px;
       padding-bottom: 80px;
       touch-action: pan-y;
+      position: relative;
     }
 
+    /* 🖐️ 雙引擎修復拖曳行程卡片樣式 */
     .timeline-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-left: 4px solid #00b4db;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-left: 5px solid #00b4db;
       border-radius: 16px;
       padding: 14px 12px;
       position: relative;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      cursor: grab;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+      touch-action: none;
     }
 
     .timeline-item.dragging {
-      opacity: 0.5;
-      transform: scale(0.98);
-      box-shadow: 0 0 15px rgba(0, 180, 219, 0.4);
+      opacity: 0.6;
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 180, 219, 0.4);
+      z-index: 1000;
     }
 
     .drag-handle {
-      color: #b0bec5;
-      font-size: 1.1rem;
+      color: #90a4ae;
+      font-size: 1.2rem;
       cursor: grab;
-      margin-right: 4px;
+      padding: 4px 8px;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drag-handle:active {
+      cursor: grabbing;
+      color: #00b4db;
     }
 
     .timeline-item.type-food { border-left-color: #ff758c; }
@@ -745,7 +757,7 @@
     }
 
     .modal {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.95);
       border: 1px solid rgba(255, 255, 255, 1);
       width: 90%;
       max-width: 340px;
@@ -1264,10 +1276,12 @@
       });
     }
 
+    /* 🖐️ 雙引擎修復版：支援 HTML5 Drag & Drop 與 Mobile Touch Drag */
     function setupDragAndDrop() {
       const container = document.getElementById('timeline-list');
       let draggedItem = null;
 
+      // 1. Desktop HTML5 Drag Event
       container.addEventListener('dragstart', (e) => {
         draggedItem = e.target.closest('.timeline-item');
         if (draggedItem) {
@@ -1292,6 +1306,40 @@
           } else {
             container.insertBefore(draggedItem, afterElement);
           }
+        }
+      });
+
+      // 2. Mobile Touch Event
+      let activeTouchItem = null;
+
+      container.addEventListener('touchstart', (e) => {
+        const handle = e.target.closest('.drag-handle');
+        if (!handle) return;
+        
+        activeTouchItem = handle.closest('.timeline-item');
+        if (activeTouchItem) {
+          activeTouchItem.classList.add('dragging');
+        }
+      }, { passive: true });
+
+      container.addEventListener('touchmove', (e) => {
+        if (!activeTouchItem) return;
+        
+        const touchY = e.touches[0].clientY;
+        const afterElement = getDragAfterElement(container, touchY);
+        
+        if (afterElement == null) {
+          container.appendChild(activeTouchItem);
+        } else {
+          container.insertBefore(activeTouchItem, afterElement);
+        }
+      }, { passive: true });
+
+      container.addEventListener('touchend', () => {
+        if (activeTouchItem) {
+          activeTouchItem.classList.remove('dragging');
+          saveReorderedItems();
+          activeTouchItem = null;
         }
       });
     }
