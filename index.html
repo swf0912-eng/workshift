@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v8.5 - 平穩極光版</title>
+  <title>瑋的班表 v8.6 - 頂部按鈕優化版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -322,6 +322,29 @@
       background: #ffffff;
     }
 
+    /* 🛠️ 新增頂部按鈕樣式 */
+    .add-travel-btn-top {
+      background: linear-gradient(135deg, #00b4db, #0083b0);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #ffffff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 3px 10px rgba(0, 180, 219, 0.35);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .add-travel-btn-top:active {
+      transform: scale(0.92);
+      opacity: 0.9;
+    }
+
     .status-bar {
       font-size: 0.72rem;
       font-weight: 700;
@@ -537,6 +560,7 @@
       align-items: center;
       margin-bottom: 8px;
       padding: 0 4px;
+      gap: 6px;
     }
 
     .travel-week-bar {
@@ -618,7 +642,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 80px;
+      padding-bottom: 20px; /* 🛠️ 不再需要預留懸浮按鈕空間 */
       touch-action: pan-y;
       position: relative;
     }
@@ -694,25 +718,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .add-travel-btn {
-      position: absolute;
-      bottom: 35px;
-      right: 20px;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #00b4db, #0083b0);
-      box-shadow: 0 8px 20px rgba(0, 180, 219, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      color: #fff;
-      font-size: 1.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 100;
     }
 
     .embedded-map-container {
@@ -922,8 +927,12 @@
     <div class="page-content" id="travel-page">
       <div class="travel-header">
         <button class="nav-btn" onclick="changeTravelWeek(-1)">‹ 上一週</button>
-        <h2 id="travel-week-title" style="font-size: 1.05rem; font-weight: 900; background: linear-gradient(to right, #0083b0, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
-        <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
+        <h2 id="travel-week-title" style="font-size: 1rem; font-weight: 900; background: linear-gradient(to right, #0083b0, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
+        <div style="display: flex; gap: 6px;">
+          <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
+          <!-- 🛠️ 已修正：將新增按鈕移至頂部右側 -->
+          <button class="add-travel-btn-top" onclick="openTravelModal()">+ 新增</button>
+        </div>
       </div>
 
       <div class="travel-week-bar" id="travel-week-bar">
@@ -933,8 +942,6 @@
       <div class="timeline-container" id="timeline-list">
         <!-- 動態渲染行程 -->
       </div>
-
-      <button class="add-travel-btn" onclick="openTravelModal()">+</button>
     </div>
 
   </div>
@@ -1238,7 +1245,7 @@
       const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
 
       if (keys.length === 0) {
-        timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:35px;">這天尚未規劃行程 ✨<br>點擊右下角「+」即可新增！</div>`;
+        timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:35px;">這天尚未規劃行程 ✨<br>點擊右上角「+ 新增」即可新增！</div>`;
         return;
       }
 
