@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v2.7</title>
+  <title>瑋的班表 v2.8 - 鎖定直式版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -83,6 +83,49 @@
       align-items: center;
       padding: 8px;
       position: relative;
+    }
+
+    /* 📱 橫向螢幕強制直式提示遮罩 (Orientation Overlay) */
+    .orientation-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(5, 5, 21, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 99999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .orientation-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      animation: rotatePhone 2s ease-in-out infinite alternate;
+    }
+
+    .orientation-overlay p {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #00f2fe, #ff007f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes rotatePhone {
+      0% { transform: rotate(0deg); }
+      50%, 100% { transform: rotate(-90deg); }
+    }
+
+    /* 偵測螢幕為橫向時顯示遮罩並隱藏主內容 */
+    @media screen and (orientation: landscape) and (max-height: 550px) {
+      .orientation-overlay {
+        display: flex;
+      }
     }
 
     .bg-glow {
@@ -271,7 +314,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      transform: translate3d(-33.3333%, 0, 0); /* 精確固定中間頁 (當月) */
+      transform: translate3d(-33.3333%, 0, 0);
       will-change: transform;
     }
 
@@ -558,6 +601,12 @@
 </head>
 <body>
 
+  <!-- 📱 橫屏旋轉提示 Overlay -->
+  <div class="orientation-overlay">
+    <div class="orientation-icon">📱</div>
+    <p>請將手機轉為直式<br>以獲得最佳體驗✨</p>
+  </div>
+
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
   <div class="bg-glow bg-glow-3"></div>
@@ -618,7 +667,6 @@
   </div>
 
   <script>
-    // 使用全域年與月，確保 100% 絕對一致（0 表示 1 月）
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
 
@@ -678,12 +726,10 @@
     function renderAllCalendars() {
       document.getElementById('month-title').innerText = `${currentYear} 年 ${currentMonth + 1} 月`;
 
-      // 渲染上個月、當月與下個月網格
       renderSingleGrid(document.getElementById('prev-grid'), currentYear, currentMonth - 1);
       renderSingleGrid(document.getElementById('current-grid'), currentYear, currentMonth);
       renderSingleGrid(document.getElementById('next-grid'), currentYear, currentMonth + 1);
 
-      // 強制重置軌道停留在中間頁 (-33.3333%)
       const track = document.getElementById('slider-track');
       track.style.transform = `translate3d(-33.3333%, 0, 0)`;
     }
@@ -691,12 +737,10 @@
     function renderSingleGrid(gridElem, year, month) {
       gridElem.innerHTML = '';
 
-      // 精確標準化年月
       const targetDate = new Date(year, month, 1);
       const realYear = targetDate.getFullYear();
       const realMonth = targetDate.getMonth();
 
-      // 精確計算星期一為週首的空白偏移量
       const firstDay = targetDate.getDay(); 
       const startOffset = (firstDay + 6) % 7; 
       const totalDays = new Date(realYear, realMonth + 1, 0).getDate();
@@ -763,7 +807,6 @@
       const track = document.getElementById('slider-track');
 
       track.classList.add('animate');
-      // 滑動動畫：向後 (-66.6666%) 或向前 (0%)
       const targetX = delta > 0 ? -66.6666 : 0;
       track.style.transform = `translate3d(${targetX}%, 0, 0)`;
 
@@ -835,7 +878,6 @@
           if (isHorizontalGesture) {
             dragDeltaX = deltaX;
             const containerWidth = container.offsetWidth || 300;
-            // 計算百分比位移，完美與視窗連動
             const percentMove = (dragDeltaX / containerWidth) * 33.3333;
             track.style.transform = `translate3d(${-33.3333 + percentMove}%, 0, 0)`;
           }
