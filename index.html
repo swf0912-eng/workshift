@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋的班表 v9.0 - 縣市氣象降雨機率版</title>
+  <title>瑋與老婆的行事曆 v9.5 - 三分頁整合版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -46,13 +46,8 @@
       --shift-day-bg: linear-gradient(135deg, #00b4db, #0083b0);
       --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
       --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
-      
-      /* 🌸 櫻花蜜桃粉 (輪休風格) */
       --shift-r-off-bg: linear-gradient(135deg, #ff007f, #ff758c, #ff8ed4);
-
-      /* 🌺 夢幻晨曦粉 (休假風格) */
       --shift-off-bg: linear-gradient(135deg, #ff758c, #ff9a9e, #fe5196);
-      
       --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
     }
 
@@ -86,12 +81,8 @@
 
     #bg-canvas {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
     }
 
     .orientation-overlay {
@@ -138,8 +129,7 @@
       border-radius: 50%;
       filter: blur(100px);
       -webkit-filter: blur(100px);
-      z-index: 0;
-      opacity: 0.6;
+      z-index: 0; opacity: 0.6;
       animation: float 10s ease-in-out infinite alternate;
       pointer-events: none;
     }
@@ -161,8 +151,7 @@
       width: 200px; height: 200px;
       background: radial-gradient(circle, #ffecd2 0%, #fcb69f 100%);
       top: 40%; left: 30%;
-      animation-delay: -2.5s;
-      opacity: 0.5;
+      animation-delay: -2.5s; opacity: 0.5;
     }
 
     @keyframes float {
@@ -201,18 +190,20 @@
       border: 1px solid rgba(255, 255, 255, 0.9);
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      gap: 2px;
     }
 
     .tab-btn {
       flex: 1;
       padding: 7px 0;
       text-align: center;
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       font-weight: 800;
       color: var(--text-muted);
       border-radius: 12px;
       cursor: pointer;
       transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      white-space: nowrap;
     }
 
     .tab-btn.active {
@@ -337,11 +328,6 @@
       white-space: nowrap;
     }
 
-    .add-travel-btn-top:active {
-      transform: scale(0.92);
-      opacity: 0.9;
-    }
-
     .status-bar {
       font-size: 0.72rem;
       font-weight: 700;
@@ -352,8 +338,7 @@
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       background-color: #00b4db;
       border-radius: 50%;
       box-shadow: 0 0 8px #00b4db;
@@ -394,8 +379,7 @@
       width: 300%;
       height: 100%;
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       transform: translate3d(-33.3333%, 0, 0);
       will-change: transform;
     }
@@ -481,7 +465,6 @@
       transform: scale(0.94);
     }
 
-    /* 🌸 輪休：最上層邊框順時針旋轉霓虹流光 */
     .day-cell.cell-r-off {
       background: rgba(255, 255, 255, 0.95);
       box-shadow: 0 2px 8px rgba(255, 0, 127, 0.2);
@@ -489,20 +472,15 @@
 
     .day-cell.cell-r-off::after {
       content: '';
-      position: absolute;
-      inset: 0;
-      padding: 2px;
+      position: absolute; inset: 0; padding: 2px;
       border-radius: 10px;
       background: conic-gradient(from var(--angle), #ff007f, #ff758c, #ff8ed4, #ff007f);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: 2;
-      pointer-events: none;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      z-index: 2; pointer-events: none;
       animation: rotateGradient 3s linear infinite;
     }
 
-    /* 🌺 休假：最上層邊框順時針旋轉霓虹流光 */
     .day-cell.cell-off {
       background: rgba(255, 255, 255, 0.95);
       box-shadow: 0 2px 8px rgba(254, 81, 150, 0.2);
@@ -510,58 +488,31 @@
 
     .day-cell.cell-off::after {
       content: '';
-      position: absolute;
-      inset: 0;
-      padding: 2px;
+      position: absolute; inset: 0; padding: 2px;
       border-radius: 10px;
       background: conic-gradient(from var(--angle), #ff758c, #ff9a9e, #fe5196, #ff758c);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: 2;
-      pointer-events: none;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      z-index: 2; pointer-events: none;
       animation: rotateGradient 3s linear infinite;
     }
 
     .shift-tag {
-      width: 98%;
-      text-align: center;
-      font-size: 0.65rem;
-      font-weight: 800;
-      padding: 2px 1px;
-      border-radius: 5px;
-      color: #fff;
-      line-height: 1.1;
-      word-break: break-all;
-      white-space: pre-wrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+      width: 98%; text-align: center;
+      font-size: 0.65rem; font-weight: 800;
+      padding: 2px 1px; border-radius: 5px;
+      color: #fff; line-height: 1.1;
+      word-break: break-all; white-space: pre-wrap;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.12);
       z-index: 1;
     }
 
     .shift-day { background: var(--shift-day-bg); }
     .shift-noon { background: var(--shift-noon-bg); }
     .shift-night { background: var(--shift-night-bg); }
-    
-    .shift-r-off { 
-      background: var(--shift-r-off-bg); 
-      background-size: 200% 200%;
-      position: relative;
-      overflow: hidden;
-      animation: gradientShift 3s ease infinite;
-    }
-
-    .shift-off { 
-      background: var(--shift-off-bg); 
-      background-size: 200% 200%;
-      position: relative;
-      overflow: hidden;
-      color: #ffffff;
-      animation: gradientShift 2.5s ease infinite;
-    }
+    .shift-r-off { background: var(--shift-r-off-bg); background-size: 200% 200%; animation: gradientShift 3s ease infinite; }
+    .shift-off { background: var(--shift-off-bg); background-size: 200% 200%; animation: gradientShift 2.5s ease infinite; }
 
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
@@ -571,349 +522,186 @@
 
     .shift-custom { background: var(--shift-custom-bg); }
 
-    /* ✈️ 旅遊規劃週視圖 */
+    /* ✈️ 旅遊規劃樣式 */
     .travel-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      padding: 0 4px;
-      gap: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; padding: 0 4px; gap: 6px;
     }
 
     .travel-week-bar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-bottom: 12px;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 6px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      flex-shrink: 0;
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+      margin-bottom: 12px; background: rgba(255, 255, 255, 0.6);
+      padding: 6px; border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.9); flex-shrink: 0;
     }
 
     .week-day-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 2px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 2px solid transparent;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s ease;
-      z-index: 1;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 6px 2px; border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9); border: 2px solid transparent;
+      cursor: pointer; position: relative; transition: all 0.2s ease; z-index: 1;
     }
 
     .week-day-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      padding: 2px;
-      border-radius: 10px;
+      content: ''; position: absolute; inset: 0; padding: 2px; border-radius: 10px;
       background: conic-gradient(from var(--angle), #00c6ff, #ff758c, #8e2de2, #00c6ff);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: 2;
-      pointer-events: none;
-      animation: rotateGradient 4s linear infinite;
-      opacity: 0.7;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      z-index: 2; pointer-events: none; animation: rotateGradient 4s linear infinite; opacity: 0.7;
     }
 
-    .week-day-card .w-name {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--text-muted);
-      z-index: 1;
-    }
-
-    .week-day-card .w-num {
-      font-size: 0.85rem;
-      font-weight: 900;
-      color: #2c3e50;
-      margin-top: 2px;
-      z-index: 1;
-    }
+    .week-day-card .w-name { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); z-index: 1; }
+    .week-day-card .w-num { font-size: 0.85rem; font-weight: 900; color: #2c3e50; margin-top: 2px; z-index: 1; }
 
     .week-day-card.active {
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3);
-      transform: scale(1.05);
+      background: #ffffff; box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); transform: scale(1.05);
     }
 
-    .week-day-card.active::after {
-      opacity: 1;
-      animation-duration: 2s;
-    }
+    .week-day-card.active::after { opacity: 1; animation-duration: 2s; }
 
     .has-plan-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: #00b4db;
-      box-shadow: 0 0 6px #00b4db;
-      position: absolute;
-      bottom: 3px;
-      z-index: 1;
+      width: 5px; height: 5px; border-radius: 50%; background: #00b4db;
+      box-shadow: 0 0 6px #00b4db; position: absolute; bottom: 3px; z-index: 1;
     }
 
     .timeline-container {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding-right: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-bottom: 20px;
-      touch-action: pan-y;
-      position: relative;
+      flex-grow: 1; overflow-y: auto; padding-right: 4px; display: flex;
+      flex-direction: column; gap: 10px; padding-bottom: 20px; touch-action: pan-y; position: relative;
     }
 
     .timeline-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.95);
-      border-left: 5px solid #00b4db;
-      border-radius: 16px;
-      padding: 14px 12px;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
-      touch-action: none;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.95);
+      border-left: 5px solid #00b4db; border-radius: 16px; padding: 14px 12px;
+      position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease; touch-action: none;
     }
 
-    .timeline-item.dragging {
-      opacity: 0.6;
-      transform: scale(1.02);
-      box-shadow: 0 8px 25px rgba(0, 180, 219, 0.4);
-      z-index: 1000;
-    }
-
-    .drag-handle {
-      color: #90a4ae;
-      font-size: 1.2rem;
-      cursor: grab;
-      padding: 4px 8px;
-      touch-action: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .drag-handle:active {
-      cursor: grabbing;
-      color: #00b4db;
-    }
-
+    .timeline-item.dragging { opacity: 0.6; transform: scale(1.02); box-shadow: 0 8px 25px rgba(0, 180, 219, 0.4); z-index: 1000; }
+    .drag-handle { color: #90a4ae; font-size: 1.2rem; cursor: grab; padding: 4px 8px; touch-action: none; display: flex; align-items: center; justify-content: center; }
     .timeline-item.type-food { border-left-color: #ff758c; }
     .timeline-item.type-hotel { border-left-color: #8e2de2; }
-
     .timeline-info { flex-grow: 1; display: flex; align-items: center; }
-
-    .map-link {
-      color: #2c3e50;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-      flex-wrap: wrap;
-    }
-
-    .map-link:active { opacity: 0.7; }
-
+    .map-link { color: #2c3e50; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .timeline-title { font-size: 0.98rem; font-weight: 800; color: #2c3e50; }
 
-    /* 🌧️ 降雨機率標籤樣式 */
     .rain-badge {
-      font-size: 0.72rem;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 12px;
-      background: rgba(0, 180, 219, 0.12);
-      color: #00779a;
-      border: 1px solid rgba(0, 180, 219, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      margin-left: 6px;
+      font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 12px;
+      background: rgba(0, 180, 219, 0.12); color: #00779a; border: 1px solid rgba(0, 180, 219, 0.3);
+      display: inline-flex; align-items: center; gap: 2px; margin-left: 6px;
     }
-
-    .rain-badge.high-rain {
-      background: rgba(229, 57, 53, 0.12);
-      color: #d32f2f;
-      border-color: rgba(229, 57, 53, 0.3);
-    }
+    .rain-badge.high-rain { background: rgba(229, 57, 53, 0.12); color: #d32f2f; border-color: rgba(229, 57, 53, 0.3); }
 
     .timeline-delete {
-      background: rgba(229, 57, 53, 0.1);
-      border: none;
-      color: #e53935;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      font-size: 0.85rem;
+      background: rgba(229, 57, 53, 0.1); border: none; color: #e53935;
+      width: 26px; height: 26px; border-radius: 50%; font-size: 0.85rem; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* 👩‍🏫 老婆課表專屬樣式 */
+    .wife-schedule-wrapper {
+      flex-grow: 1;
+      overflow-y: auto;
+      touch-action: pan-y;
+      padding-right: 2px;
+    }
+
+    .wife-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    .wife-table th, .wife-table td {
+      text-align: center;
+      padding: 6px 2px;
+      font-size: 0.75rem;
+      border-radius: 8px;
+    }
+
+    .wife-table th {
+      background: rgba(0, 180, 219, 0.15);
+      color: #00779a;
+      font-weight: 900;
+    }
+
+    .wife-table td {
+      background: rgba(255, 255, 255, 0.85);
+      color: #2c3e50;
+      font-weight: 700;
+      vertical-align: middle;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      line-height: 1.25;
+    }
+
+    .wife-table td.time-col {
+      background: rgba(240, 244, 253, 0.9);
       font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.68rem;
     }
 
+    .wife-table td.span-row {
+      background: rgba(255, 235, 238, 0.8);
+      color: #d32f2f;
+      font-weight: 900;
+    }
+
+    .wife-table td.eng-subject {
+      background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2));
+      color: #005c7a;
+      font-weight: 900;
+    }
+
+    .wife-table td.world-subject {
+      background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25));
+      color: #c2185b;
+      font-weight: 900;
+    }
+
+    /* 彈窗樣式 */
     .embedded-map-container {
-      margin-top: 10px;
-      width: 100%;
-      height: 160px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(0, 180, 219, 0.3);
-      background: rgba(255, 255, 255, 0.5);
-      display: none;
+      margin-top: 10px; width: 100%; height: 160px; border-radius: 14px;
+      overflow: hidden; border: 1px solid rgba(0, 180, 219, 0.3); background: rgba(255, 255, 255, 0.5); display: none;
     }
-
-    .embedded-map-container iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
+    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; }
 
     .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(240, 244, 253, 0.6);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(240, 244, 253, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+      display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000;
     }
-
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal {
-      background: rgba(255, 255, 255, 0.95);
-      border: 1px solid rgba(255, 255, 255, 1);
-      width: 90%;
-      max-width: 340px;
-      border-radius: 24px;
-      padding: 22px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      transform: scale(0.7) translateY(30px);
-      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 1);
+      width: 90%; max-width: 340px; border-radius: 24px; padding: 22px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); transform: scale(0.7) translateY(30px); transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-
-    .modal-overlay.active .modal {
-      transform: scale(1) translateY(0);
-    }
-
-    .modal h3 {
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-      text-align: center;
-      color: #2c3e50;
-    }
-
-    .quick-btns {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .quick-btn {
-      padding: 10px 0;
-      border: none;
-      border-radius: 10px;
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: #fff;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
+    .modal-overlay.active .modal { transform: scale(1) translateY(0); }
+    .modal h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; text-align: center; color: #2c3e50; }
+    .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+    .quick-btn { padding: 10px 0; border: none; border-radius: 10px; font-size: 0.88rem; font-weight: 800; color: #fff; cursor: pointer; position: relative; overflow: hidden; }
     .quick-btn.q-day { background: var(--shift-day-bg); }
     .quick-btn.q-noon { background: var(--shift-noon-bg); }
     .quick-btn.q-night { background: var(--shift-night-bg); }
     .quick-btn.q-r-off { background: var(--shift-r-off-bg); }
     .quick-btn.q-off { background: var(--shift-off-bg); }
 
-    .input-group {
-      margin-bottom: 14px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
+    .input-group { margin-bottom: 14px; }
+    .input-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
     .input-group input, .input-group select, .input-group textarea {
-      width: 100%;
-      padding: 10px;
-      background: rgba(240, 244, 253, 0.8);
-      border: 1px solid rgba(0, 180, 219, 0.2);
-      border-radius: 12px;
-      font-size: 0.92rem;
-      color: #2c3e50;
-      outline: none;
-      user-select: text;
-      -webkit-user-select: text;
+      width: 100%; padding: 10px; background: rgba(240, 244, 253, 0.8);
+      border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.92rem; color: #2c3e50; outline: none; user-select: text; -webkit-user-select: text;
     }
-
-    .input-group select {
-      background: rgba(255, 255, 255, 0.9);
-      color: #2c3e50;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .btn-action {
-      flex: 1;
-      padding: 11px 0;
-      border-radius: 12px;
-      border: none;
-      font-size: 0.92rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
+    .input-group select { background: rgba(255, 255, 255, 0.9); color: #2c3e50; }
+    .modal-actions { display: flex; gap: 12px; margin-top: 10px; }
+    .btn-action { flex: 1; padding: 11px 0; border-radius: 12px; border: none; font-size: 0.92rem; font-weight: 800; cursor: pointer; }
     .btn-cancel { background: rgba(0, 0, 0, 0.08); color: #607d8b; }
-    .btn-save { 
-      background: linear-gradient(135deg, #00b4db, #0083b0); 
-      color: #fff; 
-      box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); 
-    }
+    .btn-save { background: linear-gradient(135deg, #00b4db, #0083b0); color: #fff; box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); }
 
-    .particle {
-      position: absolute;
-      pointer-events: none;
-      z-index: 9999;
-      animation: confetti 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-    }
-
+    .particle { position: absolute; pointer-events: none; z-index: 9999; animation: confetti 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
     @keyframes confetti {
       0% { transform: translate(0, 0) scale(1.8) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
       100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(720deg); opacity: 0; }
@@ -935,9 +723,11 @@
 
   <div class="calendar-container">
     
+    <!-- 三分頁導覽標籤 -->
     <div class="nav-tabs">
       <div class="tab-btn active" onclick="switchPage('shift')">📅 班表管理</div>
       <div class="tab-btn" onclick="switchPage('travel')">✈️ 旅遊規劃</div>
+      <div class="tab-btn" onclick="switchPage('wife')">👩‍🏫 老婆班表</div>
     </div>
 
     <!-- 📅 第一頁：班表管理 -->
@@ -982,12 +772,116 @@
         </div>
       </div>
 
-      <div class="travel-week-bar" id="travel-week-bar">
-        <!-- 動態渲染一週七天 -->
+      <div class="travel-week-bar" id="travel-week-bar"></div>
+      <div class="timeline-container" id="timeline-list"></div>
+    </div>
+
+    <!-- 👩‍🏫 第三頁：老婆課表 -->
+    <div class="page-content" id="wife-page">
+      <div style="margin-bottom: 8px; text-align: center;">
+        <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          👩‍🏫 大佳國小課表
+        </h2>
       </div>
 
-      <div class="timeline-container" id="timeline-list">
-        <!-- 動態渲染行程 -->
+      <div class="wife-schedule-wrapper">
+        <table class="wife-table">
+          <thead>
+            <tr>
+              <th style="width: 18%;">節次</th>
+              <th style="width: 22%;">時間</th>
+              <th>一</th>
+              <th>二</th>
+              <th>三</th>
+              <th>四</th>
+              <th>五</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td>
+              <td class="time-col">07:40<br>08:00</td>
+              <td colspan="5" class="span-row">晨光時間（閱讀）</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td class="time-col">08:00<br>08:40</td>
+              <td style="font-size: 0.65rem;">兒童朝會<br>外掃區打掃</td>
+              <td style="font-size: 0.65rem;">運動日<br>(SH150)</td>
+              <td>導師時間</td>
+              <td>導師時間</td>
+              <td>宣導時間</td>
+            </tr>
+            <tr>
+              <td>第一節</td>
+              <td class="time-col">08:45<br>09:25</td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">六甲</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>第二節</td>
+              <td class="time-col">09:35<br>10:15</td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">六甲</span></td>
+              <td></td>
+              <td></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">六乙</span></td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">六乙</span></td>
+            </tr>
+            <tr>
+              <td>第三節</td>
+              <td class="time-col">10:30<br>11:10</td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">四甲</span></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">二乙</span></td>
+              <td></td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">六乙</span></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">二甲</span></td>
+            </tr>
+            <tr>
+              <td>第四節</td>
+              <td class="time-col">11:20<br>12:00</td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">四甲</span></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">二甲</span></td>
+              <td></td>
+              <td class="eng-subject">英語<br><span style="font-size:0.65rem;">四乙</span></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">二乙</span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td class="time-col">12:00<br>13:20</td>
+              <td colspan="5" class="span-row">午餐 / 午休時間</td>
+            </tr>
+            <tr>
+              <td>第五節</td>
+              <td class="time-col">13:25<br>14:05</td>
+              <td></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">四乙</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>第六節</td>
+              <td class="time-col">14:15<br>14:55</td>
+              <td></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">四乙</span></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>第七節</td>
+              <td class="time-col">15:05<br>15:45</td>
+              <td></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">六甲</span></td>
+              <td></td>
+              <td class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">四甲</span></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -997,7 +891,6 @@
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3 id="modal-date-title">統一設定班別與備註</h3>
-      
       <div class="quick-btns">
         <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
@@ -1052,7 +945,6 @@
   <script>
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
-
     let travelCurrentDate = new Date();
 
     let shiftData = {};
@@ -1068,35 +960,21 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
-    // 免費 WeatherAPI key
     const WEATHER_API_KEY = "8973aefebaa94d458df83850242207";
 
-    // 台灣常見縣市對應表（確保解析精確性）
     const CITY_MAP = [
-      { name: '台北', query: 'Taipei' },
-      { name: '臺北', query: 'Taipei' },
-      { name: '新北', query: 'New Taipei' },
-      { name: '桃園', query: 'Taoyuan' },
-      { name: '台中', query: 'Taichung' },
-      { name: '臺中', query: 'Taichung' },
-      { name: '台南', query: 'Tainan' },
-      { name: '臺南', query: 'Tainan' },
-      { name: '高雄', query: 'Kaohsiung' },
-      { name: '基隆', query: 'Keelung' },
-      { name: '新竹', query: 'Hsinchu' },
-      { name: '苗栗', query: 'Miaoli' },
-      { name: '彰化', query: 'Changhua' },
-      { name: '南投', query: 'Nantou' },
-      { name: '雲林', query: 'Yunlin' },
-      { name: '嘉義', query: 'Chiayi' },
-      { name: '屏東', query: 'Pingtung' },
-      { name: '宜蘭', query: 'Yilan' },
-      { name: '花蓮', query: 'Hualien' },
-      { name: '台東', query: 'Taitung' },
-      { name: '臺東', query: 'Taitung' },
-      { name: '澎湖', query: 'Penghu' },
-      { name: '金門', query: 'Kinmen' },
-      { name: '連江', query: 'Lienchiang' },
+      { name: '台北', query: 'Taipei' }, { name: '臺北', query: 'Taipei' },
+      { name: '新北', query: 'New Taipei' }, { name: '桃園', query: 'Taoyuan' },
+      { name: '台中', query: 'Taichung' }, { name: '臺中', query: 'Taichung' },
+      { name: '台南', query: 'Tainan' }, { name: '臺南', query: 'Tainan' },
+      { name: '高雄', query: 'Kaohsiung' }, { name: '基隆', query: 'Keelung' },
+      { name: '新竹', query: 'Hsinchu' }, { name: '苗栗', query: 'Miaoli' },
+      { name: '彰化', query: 'Changhua' }, { name: '南投', query: 'Nantou' },
+      { name: '雲林', query: 'Yunlin' }, { name: '嘉義', query: 'Chiayi' },
+      { name: '屏東', query: 'Pingtung' }, { name: '宜蘭', query: 'Yilan' },
+      { name: '花蓮', query: 'Hualien' }, { name: '台東', query: 'Taitung' },
+      { name: '臺東', query: 'Taitung' }, { name: '澎湖', query: 'Penghu' },
+      { name: '金門', query: 'Kinmen' }, { name: '連江', query: 'Lienchiang' },
       { name: '馬祖', query: 'Matsu' }
     ];
 
@@ -1134,10 +1012,13 @@
       if (page === 'shift') {
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
         document.getElementById('shift-page').classList.add('active');
-      } else {
+      } else if (page === 'travel') {
         document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('travel-page').classList.add('active');
         renderTravelWeekBar();
+      } else if (page === 'wife') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('wife-page').classList.add('active');
       }
     }
 
@@ -1244,7 +1125,6 @@
 
     function changeMonth(delta) {
       const track = document.getElementById('slider-track');
-
       track.classList.add('animate');
       const targetX = delta > 0 ? -66.6666 : 0;
       track.style.transform = `translate3d(${targetX}%, 0, 0)`;
@@ -1317,18 +1197,15 @@
       return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
     }
 
-    /* 🏙️ 從地名提取縣市名稱 */
     function extractCityQuery(locationName) {
       for (const item of CITY_MAP) {
         if (locationName.includes(item.name)) {
           return item.query;
         }
       }
-      // 若無匹配則預設送出地名給 WeatherAPI 進行自動定位
       return locationName;
     }
 
-    /* 🌧️ 抓取縣市當天降雨機率 */
     async function fetchRainChance(locationName, dateStr) {
       const cityQuery = extractCityQuery(locationName);
       const cacheKey = `${cityQuery}_${dateStr}`;
@@ -1349,9 +1226,7 @@
           weatherCache[cacheKey] = chance;
           return chance;
         }
-      } catch (e) {
-        // 氣象 API 連線失敗或日期超出免費預報範圍時自動忽略
-      }
+      } catch (e) {}
 
       weatherCache[cacheKey] = null;
       return null;
@@ -1398,7 +1273,6 @@
         `;
         timelineContainer.appendChild(itemElem);
 
-        // 自動取得該縣市當日降雨機率
         fetchRainChance(item.title, dateStr).then(rainChance => {
           const container = document.getElementById(`rain-${key}`);
           if (container && rainChance !== null) {
@@ -1419,12 +1293,10 @@
 
       container.addEventListener('dragstart', (e) => {
         draggedItem = e.target.closest('.timeline-item');
-        if (draggedItem) {
-          draggedItem.classList.add('dragging');
-        }
+        if (draggedItem) draggedItem.classList.add('dragging');
       });
 
-      container.addEventListener('dragend', (e) => {
+      container.addEventListener('dragend', () => {
         if (draggedItem) {
           draggedItem.classList.remove('dragging');
           saveReorderedItems();
@@ -1436,11 +1308,8 @@
         e.preventDefault();
         const afterElement = getDragAfterElement(container, e.clientY);
         if (draggedItem) {
-          if (afterElement == null) {
-            container.appendChild(draggedItem);
-          } else {
-            container.insertBefore(draggedItem, afterElement);
-          }
+          if (afterElement == null) container.appendChild(draggedItem);
+          else container.insertBefore(draggedItem, afterElement);
         }
       });
 
@@ -1449,24 +1318,16 @@
       container.addEventListener('touchstart', (e) => {
         const handle = e.target.closest('.drag-handle');
         if (!handle) return;
-        
         activeTouchItem = handle.closest('.timeline-item');
-        if (activeTouchItem) {
-          activeTouchItem.classList.add('dragging');
-        }
+        if (activeTouchItem) activeTouchItem.classList.add('dragging');
       }, { passive: true });
 
       container.addEventListener('touchmove', (e) => {
         if (!activeTouchItem) return;
-        
         const touchY = e.touches[0].clientY;
         const afterElement = getDragAfterElement(container, touchY);
-        
-        if (afterElement == null) {
-          container.appendChild(activeTouchItem);
-        } else {
-          container.insertBefore(activeTouchItem, afterElement);
-        }
+        if (afterElement == null) container.appendChild(activeTouchItem);
+        else container.insertBefore(activeTouchItem, afterElement);
       }, { passive: true });
 
       container.addEventListener('touchend', () => {
