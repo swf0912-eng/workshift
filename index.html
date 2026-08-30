@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v12.0 - 檢視/編輯完全分工版</title>
+  <title>瑋與老婆的行事曆 v13.0 - 簡潔無圖示拖曳版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -505,7 +505,7 @@
 
     .shift-custom { background: var(--shift-custom-bg); }
 
-    /* ✈️ 旅遊行程整合小標籤 */
+    /* ✈️ 旅遊行程整合小標籤（已移除圖示） */
     .travel-tag {
       width: 98%;
       background: linear-gradient(135deg, #00c6ff, #0072ff);
@@ -592,19 +592,18 @@
       border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.88rem; color: #2c3e50; outline: none;
     }
 
-    .modal-section-title {
-      font-size: 0.85rem; font-weight: 900; color: #0083b0; margin: 12px 0 6px 0; display: flex; justify-content: space-between; align-items: center;
-    }
-
-    .travel-list-modal { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    /* 拖曳列表與項目 */
+    .travel-list-modal { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .travel-item-modal {
-      display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.85);
-      padding: 8px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; color: #2c3e50; border: 1px solid rgba(255, 255, 255, 0.9);
+      display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.95);
+      padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; color: #2c3e50;
+      border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: transform 0.15s ease, opacity 0.15s ease; touch-action: none;
     }
+    .travel-item-modal.dragging { opacity: 0.5; transform: scale(1.02); box-shadow: 0 8px 20px rgba(0, 180, 219, 0.3); }
 
-    .travel-item-modal a {
-      color: #0083b0; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
-    }
+    .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 8px; touch-action: none; }
+    .travel-item-modal a { color: #2c3e50; text-decoration: none; flex-grow: 1; }
 
     .embedded-map-container {
       margin-top: 8px; width: 100%; height: 140px; border-radius: 12px;
@@ -754,7 +753,7 @@
               <td colspan="5" class="span-row" data-day="all">午餐 / 午休時間</td>
             </tr>
             <tr data-slot="s5">
-              <td>Fifth節</td>
+              <td>第五節</td>
               <td class="time-col">13:25<br>14:05</td>
               <td data-day="1"></td>
               <td data-day="2" class="world-subject">與世界做朋友<br><span style="font-size:0.65rem;">四乙</span></td>
@@ -787,7 +786,7 @@
 
   </div>
 
-  <!-- 👁️ 檢視模式：旅遊行程檢視與管理彈窗 -->
+  <!-- 👁️ 檢視模式：旅遊行程檢視、編輯與拖曳排序彈窗 -->
   <div class="modal-overlay" id="view-modal-overlay">
     <div class="modal">
       <h3 id="view-modal-date-title">當日旅遊行程</h3>
@@ -795,14 +794,14 @@
       <!-- 當天排班小資訊 -->
       <div id="view-shift-info" style="text-align:center; margin-bottom:12px; font-size:0.85rem; font-weight:800; color:var(--text-muted);"></div>
 
-      <!-- 旅遊行程清單 -->
+      <!-- 旅遊行程拖曳清單 -->
       <div class="travel-list-modal" id="view-travel-list">
         <!-- 動態渲染行程 -->
       </div>
 
       <!-- 新增行程輸入框 -->
       <div class="input-group" style="display: flex; gap: 6px; margin-top: 8px;">
-        <input type="text" id="view-travel-input" placeholder="新增景點 / 餐廳 / 飯店" style="flex-grow:1;" oninput="updateViewMapPreview(this.value)">
+        <input type="text" id="view-travel-input" placeholder="新增地點名稱" style="flex-grow:1;" oninput="updateViewMapPreview(this.value)">
         <button onclick="addTravelFromViewModal()" style="padding:0 12px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">新增</button>
       </div>
 
@@ -885,6 +884,7 @@
 
       setupGestureControls();
       initBackgroundParticles();
+      setupModalDragAndDrop();
 
       updateWifeCurrentSchedule();
       setInterval(updateWifeCurrentSchedule, 1000);
@@ -901,6 +901,9 @@
       window.dbOnValue(travelRef, (snapshot) => {
         travelData = snapshot.val() || {};
         renderAllCalendars();
+        if (currentViewingDate) {
+          renderViewTravelList(currentViewingDate);
+        }
       });
     }
 
@@ -1043,14 +1046,14 @@
           cell.appendChild(shiftNode);
         }
 
-        // 旅遊行程顯示
+        // 旅遊行程顯示（排序最小者優先呈現，完全無小圖示）
         const dayTravel = travelData[dateStr] || {};
-        const travelKeys = Object.keys(dayTravel);
+        const travelKeys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
         if (travelKeys.length > 0) {
           const firstTravel = dayTravel[travelKeys[0]];
           const travelTag = document.createElement('div');
           travelTag.className = 'travel-tag';
-          travelTag.innerText = `✈️ ${firstTravel.title}`;
+          travelTag.innerText = firstTravel.title;
           cell.appendChild(travelTag);
         }
 
@@ -1154,7 +1157,6 @@
           track.classList.add('animate');
 
           if (Math.abs(dragDeltaX) < 8) {
-            // 點擊事件：在【檢視模式】下點擊日期直接開啟行程視窗
             const cell = getCellFromPoint(startX, startY);
             if (cell && cell.dataset.date) {
               openViewModal(cell.dataset.date);
@@ -1207,14 +1209,14 @@
       window.addEventListener('mouseup', (e) => onEnd(e.clientX, e.clientY));
     }
 
-    /* 👁️ 檢視模式彈窗邏輯 */
+    /* 👁️ 檢視模式彈窗與拖曳排序邏輯 */
     function openViewModal(dateStr) {
       currentViewingDate = dateStr;
       const title = document.getElementById('view-modal-date-title');
       const shiftInfo = document.getElementById('view-shift-info');
       
       const parts = dateStr.split('-');
-      title.innerText = `${parseInt(parts[1])}月${parseInt(parts[2])}日 旅遊行程`;
+      title.innerText = `${parseInt(parts[1])}月${parseInt(parts[2])}日 行程規劃`;
 
       const shift = shiftData[dateStr];
       shiftInfo.innerText = shift ? `當天排班：${shift.replace(/\n/g, ' ')}` : `當天班別：尚無排班紀錄`;
@@ -1236,10 +1238,10 @@
       container.innerHTML = '';
 
       const dayTravel = travelData[dateStr] || {};
-      const keys = Object.keys(dayTravel);
+      const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
 
       if (keys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增景點或飯店！</div>`;
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增地點！</div>`;
         return;
       }
 
@@ -1247,16 +1249,102 @@
         const item = dayTravel[key];
         const elem = document.createElement('div');
         elem.className = 'travel-item-modal';
+        elem.draggable = true;
+        elem.dataset.key = key;
+
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
 
         elem.innerHTML = `
+          <div class="drag-handle-modal">☰</div>
           <a href="${mapUrl}" target="_blank" rel="noopener noreferrer">
-            📍 ${item.title}
+            ${item.title}
           </a>
           <span style="color:#e53935; cursor:pointer; font-weight:800; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
         `;
         container.appendChild(elem);
       });
+    }
+
+    /* 彈窗內行程拖曳排序功能 */
+    function setupModalDragAndDrop() {
+      const container = document.getElementById('view-travel-list');
+      let draggedItem = null;
+
+      container.addEventListener('dragstart', (e) => {
+        draggedItem = e.target.closest('.travel-item-modal');
+        if (draggedItem) draggedItem.classList.add('dragging');
+      });
+
+      container.addEventListener('dragend', () => {
+        if (draggedItem) {
+          draggedItem.classList.remove('dragging');
+          saveModalReorderedItems();
+          draggedItem = null;
+        }
+      });
+
+      container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const afterElement = getModalDragAfterElement(container, e.clientY);
+        if (draggedItem) {
+          if (afterElement == null) container.appendChild(draggedItem);
+          else container.insertBefore(draggedItem, afterElement);
+        }
+      });
+
+      let activeTouchItem = null;
+
+      container.addEventListener('touchstart', (e) => {
+        const handle = e.target.closest('.drag-handle-modal');
+        if (!handle) return;
+        activeTouchItem = handle.closest('.travel-item-modal');
+        if (activeTouchItem) activeTouchItem.classList.add('dragging');
+      }, { passive: true });
+
+      container.addEventListener('touchmove', (e) => {
+        if (!activeTouchItem) return;
+        const touchY = e.touches[0].clientY;
+        const afterElement = getModalDragAfterElement(container, touchY);
+        if (afterElement == null) container.appendChild(activeTouchItem);
+        else container.insertBefore(activeTouchItem, afterElement);
+      }, { passive: true });
+
+      container.addEventListener('touchend', () => {
+        if (activeTouchItem) {
+          activeTouchItem.classList.remove('dragging');
+          saveModalReorderedItems();
+          activeTouchItem = null;
+        }
+      });
+    }
+
+    function getModalDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.travel-item-modal:not(.dragging)')];
+
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function saveModalReorderedItems() {
+      if (!currentViewingDate) return;
+      const items = [...document.querySelectorAll('.travel-item-modal')];
+      const updates = {};
+
+      items.forEach((item, index) => {
+        const key = item.dataset.key;
+        if (key && travelData[currentViewingDate] && travelData[currentViewingDate][key]) {
+          updates[`travel/${currentViewingDate}/${key}/order`] = index;
+        }
+      });
+
+      window.dbUpdate(window.dbRef(window.db), updates);
     }
 
     function updateViewMapPreview(val) {
@@ -1285,18 +1373,18 @@
       if (!title) return;
 
       const itemKey = Date.now().toString();
+      const currentCount = travelData[currentViewingDate] ? Object.keys(travelData[currentViewingDate]).length : 0;
+
       const updates = {};
-      updates[`travel/${currentViewingDate}/${itemKey}`] = { title };
+      updates[`travel/${currentViewingDate}/${itemKey}`] = { title, order: currentCount };
 
       window.dbUpdate(window.dbRef(window.db), updates);
       input.value = '';
       document.getElementById('view-map-iframe-box').style.display = 'none';
-      setTimeout(() => renderViewTravelList(currentViewingDate), 200);
     }
 
     function deleteTravelFromViewModal(dateStr, key) {
       window.dbRemove(window.dbRef(window.db, `travel/${dateStr}/${key}`));
-      setTimeout(() => renderViewTravelList(dateStr), 200);
     }
 
     /* ✏️ 編輯模式彈窗邏輯 (劃班表) */
