@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v13.0 - 簡潔無圖示拖曳版</title>
+  <title>瑋與老婆的行事曆 v14.0 - 地圖定位修復版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -160,12 +160,13 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
+    /* 🛡️ 固化主容器，防止頁面頂部被向上拉動 */
     .calendar-container {
       position: relative;
       z-index: 1;
       width: 100%;
       max-width: 480px;
-      height: 100%;
+      height: 100vh;
       max-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -191,6 +192,7 @@
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.03);
       gap: 4px;
+      z-index: 10;
     }
 
     .tab-btn {
@@ -505,7 +507,6 @@
 
     .shift-custom { background: var(--shift-custom-bg); }
 
-    /* ✈️ 旅遊行程整合小標籤（已移除圖示） */
     .travel-tag {
       width: 98%;
       background: linear-gradient(135deg, #00c6ff, #0072ff);
@@ -572,7 +573,7 @@
       background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 1);
       width: 92%; max-width: 360px; border-radius: 24px; padding: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); transform: scale(0.7) translateY(30px); transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      max-height: 90vh; overflow-y: auto;
+      max-height: 85vh; overflow-y: auto;
     }
     .modal-overlay.active .modal { transform: scale(1) translateY(0); }
     .modal h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; text-align: center; color: #2c3e50; }
@@ -592,7 +593,6 @@
       border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.88rem; color: #2c3e50; outline: none;
     }
 
-    /* 拖曳列表與項目 */
     .travel-list-modal { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .travel-item-modal {
       display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.95);
@@ -605,11 +605,13 @@
     .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 8px; touch-action: none; }
     .travel-item-modal a { color: #2c3e50; text-decoration: none; flex-grow: 1; }
 
+    /* 🛡️ 關鍵修復：隔離 Google 地圖，防止被載入聚焦拉動頁面 */
     .embedded-map-container {
       margin-top: 8px; width: 100%; height: 140px; border-radius: 12px;
       overflow: hidden; border: 1px solid rgba(0, 180, 219, 0.3); background: rgba(255, 255, 255, 0.5); display: none;
+      contain: layout style;
     }
-    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; }
+    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; pointer-events: auto; }
 
     .modal-actions { display: flex; gap: 10px; margin-top: 14px; }
     .btn-action { flex: 1; padding: 10px 0; border-radius: 12px; border: none; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
@@ -786,28 +788,23 @@
 
   </div>
 
-  <!-- 👁️ 檢視模式：旅遊行程檢視、編輯與拖曳排序彈窗 -->
+  <!-- 👁️ 檢視模式彈窗 -->
   <div class="modal-overlay" id="view-modal-overlay">
     <div class="modal">
       <h3 id="view-modal-date-title">當日旅遊行程</h3>
       
-      <!-- 當天排班小資訊 -->
       <div id="view-shift-info" style="text-align:center; margin-bottom:12px; font-size:0.85rem; font-weight:800; color:var(--text-muted);"></div>
 
-      <!-- 旅遊行程拖曳清單 -->
-      <div class="travel-list-modal" id="view-travel-list">
-        <!-- 動態渲染行程 -->
-      </div>
+      <div class="travel-list-modal" id="view-travel-list"></div>
 
-      <!-- 新增行程輸入框 -->
       <div class="input-group" style="display: flex; gap: 6px; margin-top: 8px;">
         <input type="text" id="view-travel-input" placeholder="新增地點名稱" style="flex-grow:1;" oninput="updateViewMapPreview(this.value)">
         <button onclick="addTravelFromViewModal()" style="padding:0 12px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">新增</button>
       </div>
 
-      <!-- 地圖預覽 -->
+      <!-- 地圖容器已加上 tabindex="-1" 防自動焦點搶奪 -->
       <div class="embedded-map-container" id="view-map-iframe-box">
-        <iframe id="view-map-iframe" src="" loading="lazy"></iframe>
+        <iframe id="view-map-iframe" src="" loading="lazy" tabindex="-1"></iframe>
       </div>
 
       <div class="modal-actions" style="margin-top: 14px;">
@@ -816,12 +813,11 @@
     </div>
   </div>
 
-  <!-- ✏️ 編輯模式：劃班表彈窗 -->
+  <!-- ✏️ 編輯模式彈窗 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <h3 id="modal-date-title">設定當天班別</h3>
       
-      <!-- 班別快速選擇 -->
       <div class="quick-btns">
         <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
@@ -860,7 +856,6 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
-    // 老婆課表各節次時間比對表
     const WIFE_SLOTS_TIME = [
       { id: 'morning_light', start: 7 * 60 + 40, end: 8 * 60 + 0 },
       { id: 'assembly',      start: 8 * 60 + 0,  end: 8 * 60 + 40 },
@@ -1012,7 +1007,6 @@
         dayNumNode.innerText = day;
         cell.appendChild(dayNumNode);
 
-        // 班別顯示
         const shift = shiftData[dateStr] || '';
         if (shift) {
           const shiftNode = document.createElement('div');
@@ -1046,7 +1040,6 @@
           cell.appendChild(shiftNode);
         }
 
-        // 旅遊行程顯示（排序最小者優先呈現，完全無小圖示）
         const dayTravel = travelData[dateStr] || {};
         const travelKeys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
         if (travelKeys.length > 0) {
@@ -1209,7 +1202,6 @@
       window.addEventListener('mouseup', (e) => onEnd(e.clientX, e.clientY));
     }
 
-    /* 👁️ 檢視模式彈窗與拖曳排序邏輯 */
     function openViewModal(dateStr) {
       currentViewingDate = dateStr;
       const title = document.getElementById('view-modal-date-title');
@@ -1265,7 +1257,6 @@
       });
     }
 
-    /* 彈窗內行程拖曳排序功能 */
     function setupModalDragAndDrop() {
       const container = document.getElementById('view-travel-list');
       let draggedItem = null;
@@ -1347,6 +1338,7 @@
       window.dbUpdate(window.dbRef(window.db), updates);
     }
 
+    /* 安全非聚焦式載入 Google 地圖預覽 */
     function updateViewMapPreview(val) {
       clearTimeout(mapTimer);
       const mapBox = document.getElementById('view-map-iframe-box');
@@ -1387,7 +1379,6 @@
       window.dbRemove(window.dbRef(window.db, `travel/${dateStr}/${key}`));
     }
 
-    /* ✏️ 編輯模式彈窗邏輯 (劃班表) */
     function toggleCellSelection(cell) {
       const dateStr = cell.dataset.date;
       if (!dateStr) return;
