@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v10.0 - 即時課表高亮版</title>
+  <title>瑋與老婆的行事曆 v11.0 - 班表與旅遊合併版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -190,14 +190,14 @@
       border: 1px solid rgba(255, 255, 255, 0.9);
       flex-shrink: 0;
       box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-      gap: 2px;
+      gap: 4px;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 7px 0;
+      padding: 8px 0;
       text-align: center;
-      font-size: 0.8rem;
+      font-size: 0.88rem;
       font-weight: 800;
       color: var(--text-muted);
       border-radius: 12px;
@@ -311,23 +311,6 @@
       background: #ffffff;
     }
 
-    .add-travel-btn-top {
-      background: linear-gradient(135deg, #00b4db, #0083b0);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 12px;
-      padding: 5px 10px;
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #ffffff;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      box-shadow: 0 3px 10px rgba(0, 180, 219, 0.35);
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
     .status-bar {
       font-size: 0.72rem;
       font-weight: 700;
@@ -401,7 +384,7 @@
 
     .day-cell {
       border-radius: 10px;
-      padding: 3px 1px;
+      padding: 2px 1px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -425,7 +408,7 @@
     }
 
     .day-number {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 900;
       color: #1a252f;
       line-height: 1;
@@ -451,11 +434,11 @@
       background: linear-gradient(135deg, #ff8c00, #ff007f);
       color: #fff;
       border-radius: 50%;
-      width: 18px; height: 18px;
+      width: 17px; height: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       font-weight: 900;
     }
 
@@ -499,8 +482,8 @@
 
     .shift-tag {
       width: 98%; text-align: center;
-      font-size: 0.65rem; font-weight: 800;
-      padding: 2px 1px; border-radius: 5px;
+      font-size: 0.62rem; font-weight: 800;
+      padding: 1.5px 1px; border-radius: 4px;
       color: #fff; line-height: 1.1;
       word-break: break-all; white-space: pre-wrap;
       display: flex; align-items: center; justify-content: center;
@@ -522,177 +505,63 @@
 
     .shift-custom { background: var(--shift-custom-bg); }
 
-    /* ✈️ 旅遊規劃樣式 */
-    .travel-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px; padding: 0 4px; gap: 6px;
-    }
-
-    .travel-week-bar {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
-      margin-bottom: 12px; background: rgba(255, 255, 255, 0.6);
-      padding: 6px; border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.9); flex-shrink: 0;
-    }
-
-    .week-day-card {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 6px 2px; border-radius: 10px;
-      background: rgba(255, 255, 255, 0.9); border: 2px solid transparent;
-      cursor: pointer; position: relative; transition: all 0.2s ease; z-index: 1;
-    }
-
-    .week-day-card::after {
-      content: ''; position: absolute; inset: 0; padding: 2px; border-radius: 10px;
-      background: conic-gradient(from var(--angle), #00c6ff, #ff758c, #8e2de2, #00c6ff);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      z-index: 2; pointer-events: none; animation: rotateGradient 4s linear infinite; opacity: 0.7;
-    }
-
-    .week-day-card .w-name { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); z-index: 1; }
-    .week-day-card .w-num { font-size: 0.85rem; font-weight: 900; color: #2c3e50; margin-top: 2px; z-index: 1; }
-
-    .week-day-card.active {
-      background: #ffffff; box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); transform: scale(1.05);
-    }
-
-    .week-day-card.active::after { opacity: 1; animation-duration: 2s; }
-
-    .has-plan-dot {
-      width: 5px; height: 5px; border-radius: 50%; background: #00b4db;
-      box-shadow: 0 0 6px #00b4db; position: absolute; bottom: 3px; z-index: 1;
-    }
-
-    .timeline-container {
-      flex-grow: 1; overflow-y: auto; padding-right: 4px; display: flex;
-      flex-direction: column; gap: 10px; padding-bottom: 20px; touch-action: pan-y; position: relative;
-    }
-
-    .timeline-item {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(255, 255, 255, 0.95);
-      border-left: 5px solid #00b4db; border-radius: 16px; padding: 14px 12px;
-      position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease; touch-action: none;
-    }
-
-    .timeline-item.dragging { opacity: 0.6; transform: scale(1.02); box-shadow: 0 8px 25px rgba(0, 180, 219, 0.4); z-index: 1000; }
-    .drag-handle { color: #90a4ae; font-size: 1.2rem; cursor: grab; padding: 4px 8px; touch-action: none; display: flex; align-items: center; justify-content: center; }
-    .timeline-item.type-food { border-left-color: #ff758c; }
-    .timeline-item.type-hotel { border-left-color: #8e2de2; }
-    .timeline-info { flex-grow: 1; display: flex; align-items: center; }
-    .map-link { color: #2c3e50; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .timeline-title { font-size: 0.98rem; font-weight: 800; color: #2c3e50; }
-
-    .rain-badge {
-      font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 12px;
-      background: rgba(0, 180, 219, 0.12); color: #00779a; border: 1px solid rgba(0, 180, 219, 0.3);
-      display: inline-flex; align-items: center; gap: 2px; margin-left: 6px;
-    }
-    .rain-badge.high-rain { background: rgba(229, 57, 53, 0.12); color: #d32f2f; border-color: rgba(229, 57, 53, 0.3); }
-
-    .timeline-delete {
-      background: rgba(229, 57, 53, 0.1); border: none; color: #e53935;
-      width: 26px; height: 26px; border-radius: 50%; font-size: 0.85rem; font-weight: 800;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    /* ✈️ 旅遊行程整合小標籤 */
+    .travel-tag {
+      width: 98%;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: #fff;
+      font-size: 0.58rem;
+      font-weight: 800;
+      padding: 1px 2px;
+      border-radius: 4px;
+      margin-top: 1px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: 0 2px 4px rgba(0, 114, 255, 0.2);
+      z-index: 1;
     }
 
     /* 👩‍🏫 老婆課表專屬樣式 */
     .wife-schedule-wrapper {
-      flex-grow: 1;
-      overflow-y: auto;
-      touch-action: pan-y;
-      padding-right: 2px;
+      flex-grow: 1; overflow-y: auto; touch-action: pan-y; padding-right: 2px;
     }
 
     .wife-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 3px;
-      margin-top: 4px;
+      width: 100%; border-collapse: separate; border-spacing: 3px; margin-top: 4px;
     }
 
     .wife-table th, .wife-table td {
-      text-align: center;
-      padding: 6px 2px;
-      font-size: 0.75rem;
-      border-radius: 8px;
-      position: relative;
+      text-align: center; padding: 6px 2px; font-size: 0.75rem; border-radius: 8px; position: relative;
     }
 
-    .wife-table th {
-      background: rgba(0, 180, 219, 0.15);
-      color: #00779a;
-      font-weight: 900;
-    }
+    .wife-table th { background: rgba(0, 180, 219, 0.15); color: #00779a; font-weight: 900; }
 
     .wife-table td {
-      background: rgba(255, 255, 255, 0.85);
-      color: #2c3e50;
-      font-weight: 700;
-      vertical-align: middle;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      line-height: 1.25;
-      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.85); color: #2c3e50; font-weight: 700;
+      vertical-align: middle; border: 1px solid rgba(255, 255, 255, 0.9); line-height: 1.25; transition: all 0.3s ease;
     }
 
-    .wife-table td.time-col {
-      background: rgba(240, 244, 253, 0.9);
-      font-weight: 800;
-      color: var(--text-muted);
-      font-size: 0.68rem;
-    }
+    .wife-table td.time-col { background: rgba(240, 244, 253, 0.9); font-weight: 800; color: var(--text-muted); font-size: 0.68rem; }
+    .wife-table td.span-row { background: rgba(255, 235, 238, 0.8); color: #d32f2f; font-weight: 900; }
+    .wife-table td.eng-subject { background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2)); color: #005c7a; font-weight: 900; }
+    .wife-table td.world-subject { background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25)); color: #c2185b; font-weight: 900; }
 
-    .wife-table td.span-row {
-      background: rgba(255, 235, 238, 0.8);
-      color: #d32f2f;
-      font-weight: 900;
-    }
-
-    .wife-table td.eng-subject {
-      background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2));
-      color: #005c7a;
-      font-weight: 900;
-    }
-
-    .wife-table td.world-subject {
-      background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25));
-      color: #c2185b;
-      font-weight: 900;
-    }
-
-    /* ✨ 當前進行中時段的高亮特效 */
     .wife-table td.active-current-slot {
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.7) !important;
-      transform: scale(1.05);
-      z-index: 5;
-      font-weight: 900 !important;
+      transform: scale(1.05); z-index: 5; font-weight: 900 !important;
     }
 
     .wife-table td.active-current-slot::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      padding: 2.5px;
-      border-radius: 10px;
+      content: ''; position: absolute; inset: -2px; padding: 2.5px; border-radius: 10px;
       background: conic-gradient(from var(--angle), #ff007f, #00b4db, #ffd700, #ff007f);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: 6;
-      pointer-events: none;
-      animation: rotateGradient 1.5s linear infinite;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+      z-index: 6; pointer-events: none; animation: rotateGradient 1.5s linear infinite;
     }
 
     /* 彈窗樣式 */
-    .embedded-map-container {
-      margin-top: 10px; width: 100%; height: 160px; border-radius: 14px;
-      overflow: hidden; border: 1px solid rgba(0, 180, 219, 0.3); background: rgba(255, 255, 255, 0.5); display: none;
-    }
-    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; }
-
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(240, 244, 253, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -701,28 +570,40 @@
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal {
       background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 1);
-      width: 90%; max-width: 340px; border-radius: 24px; padding: 22px;
+      width: 92%; max-width: 360px; border-radius: 24px; padding: 20px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); transform: scale(0.7) translateY(30px); transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-height: 90vh; overflow-y: auto;
     }
     .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-    .modal h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 16px; text-align: center; color: #2c3e50; }
-    .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
-    .quick-btn { padding: 10px 0; border: none; border-radius: 10px; font-size: 0.88rem; font-weight: 800; color: #fff; cursor: pointer; position: relative; overflow: hidden; }
+    .modal h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; text-align: center; color: #2c3e50; }
+    
+    .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
+    .quick-btn { padding: 8px 0; border: none; border-radius: 10px; font-size: 0.82rem; font-weight: 800; color: #fff; cursor: pointer; }
     .quick-btn.q-day { background: var(--shift-day-bg); }
     .quick-btn.q-noon { background: var(--shift-noon-bg); }
     .quick-btn.q-night { background: var(--shift-night-bg); }
     .quick-btn.q-r-off { background: var(--shift-r-off-bg); }
     .quick-btn.q-off { background: var(--shift-off-bg); }
 
-    .input-group { margin-bottom: 14px; }
-    .input-group label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+    .input-group { margin-bottom: 12px; }
+    .input-group label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; }
     .input-group input, .input-group select, .input-group textarea {
-      width: 100%; padding: 10px; background: rgba(240, 244, 253, 0.8);
-      border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.92rem; color: #2c3e50; outline: none; user-select: text; -webkit-user-select: text;
+      width: 100%; padding: 8px; background: rgba(240, 244, 253, 0.8);
+      border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.88rem; color: #2c3e50; outline: none;
     }
-    .input-group select { background: rgba(255, 255, 255, 0.9); color: #2c3e50; }
-    .modal-actions { display: flex; gap: 12px; margin-top: 10px; }
-    .btn-action { flex: 1; padding: 11px 0; border-radius: 12px; border: none; font-size: 0.92rem; font-weight: 800; cursor: pointer; }
+
+    .modal-section-title {
+      font-size: 0.85rem; font-weight: 900; color: #0083b0; margin: 12px 0 6px 0; display: flex; justify-content: space-between; align-items: center;
+    }
+
+    .travel-list-modal { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .travel-item-modal {
+      display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.8);
+      padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; color: #2c3e50;
+    }
+
+    .modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .btn-action { flex: 1; padding: 10px 0; border-radius: 12px; border: none; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
     .btn-cancel { background: rgba(0, 0, 0, 0.08); color: #607d8b; }
     .btn-save { background: linear-gradient(135deg, #00b4db, #0083b0); color: #fff; box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); }
 
@@ -748,14 +629,13 @@
 
   <div class="calendar-container">
     
-    <!-- 三分頁導覽標籤 -->
+    <!-- 兩大主分頁導覽 -->
     <div class="nav-tabs">
-      <div class="tab-btn active" onclick="switchPage('shift')">📅 班表管理</div>
-      <div class="tab-btn" onclick="switchPage('travel')">✈️ 旅遊規劃</div>
+      <div class="tab-btn active" onclick="switchPage('shift')">📅 班表與旅遊</div>
       <div class="tab-btn" onclick="switchPage('wife')">👩‍🏫 老婆班表</div>
     </div>
 
-    <!-- 📅 第一頁：班表管理 -->
+    <!-- 📅 第一頁：班表與旅遊月曆 -->
     <div class="page-content active" id="shift-page">
       <div class="top-bar">
         <div class="status-bar">
@@ -786,22 +666,7 @@
       </div>
     </div>
 
-    <!-- ✈️ 第二頁：旅遊規劃 -->
-    <div class="page-content" id="travel-page">
-      <div class="travel-header">
-        <button class="nav-btn" onclick="changeTravelWeek(-1)">‹ 上一週</button>
-        <h2 id="travel-week-title" style="font-size: 1rem; font-weight: 900; background: linear-gradient(to right, #0083b0, #ff007f); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h2>
-        <div style="display: flex; gap: 6px;">
-          <button class="nav-btn" onclick="changeTravelWeek(1)">下一週 ›</button>
-          <button class="add-travel-btn-top" onclick="openTravelModal()">+ 新增</button>
-        </div>
-      </div>
-
-      <div class="travel-week-bar" id="travel-week-bar"></div>
-      <div class="timeline-container" id="timeline-list"></div>
-    </div>
-
-    <!-- 👩‍🏫 第三頁：老婆課表 -->
+    <!-- 👩‍🏫 第二頁：老婆課表 -->
     <div class="page-content" id="wife-page">
       <div style="margin-bottom: 8px; text-align: center;">
         <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -912,10 +777,12 @@
 
   </div>
 
-  <!-- 班表設定彈窗 -->
+  <!-- 整合版班表與旅遊設定彈窗 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
-      <h3 id="modal-date-title">統一設定班別與備註</h3>
+      <h3 id="modal-date-title">日期詳細設定</h3>
+      
+      <!-- 班別快速選擇 -->
       <div class="quick-btns">
         <button class="quick-btn q-day" onclick="setQuick('早班')">早班</button>
         <button class="quick-btn q-noon" onclick="setQuick('中班')">中班</button>
@@ -930,6 +797,20 @@
         <textarea id="shift-input" placeholder="例如：&#10;早班&#10;開會"></textarea>
       </div>
 
+      <!-- 旅遊行程管理區 -->
+      <div class="modal-section-title">
+        <span>✈️ 當日旅遊行程</span>
+      </div>
+
+      <div class="travel-list-modal" id="modal-travel-list">
+        <!-- 動態渲染旅遊行程 -->
+      </div>
+
+      <div class="input-group" style="display: flex; gap: 6px;">
+        <input type="text" id="modal-travel-input" placeholder="新增景點/住宿/餐廳" style="flex-grow:1;">
+        <button onclick="addTravelFromModal()" style="padding:0 12px; background:#00b4db; color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">新增</button>
+      </div>
+
       <div class="modal-actions">
         <button class="btn-action btn-cancel" onclick="closeModal()">取消</button>
         <button class="btn-action btn-save" onclick="saveData()">儲存同步</button>
@@ -937,44 +818,12 @@
     </div>
   </div>
 
-  <!-- 新增旅遊行程彈窗 -->
-  <div class="modal-overlay" id="travel-modal-overlay">
-    <div class="modal">
-      <h3>新增旅遊行程</h3>
-      
-      <div class="input-group">
-        <label>行程類別：</label>
-        <select id="travel-type-input">
-          <option value="spot">🎡 景點</option>
-          <option value="food">🍴 餐廳</option>
-          <option value="hotel">🏨 住宿</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>景點 / 住宿名稱：</label>
-        <input type="text" id="travel-title-input" placeholder="例如：台北101 / 宜蘭礁溪溫泉 / 台中逢甲夜市" oninput="updateEmbeddedMap(this.value)">
-      </div>
-
-      <div class="embedded-map-container" id="map-iframe-box">
-        <iframe id="map-iframe" src="" loading="lazy"></iframe>
-      </div>
-
-      <div class="modal-actions">
-        <button class="btn-action btn-cancel" onclick="closeTravelModal()">取消</button>
-        <button class="btn-action btn-save" onclick="saveTravelItem()">新增行程</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     let currentYear = new Date().getFullYear();
     let currentMonth = new Date().getMonth(); 
-    let travelCurrentDate = new Date();
 
     let shiftData = {};
     let travelData = {};
-    let weatherCache = {};
 
     let isEditMode = false;
     let isDragging = false;
@@ -983,27 +832,8 @@
 
     let startX = 0; startY = 0; currentX = 0; currentY = 0; dragDeltaX = 0;
     let isHorizontalGesture = false;
-    let mapTimer = null;
 
-    const WEATHER_API_KEY = "8973aefebaa94d458df83850242207";
-
-    const CITY_MAP = [
-      { name: '台北', query: 'Taipei' }, { name: '臺北', query: 'Taipei' },
-      { name: '新北', query: 'New Taipei' }, { name: '桃園', query: 'Taoyuan' },
-      { name: '台中', query: 'Taichung' }, { name: '臺中', query: 'Taichung' },
-      { name: '台南', query: 'Tainan' }, { name: '臺南', query: 'Tainan' },
-      { name: '高雄', query: 'Kaohsiung' }, { name: '基隆', query: 'Keelung' },
-      { name: '新竹', query: 'Hsinchu' }, { name: '苗栗', query: 'Miaoli' },
-      { name: '彰化', query: 'Changhua' }, { name: '南投', query: 'Nantou' },
-      { name: '雲林', query: 'Yunlin' }, { name: '嘉義', query: 'Chiayi' },
-      { name: '屏東', query: 'Pingtung' }, { name: '宜蘭', query: 'Yilan' },
-      { name: '花蓮', query: 'Hualien' }, { name: '台東', query: 'Taitung' },
-      { name: '臺東', query: 'Taitung' }, { name: '澎湖', query: 'Penghu' },
-      { name: '金門', query: 'Kinmen' }, { name: '連江', query: 'Lienchiang' },
-      { name: '馬祖', query: 'Matsu' }
-    ];
-
-    // 老婆課表各節次時間比對表 (以分鐘為單位計算)
+    // 老婆課表各節次時間比對表
     const WIFE_SLOTS_TIME = [
       { id: 'morning_light', start: 7 * 60 + 40, end: 8 * 60 + 0 },
       { id: 'assembly',      start: 8 * 60 + 0,  end: 8 * 60 + 40 },
@@ -1027,7 +857,6 @@
 
       setupGestureControls();
       initBackgroundParticles();
-      setupDragAndDrop();
 
       // 啟動即時比對老婆課表時段
       updateWifeCurrentSchedule();
@@ -1044,32 +873,27 @@
       const travelRef = window.dbRef(window.db, 'travel');
       window.dbOnValue(travelRef, (snapshot) => {
         travelData = snapshot.val() || {};
-        renderTravelWeekBar();
+        renderAllCalendars();
       });
     }
 
-    /* ⏰ 即時高亮老婆目前課表時段 */
     function updateWifeCurrentSchedule() {
       const now = new Date();
-      const currentDay = now.getDay(); // 0:週日, 1:週一 ... 5:週五, 6:週六
+      const currentDay = now.getDay();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // 先清除先前的高亮標記
       document.querySelectorAll('.wife-table td.active-current-slot').forEach(td => {
         td.classList.remove('active-current-slot');
       });
 
-      // 週末不進行高亮
       if (currentDay < 1 || currentDay > 5) return;
 
-      // 找出符合當前時間的時段
       const activeSlot = WIFE_SLOTS_TIME.find(slot => currentMinutes >= slot.start && currentMinutes <= slot.end);
       if (!activeSlot) return;
 
       const targetRow = document.querySelector(`.wife-table tr[data-slot="${activeSlot.id}"]`);
       if (!targetRow) return;
 
-      // 尋找對應週別的格子（包含跨星期的全區，如晨光與午休）
       let targetCell = targetRow.querySelector(`td[data-day="${currentDay}"]`);
       if (!targetCell) {
         targetCell = targetRow.querySelector(`td[data-day="all"]`);
@@ -1087,12 +911,8 @@
       if (page === 'shift') {
         document.querySelectorAll('.tab-btn')[0].classList.add('active');
         document.getElementById('shift-page').classList.add('active');
-      } else if (page === 'travel') {
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
-        document.getElementById('travel-page').classList.add('active');
-        renderTravelWeekBar();
       } else if (page === 'wife') {
-        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
         document.getElementById('wife-page').classList.add('active');
         updateWifeCurrentSchedule();
       }
@@ -1162,6 +982,7 @@
         dayNumNode.innerText = day;
         cell.appendChild(dayNumNode);
 
+        // 班別顯示
         const shift = shiftData[dateStr] || '';
         if (shift) {
           const shiftNode = document.createElement('div');
@@ -1195,6 +1016,17 @@
           cell.appendChild(shiftNode);
         }
 
+        // 旅遊行程顯示
+        const dayTravel = travelData[dateStr] || {};
+        const travelKeys = Object.keys(dayTravel);
+        if (travelKeys.length > 0) {
+          const firstTravel = dayTravel[travelKeys[0]];
+          const travelTag = document.createElement('div');
+          travelTag.className = 'travel-tag';
+          travelTag.innerText = `✈️ ${firstTravel.title}`;
+          cell.appendChild(travelTag);
+        }
+
         gridElem.appendChild(cell);
       }
     }
@@ -1212,289 +1044,6 @@
         currentMonth = nextDate.getMonth();
         renderAllCalendars();
       }, 300);
-    }
-
-    function getMonday(d) {
-      const date = new Date(d);
-      const day = date.getDay();
-      const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-      return new Date(date.setDate(diff));
-    }
-
-    function formatDateStr(date) {
-      const y = date.getFullYear();
-      const m = String(date.getMonth() + 1).padStart(2, '0');
-      const d = String(date.getDate()).padStart(2, '0');
-      return `${y}-${m}-${d}`;
-    }
-
-    function changeTravelWeek(delta) {
-      travelCurrentDate.setDate(travelCurrentDate.getDate() + (delta * 7));
-      renderTravelWeekBar();
-    }
-
-    function renderTravelWeekBar() {
-      const monday = getMonday(travelCurrentDate);
-      const weekBar = document.getElementById('travel-week-bar');
-      weekBar.innerHTML = '';
-
-      const weekNames = ['一', '二', '三', '四', '五', '六', '日'];
-      const selectedDateStr = formatDateStr(travelCurrentDate);
-
-      document.getElementById('travel-week-title').innerText = `${monday.getFullYear()} 年 ${monday.getMonth() + 1} 月週行程`;
-
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(monday);
-        day.setDate(monday.getDate() + i);
-        const dateStr = formatDateStr(day);
-
-        const card = document.createElement('div');
-        card.className = `week-day-card ${dateStr === selectedDateStr ? 'active' : ''}`;
-        card.onclick = () => {
-          travelCurrentDate = new Date(day);
-          renderTravelWeekBar();
-        };
-
-        const hasPlan = travelData[dateStr] && Object.keys(travelData[dateStr]).length > 0;
-
-        card.innerHTML = `
-          <div class="w-name">週${weekNames[i]}</div>
-          <div class="w-num">${day.getDate()}</div>
-          ${hasPlan ? `<div class="has-plan-dot"></div>` : ''}
-        `;
-
-        weekBar.appendChild(card);
-      }
-
-      loadTravelItinerary(selectedDateStr);
-    }
-
-    function getGoogleMapsUrl(query) {
-      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-    }
-
-    function extractCityQuery(locationName) {
-      for (const item of CITY_MAP) {
-        if (locationName.includes(item.name)) {
-          return item.query;
-        }
-      }
-      return locationName;
-    }
-
-    async function fetchRainChance(locationName, dateStr) {
-      const cityQuery = extractCityQuery(locationName);
-      const cacheKey = `${cityQuery}_${dateStr}`;
-
-      if (weatherCache[cacheKey] !== undefined) {
-        return weatherCache[cacheKey];
-      }
-
-      try {
-        const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${encodeURIComponent(cityQuery)}&dt=${dateStr}&days=1`);
-        if (!res.ok) throw new Error('API Error');
-        
-        const data = await res.json();
-        const forecastDay = data.forecast?.forecastday?.[0]?.day;
-        
-        if (forecastDay && forecastDay.daily_chance_of_rain !== undefined) {
-          const chance = forecastDay.daily_chance_of_rain;
-          weatherCache[cacheKey] = chance;
-          return chance;
-        }
-      } catch (e) {}
-
-      weatherCache[cacheKey] = null;
-      return null;
-    }
-
-    async function loadTravelItinerary(dateStr) {
-      const timelineContainer = document.getElementById('timeline-list');
-      timelineContainer.innerHTML = '';
-
-      const dayTravel = travelData[dateStr] || {};
-      const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
-
-      if (keys.length === 0) {
-        timelineContainer.innerHTML = `<div style="text-align:center; color: var(--text-muted); font-size:0.85rem; margin-top:35px;">這天尚未規劃行程 ✨<br>點擊右上角「+ 新增」即可新增！</div>`;
-        return;
-      }
-
-      keys.forEach(key => {
-        const item = dayTravel[key];
-        const itemElem = document.createElement('div');
-        
-        let typeClass = 'type-spot';
-        let icon = '🎡';
-        if (item.type === 'food') { typeClass = 'type-food'; icon = '🍴'; }
-        if (item.type === 'hotel') { typeClass = 'type-hotel'; icon = '🏨'; }
-
-        itemElem.className = `timeline-item ${typeClass}`;
-        itemElem.draggable = true;
-        itemElem.dataset.key = key;
-
-        const mapUrl = getGoogleMapsUrl(item.title);
-
-        itemElem.innerHTML = `
-          <div class="drag-handle">☰</div>
-          <div class="timeline-info">
-            <div class="timeline-title">
-              <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="map-link">
-                <span>${icon} ${item.title}</span>
-                <span class="rain-badge-container" id="rain-${key}"></span>
-              </a>
-            </div>
-          </div>
-          <button class="timeline-delete" onclick="deleteTravelItem('${dateStr}', '${key}')">✕</button>
-        `;
-        timelineContainer.appendChild(itemElem);
-
-        fetchRainChance(item.title, dateStr).then(rainChance => {
-          const container = document.getElementById(`rain-${key}`);
-          if (container && rainChance !== null) {
-            const isHigh = rainChance >= 50;
-            container.innerHTML = `
-              <span class="rain-badge ${isHigh ? 'high-rain' : ''}">
-                🌧️ ${rainChance}%
-              </span>
-            `;
-          }
-        });
-      });
-    }
-
-    function setupDragAndDrop() {
-      const container = document.getElementById('timeline-list');
-      let draggedItem = null;
-
-      container.addEventListener('dragstart', (e) => {
-        draggedItem = e.target.closest('.timeline-item');
-        if (draggedItem) draggedItem.classList.add('dragging');
-      });
-
-      container.addEventListener('dragend', () => {
-        if (draggedItem) {
-          draggedItem.classList.remove('dragging');
-          saveReorderedItems();
-          draggedItem = null;
-        }
-      });
-
-      container.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(container, e.clientY);
-        if (draggedItem) {
-          if (afterElement == null) container.appendChild(draggedItem);
-          else container.insertBefore(draggedItem, afterElement);
-        }
-      });
-
-      let activeTouchItem = null;
-
-      container.addEventListener('touchstart', (e) => {
-        const handle = e.target.closest('.drag-handle');
-        if (!handle) return;
-        activeTouchItem = handle.closest('.timeline-item');
-        if (activeTouchItem) activeTouchItem.classList.add('dragging');
-      }, { passive: true });
-
-      container.addEventListener('touchmove', (e) => {
-        if (!activeTouchItem) return;
-        const touchY = e.touches[0].clientY;
-        const afterElement = getDragAfterElement(container, touchY);
-        if (afterElement == null) container.appendChild(activeTouchItem);
-        else container.insertBefore(activeTouchItem, afterElement);
-      }, { passive: true });
-
-      container.addEventListener('touchend', () => {
-        if (activeTouchItem) {
-          activeTouchItem.classList.remove('dragging');
-          saveReorderedItems();
-          activeTouchItem = null;
-        }
-      });
-    }
-
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.timeline-item:not(.dragging)')];
-
-      return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return { offset: offset, element: child };
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY }).element;
-    }
-
-    function saveReorderedItems() {
-      const dateStr = formatDateStr(travelCurrentDate);
-      const items = [...document.querySelectorAll('.timeline-item')];
-      const updates = {};
-
-      items.forEach((item, index) => {
-        const key = item.dataset.key;
-        if (key && travelData[dateStr] && travelData[dateStr][key]) {
-          updates[`travel/${dateStr}/${key}/order`] = index;
-        }
-      });
-
-      window.dbUpdate(window.dbRef(window.db), updates);
-    }
-
-    function updateEmbeddedMap(val) {
-      clearTimeout(mapTimer);
-      const mapBox = document.getElementById('map-iframe-box');
-      const iframe = document.getElementById('map-iframe');
-      const query = val.trim();
-
-      if (!query) {
-        mapBox.style.display = 'none';
-        iframe.src = '';
-        return;
-      }
-
-      mapTimer = setTimeout(() => {
-        mapBox.style.display = 'block';
-        iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-      }, 500);
-    }
-
-    function openTravelModal() {
-      document.getElementById('travel-title-input').value = '';
-      document.getElementById('map-iframe-box').style.display = 'none';
-      document.getElementById('map-iframe').src = '';
-      document.getElementById('travel-modal-overlay').classList.add('active');
-    }
-
-    function closeTravelModal() {
-      document.getElementById('travel-modal-overlay').classList.remove('active');
-    }
-
-    function saveTravelItem() {
-      const dateStr = formatDateStr(travelCurrentDate);
-      const type = document.getElementById('travel-type-input').value;
-      const title = document.getElementById('travel-title-input').value.trim();
-
-      if (!title) {
-        alert('請輸入景點名稱！');
-        return;
-      }
-
-      const itemKey = Date.now().toString();
-      const currentCount = travelData[dateStr] ? Object.keys(travelData[dateStr]).length : 0;
-      
-      const updates = {};
-      updates[`travel/${dateStr}/${itemKey}`] = { type, title, order: currentCount };
-
-      window.dbUpdate(window.dbRef(window.db), updates);
-      closeTravelModal();
-    }
-
-    function deleteTravelItem(dateStr, key) {
-      window.dbRemove(window.dbRef(window.db, `travel/${dateStr}/${key}`));
     }
 
     function setupGestureControls() {
@@ -1641,13 +1190,61 @@
       const title = document.getElementById('modal-date-title');
       if (selectedDates.size === 1) {
         const date = Array.from(selectedDates)[0];
-        title.innerText = `${parseInt(date.split('-')[1])}月${parseInt(date.split('-')[2])}日 班別設定`;
+        title.innerText = `${parseInt(date.split('-')[1])}月${parseInt(date.split('-')[2])}日 詳細設定`;
         document.getElementById('shift-input').value = shiftData[date] || '';
+        renderModalTravelList(date);
       } else {
-        title.innerText = `已選擇 ${selectedDates.size} 天，統一設定班別：`;
+        title.innerText = `已選擇 ${selectedDates.size} 天，批次設定班別：`;
         document.getElementById('shift-input').value = '';
+        document.getElementById('modal-travel-list').innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem;">多選模式下無法新增旅遊行程</div>`;
       }
       document.getElementById('modal-overlay').classList.add('active');
+    }
+
+    function renderModalTravelList(dateStr) {
+      const listContainer = document.getElementById('modal-travel-list');
+      listContainer.innerHTML = '';
+
+      const dayTravel = travelData[dateStr] || {};
+      const keys = Object.keys(dayTravel);
+
+      if (keys.length === 0) {
+        listContainer.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; text-align:center;">尚無旅遊行程</div>`;
+        return;
+      }
+
+      keys.forEach(key => {
+        const item = dayTravel[key];
+        const elem = document.createElement('div');
+        elem.className = 'travel-item-modal';
+        elem.innerHTML = `
+          <span>📍 ${item.title}</span>
+          <span style="color:#e53935; cursor:pointer;" onclick="deleteTravelFromModal('${dateStr}', '${key}')">✕</span>
+        `;
+        listContainer.appendChild(elem);
+      });
+    }
+
+    function addTravelFromModal() {
+      if (selectedDates.size !== 1) return;
+      const dateStr = Array.from(selectedDates)[0];
+      const input = document.getElementById('modal-travel-input');
+      const title = input.value.trim();
+
+      if (!title) return;
+
+      const itemKey = Date.now().toString();
+      const updates = {};
+      updates[`travel/${dateStr}/${itemKey}`] = { title };
+
+      window.dbUpdate(window.dbRef(window.db), updates);
+      input.value = '';
+      setTimeout(() => renderModalTravelList(dateStr), 200);
+    }
+
+    function deleteTravelFromModal(dateStr, key) {
+      window.dbRemove(window.dbRef(window.db, `travel/${dateStr}/${key}`));
+      setTimeout(() => renderModalTravelList(dateStr), 200);
     }
 
     function closeModal() {
