@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v16.0 - 全時段（含空堂）亮燈修復版</title>
+  <title>瑋與老婆的行事曆 v17.0 - 頁面防位移穩定版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -61,10 +61,13 @@
       -webkit-user-select: none;
     }
 
+    /* 防位移核心防護：強行鎖定視窗邊界 */
     html, body {
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
+      height: 100%;
+      width: 100%;
+      overflow: hidden !important;
+      position: fixed;
+      top: 0; left: 0;
       touch-action: none;
       background: #f0f4fd;
     }
@@ -76,7 +79,6 @@
       justify-content: center;
       align-items: center;
       padding: 6px;
-      position: relative;
     }
 
     #bg-canvas {
@@ -165,8 +167,7 @@
       z-index: 1;
       width: 100%;
       max-width: 480px;
-      height: 100vh;
-      max-height: 100vh;
+      height: 100%;
       display: flex;
       flex-direction: column;
       background: var(--card-glass);
@@ -548,7 +549,6 @@
     .wife-table td.eng-subject { background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2)); color: #005c7a; font-weight: 900; }
     .wife-table td.world-subject { background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25)); color: #c2185b; font-weight: 900; }
 
-    /* ✨ 當前進行中時段的高亮特效（無論有無課堂或空堂皆可亮燈） */
     .wife-table td.active-current-slot {
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
       transform: scale(1.06); z-index: 5; font-weight: 900 !important;
@@ -677,7 +677,7 @@
       </div>
     </div>
 
-    <!-- 👩‍🏫 第二頁：老婆課表（全週與空堂完整標註） -->
+    <!-- 👩‍🏫 第二頁：老婆課表 -->
     <div class="page-content" id="wife-page">
       <div style="margin-bottom: 8px; text-align: center;">
         <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -855,7 +855,6 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
-    // 老婆課表 10 個時段比對表
     const WIFE_SLOTS_TIME = [
       { id: 'morning_light', start: 7 * 60 + 40, end: 8 * 60 + 0 },
       { id: 'assembly',      start: 8 * 60 + 0,  end: 8 * 60 + 40 },
@@ -869,8 +868,15 @@
       { id: 's7',            start: 15 * 60 + 5,  end: 15 * 60 + 45 }
     ];
 
+    /* 🛡️ 自動重置滾動位置防護函數 */
+    function resetViewportScroll() {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+      }, 50);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      // 頁面載入時自動為課表所有 td 補齊對應 data-day 屬性
       fixWifeTableDataDays();
 
       const checkFirebase = setInterval(() => {
@@ -886,22 +892,25 @@
 
       updateWifeCurrentSchedule();
       setInterval(updateWifeCurrentSchedule, 1000);
+
+      // 監聽分頁切換與返回焦點，自動把網頁拉回最頂端
+      window.addEventListener('focus', resetViewportScroll);
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) resetViewportScroll();
+      });
     });
 
-    /* 自動維護與補齊課表所有格子的 data-day 屬性 */
     function fixWifeTableDataDays() {
       const rows = document.querySelectorAll('#wife-schedule-table tbody tr');
       rows.forEach(row => {
         const cells = row.querySelectorAll('td');
         if (cells.length === 0) return;
 
-        // 如果是跨 5 欄的列（晨光、午休）
         if (cells.length === 3 && cells[2].hasAttribute('colspan')) {
           cells[2].setAttribute('data-day', 'all');
           return;
         }
 
-        // 一般 7 欄的列：前兩欄為節次與時間，後面 5 欄依序為週一 ~ 週五 (1 ~ 5)
         if (cells.length >= 7) {
           for (let day = 1; day <= 5; day++) {
             cells[day + 1].setAttribute('data-day', day.toString());
@@ -927,28 +936,23 @@
       });
     }
 
-    /* ⏰ 即時亮燈核心邏輯 */
     function updateWifeCurrentSchedule() {
       const now = new Date();
-      const currentDay = now.getDay(); // 1:週一 ~ 5:週五
+      const currentDay = now.getDay();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // 先清除舊高亮
       document.querySelectorAll('.wife-table td.active-current-slot').forEach(td => {
         td.classList.remove('active-current-slot');
       });
 
-      // 週末不進行亮燈
       if (currentDay < 1 || currentDay > 5) return;
 
-      // 比對當前時間
       const activeSlot = WIFE_SLOTS_TIME.find(slot => currentMinutes >= slot.start && currentMinutes <= slot.end);
       if (!activeSlot) return;
 
       const targetRow = document.querySelector(`.wife-table tr[data-slot="${activeSlot.id}"]`);
       if (!targetRow) return;
 
-      // 尋找對應的格子（包含課堂與空堂）
       let targetCell = targetRow.querySelector(`td[data-day="${currentDay}"]`);
       if (!targetCell) {
         targetCell = targetRow.querySelector(`td[data-day="all"]`);
@@ -971,6 +975,7 @@
         document.getElementById('wife-page').classList.add('active');
         updateWifeCurrentSchedule();
       }
+      resetViewportScroll();
     }
 
     function toggleEditMode() {
@@ -1253,6 +1258,7 @@
 
     function closeViewModal() {
       document.getElementById('view-modal-overlay').classList.remove('active');
+      resetViewportScroll(); // 關閉彈窗時把滾動條拉回最高點
     }
 
     function renderViewTravelList(dateStr) {
@@ -1441,6 +1447,7 @@
     function closeModal() {
       document.getElementById('modal-overlay').classList.remove('active');
       clearSelectionUI();
+      resetViewportScroll(); // 關閉彈窗時把滾動條拉回最高點
     }
 
     function setQuick(val) {
