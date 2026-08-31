@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v15.0 - 課表亮燈修復版</title>
+  <title>瑋與老婆的行事曆 v16.0 - 全時段（含空堂）亮燈修復版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -548,10 +548,10 @@
     .wife-table td.eng-subject { background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2)); color: #005c7a; font-weight: 900; }
     .wife-table td.world-subject { background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25)); color: #c2185b; font-weight: 900; }
 
-    /* ✨ 當前進行中時段的高亮特效 */
+    /* ✨ 當前進行中時段的高亮特效（無論有無課堂或空堂皆可亮燈） */
     .wife-table td.active-current-slot {
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.8) !important;
-      transform: scale(1.05); z-index: 5; font-weight: 900 !important;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
+      transform: scale(1.06); z-index: 5; font-weight: 900 !important;
       background: #ffffff !important;
     }
 
@@ -677,7 +677,7 @@
       </div>
     </div>
 
-    <!-- 👩‍🏫 第二頁：老婆課表（完整 data-day 比對） -->
+    <!-- 👩‍🏫 第二頁：老婆課表（全週與空堂完整標註） -->
     <div class="page-content" id="wife-page">
       <div style="margin-bottom: 8px; text-align: center;">
         <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -855,7 +855,7 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
-    // 老婆課表 10 個時段精準比對 (單位: 分鐘)
+    // 老婆課表 10 個時段比對表
     const WIFE_SLOTS_TIME = [
       { id: 'morning_light', start: 7 * 60 + 40, end: 8 * 60 + 0 },
       { id: 'assembly',      start: 8 * 60 + 0,  end: 8 * 60 + 40 },
@@ -870,6 +870,9 @@
     ];
 
     window.addEventListener('DOMContentLoaded', () => {
+      // 頁面載入時自動為課表所有 td 補齊對應 data-day 屬性
+      fixWifeTableDataDays();
+
       const checkFirebase = setInterval(() => {
         if (window.db) {
           clearInterval(checkFirebase);
@@ -884,6 +887,28 @@
       updateWifeCurrentSchedule();
       setInterval(updateWifeCurrentSchedule, 1000);
     });
+
+    /* 自動維護與補齊課表所有格子的 data-day 屬性 */
+    function fixWifeTableDataDays() {
+      const rows = document.querySelectorAll('#wife-schedule-table tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length === 0) return;
+
+        // 如果是跨 5 欄的列（晨光、午休）
+        if (cells.length === 3 && cells[2].hasAttribute('colspan')) {
+          cells[2].setAttribute('data-day', 'all');
+          return;
+        }
+
+        // 一般 7 欄的列：前兩欄為節次與時間，後面 5 欄依序為週一 ~ 週五 (1 ~ 5)
+        if (cells.length >= 7) {
+          for (let day = 1; day <= 5; day++) {
+            cells[day + 1].setAttribute('data-day', day.toString());
+          }
+        }
+      });
+    }
 
     function initFirebaseListener() {
       const shiftsRef = window.dbRef(window.db, 'shifts');
@@ -902,28 +927,28 @@
       });
     }
 
-    /* ⏰ 即時高亮老婆課表 */
+    /* ⏰ 即時亮燈核心邏輯 */
     function updateWifeCurrentSchedule() {
       const now = new Date();
       const currentDay = now.getDay(); // 1:週一 ~ 5:週五
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // 先清除高亮標記
+      // 先清除舊高亮
       document.querySelectorAll('.wife-table td.active-current-slot').forEach(td => {
         td.classList.remove('active-current-slot');
       });
 
-      // 週末（六、日）不觸發亮燈
+      // 週末不進行亮燈
       if (currentDay < 1 || currentDay > 5) return;
 
-      // 比對當前時間區間
+      // 比對當前時間
       const activeSlot = WIFE_SLOTS_TIME.find(slot => currentMinutes >= slot.start && currentMinutes <= slot.end);
       if (!activeSlot) return;
 
       const targetRow = document.querySelector(`.wife-table tr[data-slot="${activeSlot.id}"]`);
       if (!targetRow) return;
 
-      // 優先找當天（data-day="1~5"），若無則找全區（data-day="all"，如晨光與午休）
+      // 尋找對應的格子（包含課堂與空堂）
       let targetCell = targetRow.querySelector(`td[data-day="${currentDay}"]`);
       if (!targetCell) {
         targetCell = targetRow.querySelector(`td[data-day="all"]`);
