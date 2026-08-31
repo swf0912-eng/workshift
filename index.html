@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v14.0 - 地圖定位修復版</title>
+  <title>瑋與老婆的行事曆 v15.0 - 課表亮燈修復版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -160,7 +160,6 @@
       100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
     }
 
-    /* 🛡️ 固化主容器，防止頁面頂部被向上拉動 */
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -549,13 +548,15 @@
     .wife-table td.eng-subject { background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2)); color: #005c7a; font-weight: 900; }
     .wife-table td.world-subject { background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25)); color: #c2185b; font-weight: 900; }
 
+    /* ✨ 當前進行中時段的高亮特效 */
     .wife-table td.active-current-slot {
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.7) !important;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.8) !important;
       transform: scale(1.05); z-index: 5; font-weight: 900 !important;
+      background: #ffffff !important;
     }
 
     .wife-table td.active-current-slot::after {
-      content: ''; position: absolute; inset: -2px; padding: 2.5px; border-radius: 10px;
+      content: ''; position: absolute; inset: -2.5px; padding: 2.5px; border-radius: 10px;
       background: conic-gradient(from var(--angle), #ff007f, #00b4db, #ffd700, #ff007f);
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor; mask-composite: exclude;
@@ -605,7 +606,6 @@
     .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 8px; touch-action: none; }
     .travel-item-modal a { color: #2c3e50; text-decoration: none; flex-grow: 1; }
 
-    /* 🛡️ 關鍵修復：隔離 Google 地圖，防止被載入聚焦拉動頁面 */
     .embedded-map-container {
       margin-top: 8px; width: 100%; height: 140px; border-radius: 12px;
       overflow: hidden; border: 1px solid rgba(0, 180, 219, 0.3); background: rgba(255, 255, 255, 0.5); display: none;
@@ -677,7 +677,7 @@
       </div>
     </div>
 
-    <!-- 👩‍🏫 第二頁：老婆課表 -->
+    <!-- 👩‍🏫 第二頁：老婆課表（完整 data-day 比對） -->
     <div class="page-content" id="wife-page">
       <div style="margin-bottom: 8px; text-align: center;">
         <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
@@ -802,7 +802,6 @@
         <button onclick="addTravelFromViewModal()" style="padding:0 12px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">新增</button>
       </div>
 
-      <!-- 地圖容器已加上 tabindex="-1" 防自動焦點搶奪 -->
       <div class="embedded-map-container" id="view-map-iframe-box">
         <iframe id="view-map-iframe" src="" loading="lazy" tabindex="-1"></iframe>
       </div>
@@ -856,6 +855,7 @@
     let isHorizontalGesture = false;
     let mapTimer = null;
 
+    // 老婆課表 10 個時段精準比對 (單位: 分鐘)
     const WIFE_SLOTS_TIME = [
       { id: 'morning_light', start: 7 * 60 + 40, end: 8 * 60 + 0 },
       { id: 'assembly',      start: 8 * 60 + 0,  end: 8 * 60 + 40 },
@@ -902,23 +902,28 @@
       });
     }
 
+    /* ⏰ 即時高亮老婆課表 */
     function updateWifeCurrentSchedule() {
       const now = new Date();
-      const currentDay = now.getDay();
+      const currentDay = now.getDay(); // 1:週一 ~ 5:週五
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
+      // 先清除高亮標記
       document.querySelectorAll('.wife-table td.active-current-slot').forEach(td => {
         td.classList.remove('active-current-slot');
       });
 
+      // 週末（六、日）不觸發亮燈
       if (currentDay < 1 || currentDay > 5) return;
 
+      // 比對當前時間區間
       const activeSlot = WIFE_SLOTS_TIME.find(slot => currentMinutes >= slot.start && currentMinutes <= slot.end);
       if (!activeSlot) return;
 
       const targetRow = document.querySelector(`.wife-table tr[data-slot="${activeSlot.id}"]`);
       if (!targetRow) return;
 
+      // 優先找當天（data-day="1~5"），若無則找全區（data-day="all"，如晨光與午休）
       let targetCell = targetRow.querySelector(`td[data-day="${currentDay}"]`);
       if (!targetCell) {
         targetCell = targetRow.querySelector(`td[data-day="all"]`);
@@ -1338,7 +1343,6 @@
       window.dbUpdate(window.dbRef(window.db), updates);
     }
 
-    /* 安全非聚焦式載入 Google 地圖預覽 */
     function updateViewMapPreview(val) {
       clearTimeout(mapTimer);
       const mapBox = document.getElementById('view-map-iframe-box');
