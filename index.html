@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v17.0 - 頁面防位移穩定版</title>
+  <title>瑋與老婆的行事曆 v18.0 - 彩虹流光統一版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -417,23 +417,31 @@
       z-index: 1;
     }
 
+    /* ✨ 當天（Today）改為與老婆課表相同的彩虹流光外框特效 */
     .day-cell.today {
-      border: 2.5px solid transparent !important;
-      box-shadow: 0 0 12px rgba(255, 140, 0, 0.5);
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
+      transform: scale(1.03);
+      z-index: 5;
+      background: #ffffff !important;
     }
 
-    .day-cell.today::before {
+    .day-cell.today::after {
       content: '';
       position: absolute;
-      top: -2.5px; left: -2.5px; right: -2.5px; bottom: -2.5px;
-      background: conic-gradient(from var(--angle), #ff8c00, #ff007f, #ffd700, #ff8c00);
+      inset: -2.5px;
+      padding: 2.5px;
       border-radius: 10px;
-      z-index: -1;
+      background: conic-gradient(from var(--angle), #ff007f, #00b4db, #ffd700, #ff007f);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      z-index: 6;
+      pointer-events: none;
       animation: rotateGradient 1.5s linear infinite;
     }
 
     .day-cell.today .day-number {
-      background: linear-gradient(135deg, #ff8c00, #ff007f);
+      background: linear-gradient(135deg, #ff007f, #00b4db);
       color: #fff;
       border-radius: 50%;
       width: 17px; height: 17px;
@@ -868,7 +876,6 @@
       { id: 's7',            start: 15 * 60 + 5,  end: 15 * 60 + 45 }
     ];
 
-    /* 🛡️ 自動重置滾動位置防護函數 */
     function resetViewportScroll() {
       setTimeout(() => {
         window.scrollTo(0, 0);
@@ -893,7 +900,6 @@
       updateWifeCurrentSchedule();
       setInterval(updateWifeCurrentSchedule, 1000);
 
-      // 監聽分頁切換與返回焦點，自動把網頁拉回最頂端
       window.addEventListener('focus', resetViewportScroll);
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) resetViewportScroll();
@@ -1258,7 +1264,7 @@
 
     function closeViewModal() {
       document.getElementById('view-modal-overlay').classList.remove('active');
-      resetViewportScroll(); // 關閉彈窗時把滾動條拉回最高點
+      resetViewportScroll();
     }
 
     function renderViewTravelList(dateStr) {
@@ -1447,7 +1453,7 @@
     function closeModal() {
       document.getElementById('modal-overlay').classList.remove('active');
       clearSelectionUI();
-      resetViewportScroll(); // 關閉彈窗時把滾動條拉回最高點
+      resetViewportScroll();
     }
 
     function setQuick(val) {
