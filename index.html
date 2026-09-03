@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v18.0 - 彩虹流光統一版</title>
+  <title>瑋與老婆的行事曆 v19.0 - 行程超連結增強版</title>
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -417,7 +417,7 @@
       z-index: 1;
     }
 
-    /* ✨ 當天（Today）改為與老婆課表相同的彩虹流光外框特效 */
+    /* 當天彩虹流光外框特效 */
     .day-cell.today {
       box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
       transform: scale(1.03);
@@ -607,12 +607,20 @@
       display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.95);
       padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; color: #2c3e50;
       border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      transition: transform 0.15s ease, opacity 0.15s ease; touch-action: none;
+      transition: transform 0.15s ease, opacity 0.15s ease; touch-action: none; gap: 6px;
     }
     .travel-item-modal.dragging { opacity: 0.5; transform: scale(1.02); box-shadow: 0 8px 20px rgba(0, 180, 219, 0.3); }
 
-    .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 8px; touch-action: none; }
-    .travel-item-modal a { color: #2c3e50; text-decoration: none; flex-grow: 1; }
+    .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 4px; touch-action: none; }
+    .travel-item-modal a.title-link { color: #2c3e50; text-decoration: none; flex-grow: 1; word-break: break-all; }
+    
+    /* 🔗 超連結按鈕樣式 */
+    .link-btn-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 4px 6px; background: rgba(0, 180, 219, 0.15); border-radius: 8px;
+      font-size: 0.8rem; text-decoration: none; transition: transform 0.2s ease;
+    }
+    .link-btn-icon:active { transform: scale(0.9); }
 
     .embedded-map-container {
       margin-top: 8px; width: 100%; height: 140px; border-radius: 12px;
@@ -796,7 +804,7 @@
 
   </div>
 
-  <!-- 👁️ 檢視模式彈窗 -->
+  <!-- 👁️ 檢視與行程彈窗（含網址連結欄位） -->
   <div class="modal-overlay" id="view-modal-overlay">
     <div class="modal">
       <h3 id="view-modal-date-title">當日旅遊行程</h3>
@@ -805,9 +813,15 @@
 
       <div class="travel-list-modal" id="view-travel-list"></div>
 
-      <div class="input-group" style="display: flex; gap: 6px; margin-top: 8px;">
-        <input type="text" id="view-travel-input" placeholder="新增地點名稱" style="flex-grow:1;" oninput="updateViewMapPreview(this.value)">
-        <button onclick="addTravelFromViewModal()" style="padding:0 12px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer;">新增</button>
+      <!-- 新增行程區塊（名稱 + 網址） -->
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+        <div class="input-group" style="margin-bottom: 0;">
+          <input type="text" id="view-travel-input" placeholder="新增地點名稱" oninput="updateViewMapPreview(this.value)">
+        </div>
+        <div class="input-group" style="display: flex; gap: 6px; margin-bottom: 0;">
+          <input type="url" id="view-travel-url-input" placeholder="超連結 URL (選填, https://...)" style="flex-grow:1;">
+          <button onclick="addTravelFromViewModal()" style="padding:0 14px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer; white-space:nowrap;">新增</button>
+        </div>
       </div>
 
       <div class="embedded-map-container" id="view-map-iframe-box">
@@ -1255,6 +1269,7 @@
       shiftInfo.innerText = shift ? `當天排班：${shift.replace(/\n/g, ' ')}` : `當天班別：尚無排班紀錄`;
 
       document.getElementById('view-travel-input').value = '';
+      document.getElementById('view-travel-url-input').value = '';
       document.getElementById('view-map-iframe-box').style.display = 'none';
       document.getElementById('view-map-iframe').src = '';
 
@@ -1267,6 +1282,7 @@
       resetViewportScroll();
     }
 
+    /* 渲染行程列表（具備地圖超連結與自訂網址按鈕 🔗） */
     function renderViewTravelList(dateStr) {
       const container = document.getElementById('view-travel-list');
       container.innerHTML = '';
@@ -1275,7 +1291,7 @@
       const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
 
       if (keys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增地點！</div>`;
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增地點與網址！</div>`;
         return;
       }
 
@@ -1287,12 +1303,21 @@
         elem.dataset.key = key;
 
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
+        const customUrl = item.url ? item.url.trim() : '';
+
+        // 如果有設定網址，右側顯示 🔗 按鈕
+        const urlButtonHtml = customUrl ? `
+          <a href="${customUrl}" target="_blank" rel="noopener noreferrer" class="link-btn-icon" title="開啟超連結">
+            🔗
+          </a>
+        ` : '';
 
         elem.innerHTML = `
           <div class="drag-handle-modal">☰</div>
-          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer">
+          <a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="title-link">
             ${item.title}
           </a>
+          ${urlButtonHtml}
           <span style="color:#e53935; cursor:pointer; font-weight:800; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
         `;
         container.appendChild(elem);
@@ -1398,21 +1423,35 @@
       }, 500);
     }
 
+    /* 新增行程（支援地點與超連結 URL 欄位） */
     function addTravelFromViewModal() {
       if (!currentViewingDate) return;
-      const input = document.getElementById('view-travel-input');
-      const title = input.value.trim();
+      const titleInput = document.getElementById('view-travel-input');
+      const urlInput = document.getElementById('view-travel-url-input');
+      
+      const title = titleInput.value.trim();
+      let url = urlInput.value.trim();
 
       if (!title) return;
+
+      // 如果有輸入 URL 但沒填協議頭 (http/https)，自動補上 https://
+      if (url && !/^https?:\/\//i.test(url)) {
+        url = 'https://' + url;
+      }
 
       const itemKey = Date.now().toString();
       const currentCount = travelData[currentViewingDate] ? Object.keys(travelData[currentViewingDate]).length : 0;
 
       const updates = {};
-      updates[`travel/${currentViewingDate}/${itemKey}`] = { title, order: currentCount };
+      updates[`travel/${currentViewingDate}/${itemKey}`] = { 
+        title, 
+        url: url || null, 
+        order: currentCount 
+      };
 
       window.dbUpdate(window.dbRef(window.db), updates);
-      input.value = '';
+      titleInput.value = '';
+      urlInput.value = '';
       document.getElementById('view-map-iframe-box').style.display = 'none';
     }
 
