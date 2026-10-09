@@ -6,7 +6,12 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v19.0 - 行程超連結增強版</title>
+  <title>瑋與老婆的行事曆 v19.0 - 日系繪本版</title>
+
+  <!-- 引入 Google Fonts 粉圓體 (Huninn) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jf+Open+Huninn&display=swap" rel="stylesheet">
 
   <!-- 引入 Firebase SDK -->
   <script type="module">
@@ -29,39 +34,36 @@
   </script>
 
   <style>
-    @property --angle {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false;
-    }
-
     :root {
-      /* ☀️ 清新極光主題變數 */
-      --bg-gradient: linear-gradient(135deg, #f0f4fd 0%, #e8f0fe 40%, #fce4ec 70%, #f3e5f5 100%);
-      --card-glass: rgba(255, 255, 255, 0.88);
-      --card-border: rgba(255, 255, 255, 0.95);
-      --text-main: #2c3e50;
-      --text-muted: #546e7a;
-      
-      --shift-day-bg: linear-gradient(135deg, #00b4db, #0083b0);
-      --shift-noon-bg: linear-gradient(135deg, #ff758c, #ff7eb3);
-      --shift-night-bg: linear-gradient(135deg, #8e2de2, #4a00e0);
-      --shift-r-off-bg: linear-gradient(135deg, #ff007f, #ff758c, #ff8ed4);
-      --shift-off-bg: linear-gradient(135deg, #ff758c, #ff9a9e, #fe5196);
-      --shift-custom-bg: linear-gradient(135deg, #8e2de2, #7579ff);
+      /* 🎨 日系繪本風色調變數 */
+      --bg-paper: #FFFCF6;         /* 和紙白 */
+      --ink-border: #3E3A39;        /* 墨灰粗線 */
+      --text-main: #3E3A39;
+      --text-muted: #6E6864;
+
+      --coral-pink: #F2A497;       /* 珊瑚粉 */
+      --yamabuki-yellow: #F6D27A;  /* 山吹黃 */
+      --mizuiro-blue: #A8D3E6;     /* 水色 */
+      --wakatake-green: #B9DAA5;   /* 若竹綠 */
+
+      --shift-day-bg: #A8D3E6;
+      --shift-noon-bg: #F6D27A;
+      --shift-night-bg: #D1B3E0;
+      --shift-r-off-bg: #F2A497;
+      --shift-off-bg: #B9DAA5;
+      --shift-custom-bg: #E3D3C4;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+      font-family: 'Jf Open Huninn', 'Huninn', -apple-system, sans-serif;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
     }
 
-    /* 防位移核心防護：強行鎖定視窗邊界 */
     html, body {
       height: 100%;
       width: 100%;
@@ -69,16 +71,16 @@
       position: fixed;
       top: 0; left: 0;
       touch-action: none;
-      background: #f0f4fd;
+      background: var(--bg-paper);
     }
 
     body {
-      background: var(--bg-gradient);
+      background-color: var(--bg-paper);
       color: var(--text-main);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 6px;
+      padding: 8px;
     }
 
     #bg-canvas {
@@ -91,9 +93,7 @@
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(240, 244, 253, 0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: var(--bg-paper);
       z-index: 99999;
       flex-direction: column;
       justify-content: center;
@@ -110,11 +110,8 @@
 
     .orientation-overlay p {
       font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      background: linear-gradient(to right, #0083b0, #ff007f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+      color: var(--ink-border);
     }
 
     @keyframes rotatePhone {
@@ -126,42 +123,6 @@
       .orientation-overlay { display: flex; }
     }
 
-    .bg-glow {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      -webkit-filter: blur(100px);
-      z-index: 0; opacity: 0.6;
-      animation: float 10s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-
-    .bg-glow-1 {
-      width: 320px; height: 320px;
-      background: radial-gradient(circle, #a1c4fd 0%, #c2e9fb 100%);
-      top: -80px; left: -80px;
-    }
-
-    .bg-glow-2 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, #fbc2eb 0%, #a6c1ee 100%);
-      bottom: -60px; right: -60px;
-      animation-delay: -5s;
-    }
-
-    .bg-glow-3 {
-      width: 200px; height: 200px;
-      background: radial-gradient(circle, #ffecd2 0%, #fcb69f 100%);
-      top: 40%; left: 30%;
-      animation-delay: -2.5s; opacity: 0.5;
-    }
-
-    @keyframes float {
-      0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-      50% { transform: translate(40px, 30px) scale(1.2) rotate(180deg); }
-      100% { transform: translate(-20px, 50px) scale(0.9) rotate(360deg); }
-    }
-
     .calendar-container {
       position: relative;
       z-index: 1;
@@ -170,28 +131,23 @@
       height: 100%;
       display: flex;
       flex-direction: column;
-      background: var(--card-glass);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1.5px solid var(--card-border);
-      border-radius: 24px;
-      padding: 10px 8px 12px 8px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 
-                  inset 0 0 20px rgba(255, 255, 255, 0.9),
-                  0 0 20px rgba(0, 180, 219, 0.2);
+      background: var(--bg-paper);
+      border: 3px solid var(--ink-border);
+      border-radius: 28px;
+      padding: 12px 10px;
+      box-shadow: 4px 6px 0px var(--ink-border);
       overflow: hidden;
     }
 
     .nav-tabs {
       display: flex;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 16px;
+      background: #FFF8EE;
+      border: 3px solid var(--ink-border);
+      border-radius: 20px;
       padding: 4px;
-      margin-bottom: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
+      margin-bottom: 8px;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-      gap: 4px;
+      gap: 6px;
       z-index: 10;
     }
 
@@ -199,19 +155,20 @@
       flex: 1;
       padding: 8px 0;
       text-align: center;
-      font-size: 0.88rem;
-      font-weight: 800;
+      font-size: 0.92rem;
+      font-weight: bold;
       color: var(--text-muted);
-      border-radius: 12px;
+      border-radius: 14px;
+      border: 2px solid transparent;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: all 0.2s ease;
       white-space: nowrap;
     }
 
     .tab-btn.active {
-      color: #1a252f;
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      color: var(--text-main);
+      background: var(--yamabuki-yellow);
+      border-color: var(--ink-border);
     }
 
     .page-content {
@@ -231,124 +188,100 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       padding: 0 4px;
       flex-shrink: 0;
     }
 
     .mode-toggle-btn {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
+      background: #FFFFFF;
+      border: 2px solid var(--ink-border);
+      border-radius: 18px;
       padding: 4px 12px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: #333;
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: var(--text-main);
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 2px 2px 0px var(--ink-border);
+      transition: all 0.15s ease;
+    }
+
+    .mode-toggle-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px var(--ink-border);
     }
 
     .mode-toggle-btn.edit-mode {
-      background: #ffffff;
-      border: 1px solid transparent;
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
-      transform: scale(1.05);
-    }
-
-    .mode-toggle-btn.edit-mode::before {
-      content: '';
-      position: absolute;
-      top: -2px; left: -2px; right: -2px; bottom: -2px;
-      background: conic-gradient(from var(--angle), #ff007f, #00b4db, #7928ca, #ff007f);
-      border-radius: 22px;
-      z-index: -1;
-      animation: rotateGradient 3s linear infinite;
-    }
-
-    @keyframes rotateGradient {
-      to { --angle: 360deg; }
+      background: var(--coral-pink);
+      color: #FFFFFF;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       padding: 0 4px;
       flex-shrink: 0;
     }
 
     .header h2 {
-      font-size: 1.25rem;
-      font-weight: 900;
-      letter-spacing: 1.2px;
-      background: linear-gradient(to right, #0083b0, #ff007f);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--ink-border);
     }
 
     .nav-btn {
-      background: rgba(255, 255, 255, 0.85);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
+      background: #FFFFFF;
+      border: 2px solid var(--ink-border);
+      border-radius: 14px;
       padding: 5px 12px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #2c3e50;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text-main);
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 2px 2px 0px var(--ink-border);
+      transition: all 0.15s ease;
     }
 
     .nav-btn:active {
-      transform: scale(0.9);
-      background: #ffffff;
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px var(--ink-border);
     }
 
     .status-bar {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #0083b0;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
     .status-dot {
-      width: 8px; height: 8px;
-      background-color: #00b4db;
+      width: 10px; height: 10px;
+      background-color: var(--wakatake-green);
+      border: 2px solid var(--ink-border);
       border-radius: 50%;
-      box-shadow: 0 0 8px #00b4db;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.4); opacity: 0.6; }
     }
 
     .weekdays {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       text-align: center;
-      font-size: 0.85rem;
-      font-weight: 800;
+      font-size: 0.88rem;
+      font-weight: bold;
       color: var(--text-muted);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       flex-shrink: 0;
     }
 
     .weekdays div:nth-child(6),
     .weekdays div:nth-child(7) {
-      color: #e53935;
+      color: var(--coral-pink);
     }
 
     .days-grid-container {
@@ -370,14 +303,14 @@
     }
 
     .slider-track.animate {
-      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+      transition: transform 0.25s ease-out;
     }
 
     .days-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       grid-template-rows: repeat(6, minmax(0, 1fr));
-      gap: 4px;
+      gap: 5px;
       height: 100%;
       width: 33.3333%;
       flex-shrink: 0;
@@ -385,20 +318,19 @@
     }
 
     .day-cell {
-      border-radius: 10px;
-      padding: 2px 1px;
+      border-radius: 14px;
+      padding: 3px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      gap: 1px;
-      background: rgba(255, 255, 255, 0.92);
-      border: 2px solid transparent;
+      gap: 2px;
+      background: #FFFFFF;
+      border: 2px solid var(--ink-border);
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 2px 2px 0px rgba(62, 58, 57, 0.15);
       z-index: 1;
     }
 
@@ -410,125 +342,78 @@
     }
 
     .day-number {
-      font-size: 0.8rem;
-      font-weight: 900;
-      color: #1a252f;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--ink-border);
       line-height: 1;
       z-index: 1;
     }
 
-    /* 當天彩虹流光外框特效 */
+    /* 當天標示：可愛粗線黃底手繪框 */
     .day-cell.today {
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
-      transform: scale(1.03);
+      background: #FFFDF0 !important;
+      border: 3px solid var(--ink-border) !important;
+      box-shadow: 3px 3px 0px var(--ink-border) !important;
       z-index: 5;
-      background: #ffffff !important;
-    }
-
-    .day-cell.today::after {
-      content: '';
-      position: absolute;
-      inset: -2.5px;
-      padding: 2.5px;
-      border-radius: 10px;
-      background: conic-gradient(from var(--angle), #ff007f, #00b4db, #ffd700, #ff007f);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      z-index: 6;
-      pointer-events: none;
-      animation: rotateGradient 1.5s linear infinite;
     }
 
     .day-cell.today .day-number {
-      background: linear-gradient(135deg, #ff007f, #00b4db);
-      color: #fff;
+      background: var(--coral-pink);
+      color: #FFFFFF;
+      border: 1.5px solid var(--ink-border);
       border-radius: 50%;
-      width: 17px; height: 17px;
+      width: 18px; height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.65rem;
-      font-weight: 900;
+      font-size: 0.7rem;
     }
 
     .day-cell.selected {
-      background: rgba(0, 198, 255, 0.15) !important;
-      box-shadow: 0 0 15px rgba(0, 198, 255, 0.6) !important;
-      transform: scale(0.94);
+      background: var(--mizuiro-blue) !important;
+      transform: scale(0.95);
     }
 
     .day-cell.cell-r-off {
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 2px 8px rgba(255, 0, 127, 0.2);
-    }
-
-    .day-cell.cell-r-off::after {
-      content: '';
-      position: absolute; inset: 0; padding: 2px;
-      border-radius: 10px;
-      background: conic-gradient(from var(--angle), #ff007f, #ff758c, #ff8ed4, #ff007f);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      z-index: 2; pointer-events: none;
-      animation: rotateGradient 3s linear infinite;
+      background: #FFF5F3;
     }
 
     .day-cell.cell-off {
-      background: rgba(255, 255, 255, 0.95);
-      box-shadow: 0 2px 8px rgba(254, 81, 150, 0.2);
-    }
-
-    .day-cell.cell-off::after {
-      content: '';
-      position: absolute; inset: 0; padding: 2px;
-      border-radius: 10px;
-      background: conic-gradient(from var(--angle), #ff758c, #ff9a9e, #fe5196, #ff758c);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      z-index: 2; pointer-events: none;
-      animation: rotateGradient 3s linear infinite;
+      background: #F4F9F1;
     }
 
     .shift-tag {
-      width: 98%; text-align: center;
-      font-size: 0.62rem; font-weight: 800;
-      padding: 1.5px 1px; border-radius: 4px;
-      color: #fff; line-height: 1.1;
+      width: 96%; text-align: center;
+      font-size: 0.65rem; font-weight: bold;
+      padding: 2px 1px; border-radius: 8px;
+      color: var(--ink-border); line-height: 1.1;
+      border: 1.5px solid var(--ink-border);
       word-break: break-all; white-space: pre-wrap;
       display: flex; align-items: center; justify-content: center;
-      overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.12);
-      z-index: 1;
+      overflow: hidden; z-index: 1;
     }
 
     .shift-day { background: var(--shift-day-bg); }
     .shift-noon { background: var(--shift-noon-bg); }
     .shift-night { background: var(--shift-night-bg); }
-    .shift-r-off { background: var(--shift-r-off-bg); background-size: 200% 200%; animation: gradientShift 3s ease infinite; }
-    .shift-off { background: var(--shift-off-bg); background-size: 200% 200%; animation: gradientShift 2.5s ease infinite; }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
+    .shift-r-off { background: var(--shift-r-off-bg); color: #FFFFFF; }
+    .shift-off { background: var(--shift-off-bg); }
     .shift-custom { background: var(--shift-custom-bg); }
 
     .travel-tag {
-      width: 98%;
-      background: linear-gradient(135deg, #00c6ff, #0072ff);
-      color: #fff;
-      font-size: 0.58rem;
-      font-weight: 800;
+      width: 96%;
+      background: var(--mizuiro-blue);
+      color: var(--ink-border);
+      border: 1.5px solid var(--ink-border);
+      font-size: 0.6rem;
+      font-weight: bold;
       padding: 1px 2px;
-      border-radius: 4px;
+      border-radius: 6px;
       margin-top: 1px;
       text-align: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      box-shadow: 0 2px 4px rgba(0, 114, 255, 0.2);
       z-index: 1;
     }
 
@@ -538,106 +423,115 @@
     }
 
     .wife-table {
-      width: 100%; border-collapse: separate; border-spacing: 3px; margin-top: 4px;
+      width: 100%; border-collapse: separate; border-spacing: 4px; margin-top: 4px;
     }
 
     .wife-table th, .wife-table td {
-      text-align: center; padding: 6px 2px; font-size: 0.75rem; border-radius: 8px; position: relative;
+      text-align: center; padding: 6px 2px; font-size: 0.78rem; border-radius: 10px; position: relative;
     }
 
-    .wife-table th { background: rgba(0, 180, 219, 0.15); color: #00779a; font-weight: 900; }
+    .wife-table th {
+      background: var(--mizuiro-blue);
+      color: var(--ink-border);
+      font-weight: bold;
+      border: 2px solid var(--ink-border);
+    }
 
     .wife-table td {
-      background: rgba(255, 255, 255, 0.85); color: #2c3e50; font-weight: 700;
-      vertical-align: middle; border: 1px solid rgba(255, 255, 255, 0.9); line-height: 1.25; transition: all 0.3s ease;
+      background: #FFFFFF;
+      color: var(--text-main);
+      font-weight: bold;
+      vertical-align: middle;
+      border: 2px solid var(--ink-border);
+      line-height: 1.25;
     }
 
-    .wife-table td.time-col { background: rgba(240, 244, 253, 0.9); font-weight: 800; color: var(--text-muted); font-size: 0.68rem; }
-    .wife-table td.span-row { background: rgba(255, 235, 238, 0.8); color: #d32f2f; font-weight: 900; }
-    .wife-table td.eng-subject { background: linear-gradient(135deg, rgba(0, 180, 219, 0.15), rgba(0, 131, 176, 0.2)); color: #005c7a; font-weight: 900; }
-    .wife-table td.world-subject { background: linear-gradient(135deg, rgba(255, 117, 140, 0.18), rgba(255, 126, 179, 0.25)); color: #c2185b; font-weight: 900; }
+    .wife-table td.time-col { background: #FFF8EE; color: var(--text-muted); font-size: 0.7rem; }
+    .wife-table td.span-row { background: #FFEFEF; color: var(--coral-pink); }
+    .wife-table td.eng-subject { background: var(--mizuiro-blue); color: var(--ink-border); }
+    .wife-table td.world-subject { background: var(--yamabuki-yellow); color: var(--ink-border); }
 
     .wife-table td.active-current-slot {
-      box-shadow: 0 0 15px rgba(255, 0, 127, 0.85) !important;
-      transform: scale(1.06); z-index: 5; font-weight: 900 !important;
-      background: #ffffff !important;
-    }
-
-    .wife-table td.active-current-slot::after {
-      content: ''; position: absolute; inset: -2.5px; padding: 2.5px; border-radius: 10px;
-      background: conic-gradient(from var(--angle), #ff007f, #00b4db, #ffd700, #ff007f);
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor; mask-composite: exclude;
-      z-index: 6; pointer-events: none; animation: rotateGradient 1.5s linear infinite;
+      background: var(--coral-pink) !important;
+      color: #FFFFFF !important;
+      transform: scale(1.04);
+      box-shadow: 3px 3px 0px var(--ink-border);
     }
 
     /* 彈窗樣式 */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(240, 244, 253, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000;
+      background: rgba(62, 58, 57, 0.4);
+      display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 1000;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal {
-      background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 1);
+      background: var(--bg-paper);
+      border: 3px solid var(--ink-border);
       width: 92%; max-width: 360px; border-radius: 24px; padding: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); transform: scale(0.7) translateY(30px); transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 6px 8px 0px var(--ink-border); transform: scale(0.85); transition: transform 0.2s ease;
       max-height: 85vh; overflow-y: auto;
     }
-    .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-    .modal h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 12px; text-align: center; color: #2c3e50; }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal h3 { font-size: 1.15rem; font-weight: bold; margin-bottom: 14px; text-align: center; color: var(--ink-border); }
     
-    .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 14px; }
-    .quick-btn { padding: 8px 0; border: none; border-radius: 10px; font-size: 0.82rem; font-weight: 800; color: #fff; cursor: pointer; }
+    .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .quick-btn {
+      padding: 8px 0; border: 2px solid var(--ink-border); border-radius: 12px; font-size: 0.85rem; font-weight: bold; color: var(--ink-border); cursor: pointer;
+      box-shadow: 2px 2px 0px var(--ink-border);
+    }
+    .quick-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px var(--ink-border); }
     .quick-btn.q-day { background: var(--shift-day-bg); }
     .quick-btn.q-noon { background: var(--shift-noon-bg); }
     .quick-btn.q-night { background: var(--shift-night-bg); }
-    .quick-btn.q-r-off { background: var(--shift-r-off-bg); }
+    .quick-btn.q-r-off { background: var(--shift-r-off-bg); color: #FFF; }
     .quick-btn.q-off { background: var(--shift-off-bg); }
 
     .input-group { margin-bottom: 12px; }
-    .input-group label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px; }
+    .input-group label { display: block; font-size: 0.82rem; font-weight: bold; color: var(--text-muted); margin-bottom: 6px; }
     .input-group input, .input-group select, .input-group textarea {
-      width: 100%; padding: 8px; background: rgba(240, 244, 253, 0.8);
-      border: 1px solid rgba(0, 180, 219, 0.2); border-radius: 12px; font-size: 0.88rem; color: #2c3e50; outline: none;
+      width: 100%; padding: 10px; background: #FFFFFF;
+      border: 2px solid var(--ink-border); border-radius: 14px; font-size: 0.9rem; color: var(--text-main); outline: none;
     }
 
     .travel-list-modal { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
     .travel-item-modal {
-      display: flex; justify-content: space-between; align-items: center; background: rgba(240, 244, 253, 0.95);
-      padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 800; color: #2c3e50;
-      border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      transition: transform 0.15s ease, opacity 0.15s ease; touch-action: none; gap: 6px;
+      display: flex; justify-content: space-between; align-items: center; background: #FFFFFF;
+      padding: 8px 12px; border-radius: 14px; font-size: 0.88rem; font-weight: bold; color: var(--text-main);
+      border: 2px solid var(--ink-border); box-shadow: 2px 2px 0px var(--ink-border);
+      transition: transform 0.15s ease; touch-action: none; gap: 6px;
     }
-    .travel-item-modal.dragging { opacity: 0.5; transform: scale(1.02); box-shadow: 0 8px 20px rgba(0, 180, 219, 0.3); }
+    .travel-item-modal.dragging { opacity: 0.6; }
 
-    .drag-handle-modal { color: #90a4ae; font-size: 1.1rem; cursor: grab; padding-right: 4px; touch-action: none; }
-    .travel-item-modal a.title-link { color: #2c3e50; text-decoration: none; flex-grow: 1; word-break: break-all; }
+    .drag-handle-modal { color: var(--text-muted); font-size: 1.1rem; cursor: grab; padding-right: 4px; touch-action: none; }
+    .travel-item-modal a.title-link { color: var(--text-main); text-decoration: none; flex-grow: 1; word-break: break-all; }
     
-    /* 🔗 超連結按鈕樣式 */
     .link-btn-icon {
       display: inline-flex; align-items: center; justify-content: center;
-      padding: 4px 6px; background: rgba(0, 180, 219, 0.15); border-radius: 8px;
-      font-size: 0.8rem; text-decoration: none; transition: transform 0.2s ease;
+      padding: 4px 8px; background: var(--yamabuki-yellow); border: 1.5px solid var(--ink-border); border-radius: 10px;
+      font-size: 0.8rem; text-decoration: none; color: var(--ink-border);
     }
     .link-btn-icon:active { transform: scale(0.9); }
 
     .embedded-map-container {
-      margin-top: 8px; width: 100%; height: 140px; border-radius: 12px;
-      overflow: hidden; border: 1px solid rgba(0, 180, 219, 0.3); background: rgba(255, 255, 255, 0.5); display: none;
-      contain: layout style;
+      margin-top: 8px; width: 100%; height: 140px; border-radius: 14px;
+      overflow: hidden; border: 2px solid var(--ink-border); background: #FFFFFF; display: none;
     }
-    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; pointer-events: auto; }
+    .embedded-map-container iframe { width: 100%; height: 100%; border: 0; }
 
     .modal-actions { display: flex; gap: 10px; margin-top: 14px; }
-    .btn-action { flex: 1; padding: 10px 0; border-radius: 12px; border: none; font-size: 0.88rem; font-weight: 800; cursor: pointer; }
-    .btn-cancel { background: rgba(0, 0, 0, 0.08); color: #607d8b; }
-    .btn-save { background: linear-gradient(135deg, #00b4db, #0083b0); color: #fff; box-shadow: 0 4px 12px rgba(0, 180, 219, 0.3); }
+    .btn-action {
+      flex: 1; padding: 10px 0; border-radius: 14px; border: 2px solid var(--ink-border); font-size: 0.9rem; font-weight: bold; cursor: pointer;
+      box-shadow: 2px 2px 0px var(--ink-border);
+    }
+    .btn-action:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px var(--ink-border); }
+    .btn-cancel { background: #FFFFFF; color: var(--text-muted); }
+    .btn-save { background: var(--wakatake-green); color: var(--ink-border); }
 
-    .particle { position: absolute; pointer-events: none; z-index: 9999; animation: confetti 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+    .particle { position: absolute; pointer-events: none; z-index: 9999; animation: confetti 0.8s ease-out forwards; }
     @keyframes confetti {
-      0% { transform: translate(0, 0) scale(1.8) rotate(0deg); opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
-      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(720deg); opacity: 0; }
+      0% { transform: translate(0, 0) scale(1.5) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0) rotate(360deg); opacity: 0; }
     }
   </style>
 </head>
@@ -647,12 +541,8 @@
 
   <div class="orientation-overlay">
     <div class="orientation-icon">📱</div>
-    <p>請將手機轉為直式<br>以獲得最佳體驗✨</p>
+    <p>請將手機轉為直式<br>獲得最佳繪本體驗✨</p>
   </div>
-
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
-  <div class="bg-glow bg-glow-3"></div>
 
   <div class="calendar-container">
     
@@ -696,7 +586,7 @@
     <!-- 👩‍🏫 第二頁：老婆課表 -->
     <div class="page-content" id="wife-page">
       <div style="margin-bottom: 8px; text-align: center;">
-        <h2 style="font-size: 1.15rem; font-weight: 900; background: linear-gradient(to right, #ff758c, #8e2de2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        <h2 style="font-size: 1.2rem; font-weight: bold; color: var(--ink-border);">
           👩‍🏫 大佳國小課表
         </h2>
       </div>
@@ -804,23 +694,23 @@
 
   </div>
 
-  <!-- 👁️ 檢視與行程彈窗（含網址連結欄位） -->
+  <!-- 👁️ 檢視與行程彈窗 -->
   <div class="modal-overlay" id="view-modal-overlay">
     <div class="modal">
       <h3 id="view-modal-date-title">當日旅遊行程</h3>
       
-      <div id="view-shift-info" style="text-align:center; margin-bottom:12px; font-size:0.85rem; font-weight:800; color:var(--text-muted);"></div>
+      <div id="view-shift-info" style="text-align:center; margin-bottom:12px; font-size:0.88rem; font-weight:bold; color:var(--text-muted);"></div>
 
       <div class="travel-list-modal" id="view-travel-list"></div>
 
-      <!-- 新增行程區塊（名稱 + 網址） -->
+      <!-- 新增行程區塊 -->
       <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
         <div class="input-group" style="margin-bottom: 0;">
           <input type="text" id="view-travel-input" placeholder="新增地點名稱" oninput="updateViewMapPreview(this.value)">
         </div>
         <div class="input-group" style="display: flex; gap: 6px; margin-bottom: 0;">
           <input type="url" id="view-travel-url-input" placeholder="超連結 URL (選填, https://...)" style="flex-grow:1;">
-          <button onclick="addTravelFromViewModal()" style="padding:0 14px; background:linear-gradient(135deg, #00b4db, #0083b0); color:#fff; border:none; border-radius:12px; font-weight:800; cursor:pointer; white-space:nowrap;">新增</button>
+          <button onclick="addTravelFromViewModal()" style="padding:0 14px; background:var(--wakatake-green); color:var(--ink-border); border:2px solid var(--ink-border); border-radius:14px; font-weight:bold; cursor:pointer; white-space:nowrap; box-shadow:2px 2px 0px var(--ink-border);">新增</button>
         </div>
       </div>
 
@@ -845,7 +735,7 @@
         <button class="quick-btn q-night" onclick="setQuick('晚班')">晚班</button>
         <button class="quick-btn q-r-off" onclick="setQuick('輪休')">輪休</button>
         <button class="quick-btn q-off" onclick="setQuick('休假')">休假</button>
-        <button class="quick-btn" style="background: rgba(0,0,0,0.1); color:#607d8b;" onclick="setQuick('')">清除</button>
+        <button class="quick-btn" style="background: #FFFFFF;" onclick="setQuick('')">清除</button>
       </div>
 
       <div class="input-group">
@@ -1008,7 +898,7 @@
         btn.classList.add('edit-mode');
         icon.innerText = '✏️';
         text.innerText = '編輯模式';
-        createParticles(btn.offsetLeft + btn.offsetWidth/2, btn.offsetTop + btn.offsetHeight/2, 16);
+        createParticles(btn.offsetLeft + btn.offsetWidth/2, btn.offsetTop + btn.offsetHeight/2, 12);
       } else {
         btn.classList.remove('edit-mode');
         icon.innerText = '👁️';
@@ -1121,7 +1011,7 @@
         currentYear = nextDate.getFullYear();
         currentMonth = nextDate.getMonth();
         renderAllCalendars();
-      }, 300);
+      }, 250);
     }
 
     function setupGestureControls() {
@@ -1152,7 +1042,7 @@
 
         const cell = getCellFromPoint(x, y);
         if (cell && (cell.classList.contains('cell-r-off') || cell.classList.contains('cell-off'))) {
-          createParticles(x, y, 30);
+          createParticles(x, y, 12);
         }
       };
 
@@ -1190,7 +1080,7 @@
           if (isDragging) {
             isDragging = false;
             if (selectedDates.size > 0) {
-              createParticles(x || window.innerWidth/2, y || window.innerHeight/2, 20);
+              createParticles(x || window.innerWidth/2, y || window.innerHeight/2, 10);
               openModal();
             }
           }
@@ -1221,7 +1111,7 @@
               currentYear = nextDate.getFullYear();
               currentMonth = nextDate.getMonth();
               renderAllCalendars();
-            }, 300);
+            }, 250);
           } else if (dragDeltaX > threshold) {
             track.style.transform = `translate3d(0%, 0, 0)`;
             setTimeout(() => {
@@ -1230,7 +1120,7 @@
               currentYear = nextDate.getFullYear();
               currentMonth = nextDate.getMonth();
               renderAllCalendars();
-            }, 300);
+            }, 250);
           } else {
             track.style.transform = `translate3d(-33.3333%, 0, 0)`;
           }
@@ -1282,7 +1172,6 @@
       resetViewportScroll();
     }
 
-    /* 渲染行程列表（具備地圖超連結與自訂網址按鈕 🔗） */
     function renderViewTravelList(dateStr) {
       const container = document.getElementById('view-travel-list');
       container.innerHTML = '';
@@ -1291,7 +1180,7 @@
       const keys = Object.keys(dayTravel).sort((a, b) => (dayTravel[a].order ?? 0) - (dayTravel[b].order ?? 0));
 
       if (keys.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.82rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增地點與網址！</div>`;
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px 0;">當天尚未規劃行程 ✨<br>可以在下方輸入框新增地點與網址！</div>`;
         return;
       }
 
@@ -1305,7 +1194,6 @@
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.title)}`;
         const customUrl = item.url ? item.url.trim() : '';
 
-        // 如果有設定網址，右側顯示 🔗 按鈕
         const urlButtonHtml = customUrl ? `
           <a href="${customUrl}" target="_blank" rel="noopener noreferrer" class="link-btn-icon" title="開啟超連結">
             🔗
@@ -1318,7 +1206,7 @@
             ${item.title}
           </a>
           ${urlButtonHtml}
-          <span style="color:#e53935; cursor:pointer; font-weight:800; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
+          <span style="color:var(--coral-pink); cursor:pointer; font-weight:bold; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
         `;
         container.appendChild(elem);
       });
@@ -1423,7 +1311,6 @@
       }, 500);
     }
 
-    /* 新增行程（支援地點與超連結 URL 欄位） */
     function addTravelFromViewModal() {
       if (!currentViewingDate) return;
       const titleInput = document.getElementById('view-travel-input');
@@ -1434,7 +1321,6 @@
 
       if (!title) return;
 
-      // 如果有輸入 URL 但沒填協議頭 (http/https)，自動補上 https://
       if (url && !/^https?:\/\//i.test(url)) {
         url = 'https://' + url;
       }
@@ -1512,30 +1398,29 @@
       closeModal();
     }
 
-    function createParticles(x, y, count = 20) {
-      const colors = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300', '#fe5196'];
-      const shapes = ['circle', 'rect'];
+    /* 可愛點點粒子效果 */
+    function createParticles(x, y, count = 12) {
+      const colors = ['#F2A497', '#F6D27A', '#A8D3E6', '#B9DAA5'];
 
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         document.body.appendChild(p);
 
-        const size = Math.random() * 9 + 4;
-        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = Math.random() * 8 + 6;
         
         p.style.width = `${size}px`;
-        p.style.height = shape === 'rect' ? `${size * 1.8}px` : `${size}px`;
-        p.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+        p.style.height = `${size}px`;
+        p.style.borderRadius = '50%';
+        p.style.border = '1.5px solid #3E3A39';
         
         const color = colors[Math.floor(Math.random() * colors.length)];
         p.style.background = color;
-        p.style.color = color;
         p.style.left = `${x}px`;
         p.style.top = `${y}px`;
 
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 110 + 40;
+        const speed = Math.random() * 80 + 30;
         p.style.setProperty('--dx', `${Math.cos(angle) * speed}px`);
         p.style.setProperty('--dy', `${Math.sin(angle) * speed}px`);
 
@@ -1543,6 +1428,7 @@
       }
     }
 
+    /* 背景柔和浮動點點 */
     function initBackgroundParticles() {
       const canvas = document.getElementById('bg-canvas');
       const ctx = canvas.getContext('2d');
@@ -1550,8 +1436,8 @@
       let height = canvas.height = window.innerHeight;
 
       const particles = [];
-      const particleCount = 80;
-      let touchPos = { x: -1000, y: -1000, radius: 120 };
+      const particleCount = 25;
+      let touchPos = { x: -1000, y: -1000, radius: 100 };
 
       window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
@@ -1562,11 +1448,10 @@
         constructor() {
           this.x = Math.random() * width;
           this.y = Math.random() * height;
-          this.vx = (Math.random() - 0.5) * 0.8;
-          this.vy = (Math.random() - 0.5) * 0.8;
-          this.radius = Math.random() * 2 + 1;
-          this.color = ['#00b4db', '#ff758c', '#8e2de2', '#ffb300'][Math.floor(Math.random() * 4)];
-          this.alpha = Math.random() * 0.5 + 0.3;
+          this.vx = (Math.random() - 0.5) * 0.4;
+          this.vy = (Math.random() - 0.5) * 0.4;
+          this.radius = Math.random() * 5 + 3;
+          this.color = ['#F2A497', '#F6D27A', '#A8D3E6', '#B9DAA5'][Math.floor(Math.random() * 4)];
         }
 
         update() {
@@ -1575,28 +1460,17 @@
 
           if (this.x < 0 || this.x > width) this.vx *= -1;
           if (this.y < 0 || this.y > height) this.vy *= -1;
-
-          const dx = touchPos.x - this.x;
-          const dy = touchPos.y - this.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-
-          if (dist < touchPos.radius) {
-            const angle = Math.atan2(dy, dx);
-            const force = (touchPos.radius - dist) / touchPos.radius;
-            this.x -= Math.cos(angle) * force * 4;
-            this.y -= Math.sin(angle) * force * 4;
-          }
         }
 
         draw() {
           ctx.save();
-          ctx.globalAlpha = this.alpha;
           ctx.beginPath();
           ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
           ctx.fillStyle = this.color;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = this.color;
+          ctx.strokeStyle = '#3E3A39';
+          ctx.lineWidth = 1.5;
           ctx.fill();
+          ctx.stroke();
           ctx.restore();
         }
       }
