@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>瑋與老婆的行事曆 v19.0 - 日系繪本版</title>
+  <title>瑋與老婆的行事曆 v19.0 - 日系繪本加強版</title>
 
   <!-- 引入 Google Fonts 粉圓體 (Huninn) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,11 +46,12 @@
       --mizuiro-blue: #A8D3E6;     /* 水色 */
       --wakatake-green: #B9DAA5;   /* 若竹綠 */
 
+      /* 班別色調（強化休假與輪休） */
       --shift-day-bg: #A8D3E6;
       --shift-noon-bg: #F6D27A;
       --shift-night-bg: #D1B3E0;
-      --shift-r-off-bg: #F2A497;
-      --shift-off-bg: #B9DAA5;
+      --shift-r-off-bg: #E75A5A;   /* 鮮豔手繪紅（輪休） */
+      --shift-off-bg: #FF85A2;     /* 亮眼可愛粉紅（休假） */
       --shift-custom-bg: #E3D3C4;
     }
 
@@ -349,18 +350,18 @@
       z-index: 1;
     }
 
-    /* 當天標示：可愛粗線黃底手繪框 */
+    /* 🌟 當天高光：強烈山吹黃手繪風格高光 */
     .day-cell.today {
-      background: #FFFDF0 !important;
+      background: var(--yamabuki-yellow) !important;
       border: 3px solid var(--ink-border) !important;
-      box-shadow: 3px 3px 0px var(--ink-border) !important;
+      box-shadow: 3px 4px 0px var(--ink-border) !important;
+      transform: scale(1.03);
       z-index: 5;
     }
 
     .day-cell.today .day-number {
-      background: var(--coral-pink);
+      background: var(--ink-border);
       color: #FFFFFF;
-      border: 1.5px solid var(--ink-border);
       border-radius: 50%;
       width: 18px; height: 18px;
       display: flex;
@@ -375,11 +376,11 @@
     }
 
     .day-cell.cell-r-off {
-      background: #FFF5F3;
+      background: #FFF0F0;
     }
 
     .day-cell.cell-off {
-      background: #F4F9F1;
+      background: #FFF0F5;
     }
 
     .shift-tag {
@@ -396,8 +397,8 @@
     .shift-day { background: var(--shift-day-bg); }
     .shift-noon { background: var(--shift-noon-bg); }
     .shift-night { background: var(--shift-night-bg); }
-    .shift-r-off { background: var(--shift-r-off-bg); color: #FFFFFF; }
-    .shift-off { background: var(--shift-off-bg); }
+    .shift-r-off { background: var(--shift-r-off-bg); color: #FFFFFF; } /* 鮮豔輪休紅 */
+    .shift-off { background: var(--shift-off-bg); color: #FFFFFF; }   /* 亮眼休假粉 */
     .shift-custom { background: var(--shift-custom-bg); }
 
     .travel-tag {
@@ -444,6 +445,7 @@
       vertical-align: middle;
       border: 2px solid var(--ink-border);
       line-height: 1.25;
+      transition: all 0.2s ease;
     }
 
     .wife-table td.time-col { background: #FFF8EE; color: var(--text-muted); font-size: 0.7rem; }
@@ -451,11 +453,14 @@
     .wife-table td.eng-subject { background: var(--mizuiro-blue); color: var(--ink-border); }
     .wife-table td.world-subject { background: var(--yamabuki-yellow); color: var(--ink-border); }
 
+    /* 🌟 老婆課表「當前時段」顯眼高光 */
     .wife-table td.active-current-slot {
-      background: var(--coral-pink) !important;
-      color: #FFFFFF !important;
-      transform: scale(1.04);
-      box-shadow: 3px 3px 0px var(--ink-border);
+      background: var(--yamabuki-yellow) !important;
+      color: var(--ink-border) !important;
+      border: 3px solid var(--ink-border) !important;
+      transform: scale(1.05);
+      box-shadow: 3px 4px 0px var(--ink-border) !important;
+      z-index: 10;
     }
 
     /* 彈窗樣式 */
@@ -485,7 +490,7 @@
     .quick-btn.q-noon { background: var(--shift-noon-bg); }
     .quick-btn.q-night { background: var(--shift-night-bg); }
     .quick-btn.q-r-off { background: var(--shift-r-off-bg); color: #FFF; }
-    .quick-btn.q-off { background: var(--shift-off-bg); }
+    .quick-btn.q-off { background: var(--shift-off-bg); color: #FFF; }
 
     .input-group { margin-bottom: 12px; }
     .input-group label { display: block; font-size: 0.82rem; font-weight: bold; color: var(--text-muted); margin-bottom: 6px; }
@@ -1206,7 +1211,7 @@
             ${item.title}
           </a>
           ${urlButtonHtml}
-          <span style="color:var(--coral-pink); cursor:pointer; font-weight:bold; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
+          <span style="color:var(--shift-r-off-bg); cursor:pointer; font-weight:bold; padding:2px 6px;" onclick="deleteTravelFromViewModal('${dateStr}', '${key}')">✕</span>
         `;
         container.appendChild(elem);
       });
@@ -1398,9 +1403,8 @@
       closeModal();
     }
 
-    /* 可愛點點粒子效果 */
     function createParticles(x, y, count = 12) {
-      const colors = ['#F2A497', '#F6D27A', '#A8D3E6', '#B9DAA5'];
+      const colors = ['#E75A5A', '#FF85A2', '#F6D27A', '#A8D3E6', '#B9DAA5'];
 
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
@@ -1428,7 +1432,6 @@
       }
     }
 
-    /* 背景柔和浮動點點 */
     function initBackgroundParticles() {
       const canvas = document.getElementById('bg-canvas');
       const ctx = canvas.getContext('2d');
